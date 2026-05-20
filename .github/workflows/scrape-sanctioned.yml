@@ -1,0 +1,40 @@
+# Weekly refresh of the sanctioned-events list.
+#
+# The official Burning Man Regional Events directory at burningman.org is the
+# single source of truth for whether an event is "officially sanctioned." This
+# workflow re-scrapes it every Monday and commits the result back to the repo.
+#
+# Manual trigger: Actions tab → "Refresh sanctioned events" → Run workflow.
+
+name: Refresh sanctioned events
+
+on:
+  schedule:
+    # Every Monday at 14:00 UTC.
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Scrape burningman.org regional events directory
+        run: node scripts/scrape-bm-regionals.mjs
+      - name: Commit updated sanctioned-events snapshot
+        run: |
+          if git diff --quiet -- public/sanctioned-events.json; then
+            echo "No change in sanctioned-events.json — nothing to commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/sanctioned-events.json
+          git commit -m "chore: refresh sanctioned-events.json (weekly scrape)"
+          git push

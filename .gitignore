@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+.playwright/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Env / local
+.env
+.env.local
+.env.*.local
+.claude/
+
+# Build-time data snapshot — ~12 MB of festival JSON, populated on demand by
+# `npm run fetch-data`. Don't commit; let each developer / CI fetch it fresh.
+public/data/

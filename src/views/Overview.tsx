@@ -1,0 +1,182 @@
+import { useMemo } from 'react';
+import { EChart } from '../components/EChart';
+import { densityByFestival, globalTypeMix } from '../data/aggregate';
+import type { FestivalBundle } from '../data/loader';
+import type { SanctionFlags } from '../data/sanctioned';
+import type { SanctionFilter } from '../App';
+
+interface Props {
+  bundles: FestivalBundle[];
+  sanction: SanctionFlags | null;
+  filter: SanctionFilter;
+}
+
+export function Overview({ bundles, sanction, filter }: Props) {
+  const density = useMemo(() => densityByFestival(bundles), [bundles]);
+  const topByEvents = useMemo(() => [...density].sort((a, b) => b.events - a.events).slice(0, 12), [density]);
+  const typeMix = useMemo(() => globalTypeMix(bundles), [bundles]);
+
+  const totals = useMemo(
+    () =>
+      density.reduce(
+        (acc, r) => {
+          acc.events += r.events;
+          acc.camps += r.camps;
+          acc.art += r.art;
+          acc.music += r.music;
+          return acc;
+        },
+        { events: 0, camps: 0, art: 0, music: 0 },
+      ),
+    [density],
+  );
+
+  const sanctionedShown = useMemo(() => {
+    if (!sanction) return 0;
+    let n = 0;
+    for (const b of bundles) {
+      if (sanction.byFestival.get(b.festival.name)?.is_sanctioned) n++;
+    }
+    return n;
+  }, [bundles, sanction]);
+
+  const continents = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const b of bundles) {
+      const continent = continentForCoords(b.festival.lat, b.festival.long);
+      m.set(continent, (m.get(continent) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1]);
+  }, [bundles]);
+
+  return (
+    <div className="grid cols-3" style={{ marginBottom: 16 }}>
+      <div className="panel kpi">
+        <div className="label">Burns shown</div>
+        <div className="value">{bundles.length}</div>
+        <div className="delta">
+          {sanction && filter === 'all'
+            ? `${sanctionedShown} official · ${bundles.length - sanctionedShown} other`
+            : filter === 'sanctioned'
+              ? 'official BM regionals'
+              : filter === 'unsanctioned'
+                ? 'unsanctioned / unrecognized'
+                : 'no sanction data'}
+        </div>
+      </div>
+      <div className="panel kpi">
+        <div className="label">Events</div>
+        <div className="value">{totals.events.toLocaleString()}</div>
+        <div className="delta">{totals.music.toLocaleString()} music sets</div>
+      </div>
+      <div className="panel kpi">
+        <div className="label">Camps · Art</div>
+        <div className="value">
+          {totals.camps.toLocaleString()} · {totals.art.toLocaleString()}
+        </div>
+        <div className="delta">aggregate across burns</div>
+      </div>
+
+      <div className="panel" style={{ gridColumn: 'span 2' }}>
+        <h2>Top burns by event count</h2>
+        <div className="sub">Largest scheduled programs across the current filter.</div>
+        <EChart
+          className="chart"
+          option={{
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: 160, right: 24, top: 12, bottom: 24 },
+            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            yAxis: {
+              type: 'category',
+              data: topByEvents
+                .map((r) => decoratedTitle(r.title, r.festival, sanction))
+                .reverse(),
+              axisLine: { lineStyle: { color: '#444' } },
+              axisLabel: { color: '#8b93a7', fontSize: 11 },
+            },
+            series: [
+              {
+                type: 'bar',
+                data: topByEvents
+                  .map((r) => ({
+                    value: r.events,
+                    itemStyle: {
+                      color: sanction?.byFestival.get(r.festival)?.is_sanctioned ? '#ff8a3d' : '#5a9dd1',
+                    },
+                  }))
+                  .reverse(),
+                barWidth: 14,
+              },
+            ],
+          }}
+        />
+      </div>
+
+      <div className="panel">
+        <h2>Distribution by continent</h2>
+        <div className="sub">Geographic spread of burns in current filter.</div>
+        <EChart
+          className="chart"
+          option={{
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'item' },
+            series: [
+              {
+                type: 'pie',
+                radius: ['45%', '70%'],
+                avoidLabelOverlap: true,
+                data: continents.map(([name, count]) => ({ name, value: count })),
+                label: { color: '#e6e9ef' },
+                itemStyle: { borderColor: '#161922', borderWidth: 2 },
+              },
+            ],
+            color: ['#ff8a3d', '#5ad19a', '#5a9dd1', '#d15a9d', '#f5c542', '#9d5ad1', '#888'],
+          }}
+        />
+      </div>
+
+      <div className="panel" style={{ gridColumn: 'span 3' }}>
+        <h2>Global event-type mix</h2>
+        <div className="sub">Summed across burns in current filter. The 19-label dust taxonomy.</div>
+        <EChart
+          className="chart"
+          option={{
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: 200, right: 24, top: 12, bottom: 24 },
+            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            yAxis: {
+              type: 'category',
+              data: [...typeMix].sort((a, b) => a.count - b.count).map((r) => r.label),
+              axisLine: { lineStyle: { color: '#444' } },
+            },
+            series: [
+              {
+                type: 'bar',
+                data: [...typeMix].sort((a, b) => a.count - b.count).map((r) => r.count),
+                itemStyle: { color: '#5ad19a' },
+                barWidth: 12,
+              },
+            ],
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function decoratedTitle(title: string, festival: string, sanction: SanctionFlags | null): string {
+  if (!sanction) return title;
+  return sanction.byFestival.get(festival)?.is_sanctioned ? `★ ${title}` : title;
+}
+
+function continentForCoords(lat: number, lng: number): string {
+  if (lat > 14 && lng > -170 && lng < -50) return 'North America';
+  if (lat <= 14 && lat > -56 && lng > -85 && lng < -34) return 'South America';
+  if (lat > 35 && lng > -25 && lng < 60) return 'Europe';
+  if (lat > -35 && lat < 38 && lng > -20 && lng < 52) return 'Africa';
+  if (lat > -10 && lng > 60 && lng < 150) return 'Asia';
+  if (lat < -10 && lng > 110 && lng < 180) return 'Oceania';
+  return 'Other';
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Outer scope ring -->
+  <circle cx="32" cy="32" r="28" stroke="#ff8a3d" stroke-width="2"/>
+
+  <!-- Cardinal-direction dots (telescope reticle / compass) -->
+  <g fill="#ff8a3d">
+    <circle cx="32" cy="2"  r="1.6"/>
+    <circle cx="62" cy="32" r="1.6"/>
+    <circle cx="32" cy="62" r="1.6"/>
+    <circle cx="2"  cy="32" r="1.6"/>
+  </g>
+
+  <!-- Inner aperture (lens edge) -->
+  <circle cx="32" cy="32" r="18" stroke="#ff8a3d" stroke-width="1" opacity="0.4"/>
+
+  <!-- Central flame: stylized teardrop, the "playa" -->
+  <path d="M32 18 C25 26 25 38 32 46 C39 38 39 26 32 18 Z" fill="#ff8a3d"/>
+
+  <!-- Inner highlight gives the flame depth -->
+  <path d="M32 23 C28.5 28 28.5 36 32 40 C34 36 34 28 32 23 Z" fill="#161922" opacity="0.55"/>
+</svg>

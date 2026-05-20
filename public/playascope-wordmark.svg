@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" fill="none">
+  <!-- Icon (same as playascope.svg, anchored left) -->
+  <g>
+    <circle cx="32" cy="32" r="28" stroke="#ff8a3d" stroke-width="2"/>
+    <g fill="#ff8a3d">
+      <circle cx="32" cy="2"  r="1.6"/>
+      <circle cx="62" cy="32" r="1.6"/>
+      <circle cx="32" cy="62" r="1.6"/>
+      <circle cx="2"  cy="32" r="1.6"/>
+    </g>
+    <circle cx="32" cy="32" r="18" stroke="#ff8a3d" stroke-width="1" opacity="0.4"/>
+    <path d="M32 18 C25 26 25 38 32 46 C39 38 39 26 32 18 Z" fill="#ff8a3d"/>
+    <path d="M32 23 C28.5 28 28.5 36 32 40 C34 36 34 28 32 23 Z" fill="#161922" opacity="0.55"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="78" y="42"
+        font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+        font-size="28"
+        font-weight="600"
+        letter-spacing="-0.5"
+        fill="#e6e9ef">playa<tspan fill="#ff8a3d">scope</tspan></text>
+</svg>
