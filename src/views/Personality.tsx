@@ -6,6 +6,8 @@
 // "Find similar" panel uses cosine similarity over normalized fractions.
 
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import { EVENT_TYPE_LABELS, canonicalEventTypeLabel } from '../data/types';
@@ -64,6 +66,7 @@ function cosineSimilarity(a: Record<EventTypeLabel, number>, b: Record<EventType
 }
 
 export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
   const { globalMean, globalStd, profiles } = useMemo(() => {
@@ -99,11 +102,12 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
       const topTraits = ranked.slice(0, 3).filter((t) => t.z >= 0.5);
       const lowest = ranked[ranked.length - 1];
 
-      const blurb = generateBlurb(topTraits.map((t) => t.label), lowest?.label);
+      const blurb = generateBlurb(t, topTraits.map((tr) => tr.label), lowest?.label);
 
       return { bundle: b, frac, z, ranked, topTraits, lowest, blurb };
     });
-  }, [bundles, profiles, globalMean, globalStd]);
+    // `t` in deps so blurbs re-translate on a language switch.
+  }, [bundles, profiles, globalMean, globalStd, t]);
 
   // "Find similar" — relative to a selected burn (or the first one, default).
   const similarity = useMemo(() => {
@@ -182,7 +186,7 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
                   {TRAIT_LABEL[t.label]}
                 </span>
               )) : (
-                <span style={{ fontSize: 10, color: 'var(--muted)' }}>Average across the board</span>
+                <span style={{ fontSize: 10, color: 'var(--muted)' }}>{t('personality.blurbs.average')}</span>
               )}
             </div>
             {c.blurb && (
@@ -246,22 +250,24 @@ function RadarMini({ frac, mean }: { frac: Record<EventTypeLabel, number>; mean:
   );
 }
 
-function generateBlurb(traits: EventTypeLabel[], lowest: EventTypeLabel | undefined): string {
+// Blurb text lives in the i18n catalog under `personality.blurbs.*`
+// (English-only by policy; fr.json falls back). This only picks the key.
+function generateBlurb(t: TFunction, traits: EventTypeLabel[], lowest: EventTypeLabel | undefined): string {
   const set = new Set(traits);
   const has = (l: EventTypeLabel) => set.has(l);
   if (has('Fire/Spectacle') && has('Live Music') && has('Gathering/Party')) {
-    return 'This is the burn where you do not sleep.';
+    return t('personality.blurbs.noSleep');
   }
   if (has('Class/Workshop') && has('Yoga/Movement/Fitness')) {
-    return 'This is the burn where everyone has a sound bowl.';
+    return t('personality.blurbs.soundBowl');
   }
   if (has('Mature Audiences') && !has('Class/Workshop')) {
-    return 'You will see things.';
+    return t('personality.blurbs.seeThings');
   }
-  if (has('Repair')) return 'The most practical burn on the circuit.';
-  if (has('For Kids')) return 'Bring the kids. Actually bring them.';
-  if (has('Parade')) return 'Get ready to walk in formation.';
-  if (lowest === 'Fire/Spectacle') return 'A subtler burn — bring vibes, not spectacle.';
-  if (lowest === 'Class/Workshop') return 'This burn does not believe in learning.';
+  if (has('Repair')) return t('personality.blurbs.practical');
+  if (has('For Kids')) return t('personality.blurbs.kids');
+  if (has('Parade')) return t('personality.blurbs.parade');
+  if (lowest === 'Fire/Spectacle') return t('personality.blurbs.subtle');
+  if (lowest === 'Class/Workshop') return t('personality.blurbs.noLearning');
   return '';
 }

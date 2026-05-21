@@ -5,6 +5,8 @@
 // auto-generated snarky verdict.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
@@ -79,6 +81,7 @@ function readBattleHash(): [string, string] | null {
 }
 
 export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [copied, setCopied] = useState(false);
   // Alphabetical for the pickers; not a ranking.
@@ -194,7 +197,7 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
   const bWins = rows.filter((r) => r.winner === -1).length;
   const verdict = aWins > bWins ? titleA : bWins > aWins ? titleB : null;
 
-  const snark = buildSnark(titleA, titleB, a, b);
+  const snark = buildSnark(t, titleA, titleB, a, b);
 
   return (
     <div className="grid" style={{ gap: 16 }}>
@@ -429,7 +432,10 @@ function ScheduleVs({
   );
 }
 
-function buildSnark(titleA: string, titleB: string, a: Stats, b: Stats): string[] {
+// Snark lives in the i18n catalog under `battle.snark.*` (English-only — see
+// the policy note there; fr.json falls back automatically). This function
+// only picks which key fires and supplies the interpolation values.
+function buildSnark(t: TFunction, titleA: string, titleB: string, a: Stats, b: Stats): string[] {
   const lines: string[] = [];
   const ratio = (x: number, y: number) => (y > 0 ? x / y : x > 0 ? Infinity : 1);
 
@@ -438,50 +444,58 @@ function buildSnark(titleA: string, titleB: string, a: Stats, b: Stats): string[
     const r = ratio(Math.max(a.events, b.events), Math.min(a.events, b.events));
     const big = a.events > b.events ? titleA : titleB;
     const small = a.events > b.events ? titleB : titleA;
-    if (r >= 2) lines.push(`${big} runs ${r.toFixed(1)}× the events of ${small}. One of you will not sleep; the other will be bored by Tuesday.`);
-    else lines.push(`${big} edges out ${small} on raw event count — but it's close enough to call it a draw if you squint.`);
+    if (r >= 2) lines.push(t('battle.snark.eventsRunaway', { big, ratio: r.toFixed(1), small }));
+    else lines.push(t('battle.snark.eventsClose', { big, small }));
   }
 
   // Art.
   if (a.art !== b.art) {
     const big = a.art > b.art ? titleA : titleB;
-    const ax = Math.max(a.art, b.art), bx = Math.min(a.art, b.art);
-    lines.push(`${big} has ${ax} art installations to the other's ${bx}. Bring a wide-angle lens to one and your imagination to the other.`);
+    lines.push(t('battle.snark.art', {
+      big, bigArt: Math.max(a.art, b.art), smallArt: Math.min(a.art, b.art),
+    }));
   }
 
   // Music.
   if (a.music + b.music > 0) {
     const big = a.music > b.music ? titleA : titleB;
-    if (Math.abs(a.music - b.music) > 20) lines.push(`${big} is the louder night out — ${Math.max(a.music, b.music)} music sets vs ${Math.min(a.music, b.music)}. Pack earplugs accordingly.`);
+    if (Math.abs(a.music - b.music) > 20) {
+      lines.push(t('battle.snark.music', {
+        big, bigMusic: Math.max(a.music, b.music), smallMusic: Math.min(a.music, b.music),
+      }));
+    }
   }
 
   // Duration / intensity.
   if (a.duration !== b.duration) {
     const longer = a.duration > b.duration ? titleA : titleB;
-    lines.push(`${longer} runs longer (${Math.max(a.duration, b.duration)} days vs ${Math.min(a.duration, b.duration)}) — endurance event vs weekend warm-up.`);
+    lines.push(t('battle.snark.durationLonger', {
+      longer, longDays: Math.max(a.duration, b.duration), shortDays: Math.min(a.duration, b.duration),
+    }));
   } else {
     const denser = a.perDay > b.perDay ? titleA : b.perDay > a.perDay ? titleB : null;
-    if (denser) lines.push(`Same number of days, but ${denser} crams more into each one. Choose your pace.`);
+    if (denser) lines.push(t('battle.snark.durationDenser', { denser }));
   }
 
   // Region.
-  if (a.region === b.region) lines.push(`Civil war: both burns are in ${a.region}. Loyalties will be tested.`);
-  else lines.push(`${a.region} vs ${b.region} — this battle requires a passport.`);
+  if (a.region === b.region) lines.push(t('battle.snark.regionSame', { region: a.region }));
+  else lines.push(t('battle.snark.regionDiff', { regionA: a.region, regionB: b.region }));
 
   // Sanctioned.
-  if (a.sanctioned && b.sanctioned) lines.push('Both are official Burning Man regionals. The Org blesses this matchup.');
-  else if (!a.sanctioned && !b.sanctioned) lines.push('Neither is on the official BM list. Two rebels enter.');
+  if (a.sanctioned && b.sanctioned) lines.push(t('battle.snark.sanctionBoth'));
+  else if (!a.sanctioned && !b.sanctioned) lines.push(t('battle.snark.sanctionNeither'));
   else {
-    const official = a.sanctioned ? titleA : titleB;
-    const other = a.sanctioned ? titleB : titleA;
-    lines.push(`${official} carries the official BM regional badge; ${other} is doing its own thing. Respect either way.`);
+    lines.push(t('battle.snark.sanctionOne', {
+      official: a.sanctioned ? titleA : titleB,
+      other: a.sanctioned ? titleB : titleA,
+    }));
   }
 
   // Vibe clash.
   if (a.topTrait && b.topTrait && a.topTrait !== b.topTrait) {
-    lines.push(`Vibe clash: ${titleA} leans ${a.topTrait}, ${titleB} leans ${b.topTrait}. You already know which one is your scene.`);
+    lines.push(t('battle.snark.vibeClash', { titleA, traitA: a.topTrait, titleB, traitB: b.topTrait }));
   } else if (a.topTrait && a.topTrait === b.topTrait) {
-    lines.push(`Both burns are ${a.topTrait}-forward. Twins separated at birth.`);
+    lines.push(t('battle.snark.vibeSame', { trait: a.topTrait }));
   }
 
   return lines;

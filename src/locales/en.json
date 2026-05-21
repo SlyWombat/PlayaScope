@@ -1,0 +1,269 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "moop": "MOOP Report",
+    "geo": "Geography",
+    "personality": "Personality",
+    "battle": "Burn Battle",
+    "typeMix": "Event Mix",
+    "lexicon": "Lexicon",
+    "artists": "Artists",
+    "schedule": "Schedule Shape",
+    "calendar": "Calendar",
+    "continuity": "Continuity",
+    "table": "Data",
+    "home": "Home",
+    "primary": "Primary"
+  },
+  "filter": {
+    "all": "All",
+    "official": "Official",
+    "other": "Other",
+    "sanctionTitle": "Filter by official Burning Man Regional Event status",
+    "currentYearOnly": "{{year}} only",
+    "allYears": "all years",
+    "currentYearTitle": "Only burns in {{year}}",
+    "allYearsTitle": "Showing all years (incl. prior-year duplicates)"
+  },
+  "topbar": {
+    "refresh": "refresh"
+  },
+  "regionBar": {
+    "filtered_one": "Filtered to {{region}} — showing {{count}} burn. Every tab is scoped to this region.",
+    "filtered_other": "Filtered to {{region}} — showing {{count}} burns. Every tab is scoped to this region.",
+    "clear": "✕ Clear region filter"
+  },
+  "sanctionStrip": {
+    "summary": "Sanctioned list: {{count}} events · {{date}} ({{age}}d old)",
+    "stale": " · stale — run `npm run scrape-sanctioned`",
+    "unmatched": "{{count}} on official list with no active dust match"
+  },
+  "load": {
+    "failed": "Load failed: {{error}}",
+    "registry": "Fetching festivals registry…",
+    "bundles": "Loading per-festival data… {{done}} / {{total}}",
+    "dataVia": "data via data.dust.events"
+  },
+  "empty": {
+    "noMatch": "No burns match the current filter.",
+    "showAll": "show all"
+  },
+  "lang": {
+    "label": "Language"
+  },
+  "overview": {
+    "burnsShown": "Burns shown",
+    "deltaMixed": "{{official}} official · {{other}} other",
+    "deltaOfficial": "official BM regionals",
+    "deltaOther": "unsanctioned / unrecognized",
+    "deltaNoData": "no sanction data",
+    "events": "Events",
+    "musicSets": "{{n}} music sets",
+    "campsArt": "Camps · Art",
+    "aggregate": "aggregate across burns",
+    "topBurns": "Top burns by event count",
+    "topBurnsSub": "Largest scheduled programs across the current filter. Click any bar to open its page.",
+    "byRegion": "Distribution by region",
+    "byRegionSub": "Geographic spread. Click a slice to filter to just that region.",
+    "typeMix": "Global event-type mix",
+    "typeMixSub": "Summed across burns in current filter. The 19-label dust taxonomy."
+  },
+  "moop": {
+    "title": "The MOOP Report",
+    "tagline": "Matter Out Of Place.",
+    "sub": "{{tiles}} trivia tiles across {{burns}} burns in current filter. Tiles with an → arrow open the relevant burn page.",
+    "tiles": {
+      "_comment": "Generated MOOP trivia-tile copy. English-only by policy — fr.json (and every locale) falls back here automatically. Translate idiomatically: jokes, not literal.",
+      "longestCamp": {
+        "title": "Longest camp name",
+        "value": "{{n}} characters",
+        "hint": "at {{burn}}",
+        "how": "Longest camps[].name across all burns. Click to open the burn."
+      },
+      "topWord": {
+        "title": "Most-used event-title word",
+        "detail": "{{n}} occurrences across {{titles}} event titles",
+        "how": "Lowercased event titles, stop-words removed, frequency counted."
+      },
+      "topPrefix": {
+        "title": "Most-overused camp name prefix",
+        "detail": "{{n}}× — runner-ups: {{runners}}",
+        "how": "First word of each camp name, stop-words excluded."
+      },
+      "varied": {
+        "title": "Most varied program",
+        "detail": "Spread evenly across event types — variety score {{score}}/100",
+        "how": "Even split across all 19 event categories = top score. Click to open the burn."
+      },
+      "oneTrack": {
+        "title": "Most one-track program",
+        "detail": "Programming dominated by a single category — variety score {{score}}/100",
+        "how": "Lowest spread across event categories (≥5 events)."
+      },
+      "allDay": {
+        "title": "Hardest-working idle program",
+        "value": "{{n}} all-day events",
+        "how": "Count of events with all_day === true."
+      },
+      "locationless": {
+        "title": "Most \"find it yourself\" events",
+        "value": "{{n}} events with no location",
+        "how": "No hosting camp, no host art, no other_location."
+      },
+      "totalHours": {
+        "title": "Total programming this season",
+        "detail": "Sum of every scheduled event duration, across every burn in the current filter.",
+        "how": "Σ (end_time − start_time)."
+      },
+      "ifToday": {
+        "title": "If every burn happened today",
+        "value": "{{n}} events",
+        "detail": "{{camps}} camps · {{art}} art pieces. Society would not survive.",
+        "how": "Summed across the current filter."
+      },
+      "weirdest": {
+        "title": "Weirdest event title",
+        "detail": "at {{burn}}. Runners-up: {{runners}}",
+        "how": "Title length + 4× punctuation count."
+      },
+      "traveled": {
+        "title": "Most-traveled performer",
+        "detail": "{{burns}} · {{sets}}",
+        "burns_one": "{{count}} burn",
+        "burns_other": "{{count}} burns",
+        "sets_one": "{{count}} set",
+        "sets_other": "{{count}} sets",
+        "how": "Distinct burns played, placeholder names (TBD/TBA/unknown) excluded."
+      },
+      "overlap": {
+        "title": "Most-overlapped date",
+        "value": "{{n}} burns at once",
+        "detail": "On {{date}}: {{burns}}.",
+        "how": "Count of festivals whose date range includes each UTC day."
+      },
+      "afterDark": {
+        "title": "After-dark lexicon",
+        "detail": "{{n}} event titles got spicy. Also overheard: {{runners}}. The playa contains multitudes.",
+        "how": "Event titles matched against an adult-themed word list ({{terms}} terms). Bring an open mind."
+      },
+      "spiciest": {
+        "title": "Spiciest burn",
+        "detail": "{{n}} Mature Audiences events ({{pct}}% of its program). {{total}} across the whole season. Pace yourself.",
+        "how": "Count of events whose event_type is \"Mature Audiences\" — a real dust category."
+      },
+      "reputation": {
+        "title": "Camps with a reputation",
+        "value": "{{n}} camps",
+        "detail": "Theme camps whose names raise an eyebrow — e.g. {{sample}}. You know which neighbourhood to find. Or avoid.",
+        "detailMore": "Theme camps whose names raise an eyebrow — e.g. {{sample}}, and more. You know which neighbourhood to find. Or avoid.",
+        "how": "Camp names matched against the same {{terms}}-term adult word list."
+      },
+      "fire": {
+        "title": "Burns named after fire",
+        "value": "{{n}} / {{total}}",
+        "how": "Title contains: {{words}}."
+      },
+      "notFire": {
+        "title": "Burns NOT named after fire",
+        "value": "{{n}} / {{total}}",
+        "how": "Complement of the above."
+      },
+      "artWalk": {
+        "title": "Longest art walk",
+        "value": "{{km}} km",
+        "detail": "{{burn}} — {{count}} art pieces, {{steps}} steps, {{bananas}} bananas end-to-end",
+        "how": "Shortest path connecting every GPS-located art piece. 1 step ≈ 0.762 m, 1 banana ≈ 0.18 m."
+      }
+    }
+  },
+  "data": {
+    "allBurns": "All burns",
+    "filterPlaceholder": "filter title / region / slug…",
+    "sortHint": "click to sort",
+    "colBm": "BM",
+    "colBurn": "Burn",
+    "colRegion": "Region",
+    "colTimezone": "Timezone",
+    "colDays": "Days",
+    "colEvents": "Events",
+    "colCamps": "Camps",
+    "colArt": "Art",
+    "colMusic": "Music",
+    "colAttendees": "Attendees",
+    "notOfficial": "not on official BM list",
+    "noAttendance": "No attendance figure available",
+    "estMarker": "est"
+  },
+  "attendance": {
+    "reported": "Reported",
+    "estimated": "Estimated",
+    "capacity": "Venue capacity",
+    "na": "NA"
+  },
+  "burnDetail": {
+    "back": "← back",
+    "notFound": "Burn not found",
+    "notFoundSub": "No festival with slug {{slug}} in the current dataset.",
+    "datesOnlyManual": "Listed manually — schedule, camps and art aren’t published through a feed PlayaScope can read.",
+    "datesOnlyDirectory": "Listed on the burningman.org directory — this burn doesn’t publish a Dust feed, so only its dates and location are known here.",
+    "attendanceLabel": "Attendance:",
+    "officialSite": "Official site ↗",
+    "officialBmRegional": "Official BM Regional",
+    "unsanctioned": "Unsanctioned / unrecognized",
+    "kpiEvents": "Events",
+    "kpiCamps": "Camps",
+    "kpiArt": "Art",
+    "kpiMusic": "Music sets",
+    "noEvents": "No scheduled events have been published yet for this burn.",
+    "scheduleShape": "Schedule shape",
+    "scheduleShapeSub": "Events per day of burn. Day 0 is opening day.",
+    "timeOfDay": "Time of day",
+    "timeOfDaySub": "When the events fire. Hour 0 is local midnight.",
+    "heatmap": "Time of day × day of burn",
+    "heatmapSub": "Darker = more events that hour/day. Shows the actual rhythm of the burn.",
+    "whatItDoes": "What this burn does",
+    "whatItDoesSub": "Top event-type categories by count.",
+    "titleWords": "Common event-title words",
+    "titleWordsSub": "Words that recur across this burn's program.",
+    "noEventsYet": "no events scheduled yet",
+    "performers": "Performers playing here",
+    "performersSub": "Top {{n}} by music-set count at this burn.",
+    "featuredArt": "Featured art ({{count}})",
+    "featuredArtSub": "First 20 pieces. All on the playa for the burn's run ({{dates}}).",
+    "day": "Day {{n}}",
+    "sets_one": "{{count}} set",
+    "sets_other": "{{count}} sets"
+  },
+  "battle": {
+    "snark": {
+      "_comment": "Generated head-to-head snark. English-only by policy — fr.json (and every other locale) falls back here automatically. When translating, rewrite idiomatically: these are jokes, and a literal translation kills the punchline.",
+      "eventsRunaway": "{{big}} runs {{ratio}}× the events of {{small}}. One of you will not sleep; the other will be bored by Tuesday.",
+      "eventsClose": "{{big}} edges out {{small}} on raw event count — but it's close enough to call it a draw if you squint.",
+      "art": "{{big}} has {{bigArt}} art installations to the other's {{smallArt}}. Bring a wide-angle lens to one and your imagination to the other.",
+      "music": "{{big}} is the louder night out — {{bigMusic}} music sets vs {{smallMusic}}. Pack earplugs accordingly.",
+      "durationLonger": "{{longer}} runs longer ({{longDays}} days vs {{shortDays}}) — endurance event vs weekend warm-up.",
+      "durationDenser": "Same number of days, but {{denser}} crams more into each one. Choose your pace.",
+      "regionSame": "Civil war: both burns are in {{region}}. Loyalties will be tested.",
+      "regionDiff": "{{regionA}} vs {{regionB}} — this battle requires a passport.",
+      "sanctionBoth": "Both are official Burning Man regionals. The Org blesses this matchup.",
+      "sanctionNeither": "Neither is on the official BM list. Two rebels enter.",
+      "sanctionOne": "{{official}} carries the official BM regional badge; {{other}} is doing its own thing. Respect either way.",
+      "vibeClash": "Vibe clash: {{titleA}} leans {{traitA}}, {{titleB}} leans {{traitB}}. You already know which one is your scene.",
+      "vibeSame": "Both burns are {{trait}}-forward. Twins separated at birth."
+    }
+  },
+  "personality": {
+    "blurbs": {
+      "_comment": "Generated burn-personality one-liners. English-only by policy — fr.json falls back here. Translate idiomatically (jokes), never literally.",
+      "noSleep": "This is the burn where you do not sleep.",
+      "soundBowl": "This is the burn where everyone has a sound bowl.",
+      "seeThings": "You will see things.",
+      "practical": "The most practical burn on the circuit.",
+      "kids": "Bring the kids. Actually bring them.",
+      "parade": "Get ready to walk in formation.",
+      "subtle": "A subtler burn — bring vibes, not spectacle.",
+      "noLearning": "This burn does not believe in learning.",
+      "average": "Average across the board"
+    }
+  }
+}

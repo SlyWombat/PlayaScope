@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import { densityByFestival, globalTypeMix } from '../data/aggregate';
 import type { FestivalBundle } from '../data/loader';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const density = useMemo(() => densityByFestival(bundles), [bundles]);
   const topByEvents = useMemo(() => [...density].sort((a, b) => b.events - a.events).slice(0, 12), [density]);
@@ -58,34 +60,34 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
   return (
     <div className="grid cols-3" style={{ marginBottom: 16 }}>
       <div className="panel kpi">
-        <div className="label">Burns shown</div>
+        <div className="label">{t('overview.burnsShown')}</div>
         <div className="value">{bundles.length}</div>
         <div className="delta">
           {sanction && filter === 'all'
-            ? `${sanctionedShown} official · ${bundles.length - sanctionedShown} other`
+            ? t('overview.deltaMixed', { official: sanctionedShown, other: bundles.length - sanctionedShown })
             : filter === 'sanctioned'
-              ? 'official BM regionals'
+              ? t('overview.deltaOfficial')
               : filter === 'unsanctioned'
-                ? 'unsanctioned / unrecognized'
-                : 'no sanction data'}
+                ? t('overview.deltaOther')
+                : t('overview.deltaNoData')}
         </div>
       </div>
       <div className="panel kpi">
-        <div className="label">Events</div>
+        <div className="label">{t('overview.events')}</div>
         <div className="value">{totals.events.toLocaleString()}</div>
-        <div className="delta">{totals.music.toLocaleString()} music sets</div>
+        <div className="delta">{t('overview.musicSets', { n: totals.music.toLocaleString() })}</div>
       </div>
       <div className="panel kpi">
-        <div className="label">Camps · Art</div>
+        <div className="label">{t('overview.campsArt')}</div>
         <div className="value">
           {totals.camps.toLocaleString()} · {totals.art.toLocaleString()}
         </div>
-        <div className="delta">aggregate across burns</div>
+        <div className="delta">{t('overview.aggregate')}</div>
       </div>
 
       <div className="panel" style={{ gridColumn: 'span 2' }}>
-        <h2>Top burns by event count</h2>
-        <div className="sub">Largest scheduled programs across the current filter. Click any bar to open its page.</div>
+        <h2>{t('overview.topBurns')}</h2>
+        <div className="sub">{t('overview.topBurnsSub')}</div>
         <EChart
           className="chart"
           onEvents={onOpenBurn ? {
@@ -127,8 +129,8 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
       </div>
 
       <div className="panel">
-        <h2>Distribution by region</h2>
-        <div className="sub">Geographic spread. Click a slice to filter to just that region.</div>
+        <h2>{t('overview.byRegion')}</h2>
+        <div className="sub">{t('overview.byRegionSub')}</div>
         <EChart
           className="chart"
           onEvents={onSelectRegion ? {
@@ -157,8 +159,8 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
       </div>
 
       <div className="panel" style={{ gridColumn: 'span 3' }}>
-        <h2>Global event-type mix</h2>
-        <div className="sub">Summed across burns in current filter. The 19-label dust taxonomy.</div>
+        <h2>{t('overview.typeMix')}</h2>
+        <div className="sub">{t('overview.typeMixSub')}</div>
         <EChart
           className="chart"
           option={{

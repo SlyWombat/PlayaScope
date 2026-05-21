@@ -1,0 +1,134 @@
+{
+  "nav": {
+    "overview": "Aperçu",
+    "moop": "Rapport MOOP",
+    "geo": "Géographie",
+    "personality": "Personnalité",
+    "battle": "Duel de burns",
+    "typeMix": "Types d'événements",
+    "lexicon": "Lexique",
+    "artists": "Artistes",
+    "schedule": "Profil horaire",
+    "calendar": "Calendrier",
+    "continuity": "Continuité",
+    "table": "Données",
+    "home": "Accueil",
+    "primary": "Navigation principale"
+  },
+  "filter": {
+    "all": "Tous",
+    "official": "Officiels",
+    "other": "Autres",
+    "sanctionTitle": "Filtrer selon le statut d'événement régional officiel Burning Man",
+    "currentYearOnly": "{{year}} seulement",
+    "allYears": "toutes les années",
+    "currentYearTitle": "Seulement les burns de {{year}}",
+    "allYearsTitle": "Affiche toutes les années (doublons des années précédentes inclus)"
+  },
+  "topbar": {
+    "refresh": "actualiser"
+  },
+  "regionBar": {
+    "filtered_one": "Filtré sur {{region}} — {{count}} burn affiché. Tous les onglets sont limités à cette région.",
+    "filtered_other": "Filtré sur {{region}} — {{count}} burns affichés. Tous les onglets sont limités à cette région.",
+    "clear": "✕ Effacer le filtre de région"
+  },
+  "sanctionStrip": {
+    "summary": "Liste officielle : {{count}} événements · {{date}} (il y a {{age}} j)",
+    "stale": " · obsolète — exécuter `npm run scrape-sanctioned`",
+    "unmatched": "{{count}} sur la liste officielle sans correspondance dust active"
+  },
+  "load": {
+    "failed": "Échec du chargement : {{error}}",
+    "registry": "Récupération du registre des festivals…",
+    "bundles": "Chargement des données par festival… {{done}} / {{total}}",
+    "dataVia": "données via data.dust.events"
+  },
+  "empty": {
+    "noMatch": "Aucun burn ne correspond au filtre actuel.",
+    "showAll": "tout afficher"
+  },
+  "lang": {
+    "label": "Langue"
+  },
+  "overview": {
+    "burnsShown": "Burns affichés",
+    "deltaMixed": "{{official}} officiels · {{other}} autres",
+    "deltaOfficial": "burns régionaux officiels",
+    "deltaOther": "non officiels / non reconnus",
+    "deltaNoData": "aucune donnée de statut",
+    "events": "Événements",
+    "musicSets": "{{n}} sets musicaux",
+    "campsArt": "Camps · Art",
+    "aggregate": "total sur tous les burns",
+    "topBurns": "Top des burns par nombre d'événements",
+    "topBurnsSub": "Les plus grandes programmations selon le filtre actuel. Cliquez sur une barre pour ouvrir sa page.",
+    "byRegion": "Répartition par région",
+    "byRegionSub": "Répartition géographique. Cliquez sur une part pour filtrer sur cette région.",
+    "typeMix": "Répartition globale des types d'événements",
+    "typeMixSub": "Cumulé sur les burns du filtre actuel. La taxonomie dust à 19 catégories."
+  },
+  "moop": {
+    "title": "Le rapport MOOP",
+    "tagline": "Matter Out Of Place.",
+    "sub": "{{tiles}} fiches d'anecdotes sur {{burns}} burns selon le filtre actuel. Les fiches avec une flèche → ouvrent la page du burn concerné."
+  },
+  "data": {
+    "allBurns": "Tous les burns",
+    "filterPlaceholder": "filtrer par titre / région / identifiant…",
+    "sortHint": "cliquer pour trier",
+    "colBm": "BM",
+    "colBurn": "Burn",
+    "colRegion": "Région",
+    "colTimezone": "Fuseau horaire",
+    "colDays": "Jours",
+    "colEvents": "Événements",
+    "colCamps": "Camps",
+    "colArt": "Art",
+    "colMusic": "Musique",
+    "colAttendees": "Participants",
+    "notOfficial": "absent de la liste officielle BM",
+    "noAttendance": "Aucun chiffre de fréquentation disponible",
+    "estMarker": "est."
+  },
+  "attendance": {
+    "reported": "Rapporté",
+    "estimated": "Estimé",
+    "capacity": "Capacité du site",
+    "na": "NA"
+  },
+  "burnDetail": {
+    "back": "← retour",
+    "notFound": "Burn introuvable",
+    "notFoundSub": "Aucun festival avec l'identifiant {{slug}} dans le jeu de données actuel.",
+    "datesOnlyManual": "Référencé manuellement — le programme, les camps et les œuvres ne sont pas publiés via un flux lisible par PlayaScope.",
+    "datesOnlyDirectory": "Référencé sur l'annuaire burningman.org — ce burn ne publie pas de flux Dust ; seules ses dates et sa localisation sont connues ici.",
+    "attendanceLabel": "Fréquentation :",
+    "officialSite": "Site officiel ↗",
+    "officialBmRegional": "Régional officiel BM",
+    "unsanctioned": "Non officiel / non reconnu",
+    "kpiEvents": "Événements",
+    "kpiCamps": "Camps",
+    "kpiArt": "Œuvres",
+    "kpiMusic": "Sets musicaux",
+    "noEvents": "Aucun événement programmé n'a encore été publié pour ce burn.",
+    "scheduleShape": "Profil horaire",
+    "scheduleShapeSub": "Événements par jour de burn. Le jour 0 est le jour d'ouverture.",
+    "timeOfDay": "Heure de la journée",
+    "timeOfDaySub": "Quand les événements ont lieu. L'heure 0 est minuit local.",
+    "heatmap": "Heure × jour de burn",
+    "heatmapSub": "Plus foncé = plus d'événements à cette heure/ce jour. Montre le rythme réel du burn.",
+    "whatItDoes": "Ce que fait ce burn",
+    "whatItDoesSub": "Principales catégories d'événements par nombre.",
+    "titleWords": "Mots fréquents des titres d'événements",
+    "titleWordsSub": "Les mots qui reviennent dans le programme de ce burn.",
+    "noEventsYet": "aucun événement programmé pour l'instant",
+    "performers": "Artistes en représentation ici",
+    "performersSub": "Top {{n}} par nombre de sets musicaux à ce burn.",
+    "featuredArt": "Œuvres en vedette ({{count}})",
+    "featuredArtSub": "20 premières pièces. Toutes sur la playa pendant le burn ({{dates}}).",
+    "day": "Jour {{n}}",
+    "sets_one": "{{count}} set",
+    "sets_other": "{{count}} sets"
+  }
+}

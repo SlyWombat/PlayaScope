@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fetchFestivals } from './data/api';
 import { loadFestivals, clearCache, type FestivalBundle } from './data/loader';
 import type { Festival } from './data/types';
@@ -18,6 +19,7 @@ import { Moop } from './views/Moop';
 import { BurnBattle } from './views/BurnBattle';
 import { BurnDetail } from './views/BurnDetail';
 import { Countdown } from './components/Countdown';
+import { LangSwitcher } from './components/LangSwitcher';
 import { regionForFestival, REGION_COLORS } from './lib/region';
 import type { RegionLabel } from './lib/region';
 
@@ -39,21 +41,22 @@ type Tab =
 
 export type SanctionFilter = 'all' | 'sanctioned' | 'unsanctioned';
 
-const TABS: { key: Tab; label: string; group: 'explore' | 'detail' }[] = [
+// `labelKey` is an i18n catalog key (see src/locales/) — resolved with t().
+const TABS: { key: Tab; labelKey: string; group: 'explore' | 'detail' }[] = [
   // First group: high-level summaries you'd open first.
-  { key: 'overview', label: 'Overview', group: 'explore' },
-  { key: 'moop', label: 'MOOP Report', group: 'explore' },
-  { key: 'geo', label: 'Geography', group: 'explore' },
-  { key: 'personality', label: 'Personality', group: 'explore' },
-  { key: 'battle', label: 'Burn Battle', group: 'explore' },
-  { key: 'type-mix', label: 'Event Mix', group: 'explore' },
+  { key: 'overview', labelKey: 'nav.overview', group: 'explore' },
+  { key: 'moop', labelKey: 'nav.moop', group: 'explore' },
+  { key: 'geo', labelKey: 'nav.geo', group: 'explore' },
+  { key: 'personality', labelKey: 'nav.personality', group: 'explore' },
+  { key: 'battle', labelKey: 'nav.battle', group: 'explore' },
+  { key: 'type-mix', labelKey: 'nav.typeMix', group: 'explore' },
   // Second group: deeper dives + raw data.
-  { key: 'lexicon', label: 'Lexicon', group: 'detail' },
-  { key: 'artists', label: 'Artists', group: 'detail' },
-  { key: 'schedule', label: 'Schedule Shape', group: 'detail' },
-  { key: 'calendar', label: 'Calendar', group: 'detail' },
-  { key: 'continuity', label: 'Continuity', group: 'detail' },
-  { key: 'table', label: 'Data', group: 'detail' },
+  { key: 'lexicon', labelKey: 'nav.lexicon', group: 'detail' },
+  { key: 'artists', labelKey: 'nav.artists', group: 'detail' },
+  { key: 'schedule', labelKey: 'nav.schedule', group: 'detail' },
+  { key: 'calendar', labelKey: 'nav.calendar', group: 'detail' },
+  { key: 'continuity', labelKey: 'nav.continuity', group: 'detail' },
+  { key: 'table', labelKey: 'nav.table', group: 'detail' },
 ];
 
 interface LoadState {
@@ -73,6 +76,7 @@ function readBurnHash(): string | null {
 }
 
 export function App() {
+  const { t } = useTranslation();
   // A shared `#battle=a,b` link should land directly on the Burn Battle tab.
   const [tab, setTab] = useState<Tab>(() =>
     typeof window !== 'undefined' && /[#&]battle=/.test(window.location.hash) ? 'battle' : 'overview',
@@ -191,7 +195,7 @@ export function App() {
         <h1
           onClick={() => { closeBurn(); setTab('overview'); }}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
-          title="Home"
+          title={t('nav.home')}
         >
           <img
             src={`${import.meta.env.BASE_URL}playascope.svg`}
@@ -202,23 +206,23 @@ export function App() {
           />
           <span>playa<span className="accent">scope</span></span>
         </h1>
-        <nav className="tab-bar" aria-label="Primary">
+        <nav className="tab-bar" aria-label={t('nav.primary')}>
           {(['explore', 'detail'] as const).map((group) => (
             <div key={group} className="tab-group" aria-label={group}>
-              {TABS.filter((t) => t.group === group).map((t) => (
+              {TABS.filter((tb) => tb.group === group).map((tb) => (
                 <button
-                  key={t.key}
-                  aria-current={tab === t.key && !burnHash ? 'page' : undefined}
-                  className={tab === t.key && !burnHash ? 'active' : ''}
+                  key={tb.key}
+                  aria-current={tab === tb.key && !burnHash ? 'page' : undefined}
+                  className={tab === tb.key && !burnHash ? 'active' : ''}
                   onClick={() => {
                     // Leaving a BurnDetail drilldown is the user's most-likely
                     // intent when they click a top-level tab. Clear the hash
                     // before switching, otherwise BurnDetail keeps rendering.
                     if (burnHash) closeBurn();
-                    setTab(t.key);
+                    setTab(tb.key);
                   }}
                 >
-                  {t.label}
+                  {t(tb.labelKey)}
                 </button>
               ))}
             </div>
@@ -237,9 +241,13 @@ export function App() {
             onClick={() => setYearFilter(yearFilter === 'current' ? 'all' : 'current')}
             className={yearFilter === 'current' ? 'primary' : ''}
             style={{ fontSize: 11, padding: '3px 8px', marginLeft: 6 }}
-            title={yearFilter === 'current' ? `Only burns in ${currentYear}` : 'Showing all years (incl. prior-year duplicates)'}
+            title={yearFilter === 'current'
+              ? t('filter.currentYearTitle', { year: currentYear })
+              : t('filter.allYearsTitle')}
           >
-            {yearFilter === 'current' ? `${currentYear} only` : 'all years'}
+            {yearFilter === 'current'
+              ? t('filter.currentYearOnly', { year: currentYear })
+              : t('filter.allYears')}
           </button>
           {' '}
           <SanctionToggle
@@ -258,8 +266,9 @@ export function App() {
             disabled={state.status === 'loading-registry' || state.status === 'loading-bundles'}
             onClick={() => void load({ force: true })}
           >
-            refresh
+            {t('topbar.refresh')}
           </button>
+          <LangSwitcher />
         </div>
       </header>
 
@@ -285,16 +294,14 @@ export function App() {
             }}
           />
           <span>
-            Filtered to <strong style={{ color: 'var(--accent)' }}>{regionFilter}</strong> —
-            showing {filteredBundles.length} burn{filteredBundles.length === 1 ? '' : 's'}.
-            Every tab is scoped to this region.
+            {t('regionBar.filtered', { region: regionFilter, count: filteredBundles.length })}
           </span>
           <button
             className="primary"
             style={{ marginLeft: 'auto', fontSize: 12, padding: '5px 12px' }}
             onClick={() => setRegionFilter(null)}
           >
-            ✕ Clear region filter
+            {t('regionBar.clear')}
           </button>
         </div>
       )}
@@ -310,10 +317,12 @@ export function App() {
             fontFamily: "'JetBrains Mono', monospace",
           }}
         >
-          Sanctioned list: {state.sanction.index.events.length} events ·{' '}
-          {new Date(state.sanction.index.scrapedAt).toISOString().slice(0, 10)} (
-          {Math.round(state.sanction.index.ageDays)}d old)
-          {stale && ' · stale — run `npm run scrape-sanctioned`'}
+          {t('sanctionStrip.summary', {
+            count: state.sanction.index.events.length,
+            date: new Date(state.sanction.index.scrapedAt).toISOString().slice(0, 10),
+            age: Math.round(state.sanction.index.ageDays),
+          })}
+          {stale && t('sanctionStrip.stale')}
           {state.sanction.unmatched.length > 0 && (
             <>
               {' · '}
@@ -324,7 +333,7 @@ export function App() {
                   color: 'inherit', textDecoration: 'underline dotted', cursor: 'pointer',
                 }}
               >
-                {state.sanction.unmatched.length} on official list with no active dust match
+                {t('sanctionStrip.unmatched', { count: state.sanction.unmatched.length })}
                 {' '}{showUnmatched ? '▲' : '▼'}
               </button>
               {showUnmatched && (
@@ -338,13 +347,15 @@ export function App() {
       )}
 
       <main>
-        {state.status === 'error' && <div className="error">Load failed: {state.error}</div>}
+        {state.status === 'error' && (
+          <div className="error">{t('load.failed', { error: state.error })}</div>
+        )}
         {(state.status === 'loading-registry' || state.status === 'loading-bundles') && (
           <div className="loading">
             <div>
               {state.status === 'loading-registry'
-                ? 'Fetching festivals registry…'
-                : `Loading per-festival data… ${state.progress.done} / ${state.progress.total}`}
+                ? t('load.registry')
+                : t('load.bundles', { done: state.progress.done, total: state.progress.total })}
             </div>
             <div className="progress">
               <div
@@ -357,7 +368,7 @@ export function App() {
                 }}
               />
             </div>
-            <div style={{ fontSize: 11 }}>data via data.dust.events</div>
+            <div style={{ fontSize: 11 }}>{t('load.dataVia')}</div>
           </div>
         )}
         {state.status === 'ready' && burnHash && (
@@ -417,8 +428,8 @@ export function App() {
         )}
         {state.status === 'ready' && filteredBundles.length === 0 && (
           <div className="loading">
-            <div>No burns match the current filter.</div>
-            <button onClick={() => setFilter('all')}>show all</button>
+            <div>{t('empty.noMatch')}</div>
+            <button onClick={() => setFilter('all')}>{t('empty.showAll')}</button>
           </div>
         )}
       </main>
@@ -435,13 +446,14 @@ interface SanctionToggleProps {
 }
 
 function SanctionToggle({ value, onChange, sanctionedCount, totalCount, disabled }: SanctionToggleProps) {
+  const { t } = useTranslation();
   const OPTIONS: { key: SanctionFilter; label: string; sub: string }[] = [
-    { key: 'all', label: 'All', sub: `${totalCount}` },
-    { key: 'sanctioned', label: 'Official', sub: `${sanctionedCount}` },
-    { key: 'unsanctioned', label: 'Other', sub: `${Math.max(0, totalCount - sanctionedCount)}` },
+    { key: 'all', label: t('filter.all'), sub: `${totalCount}` },
+    { key: 'sanctioned', label: t('filter.official'), sub: `${sanctionedCount}` },
+    { key: 'unsanctioned', label: t('filter.other'), sub: `${Math.max(0, totalCount - sanctionedCount)}` },
   ];
   return (
-    <div style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }} title="Filter by official Burning Man Regional Event status">
+    <div style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }} title={t('filter.sanctionTitle')}>
       {OPTIONS.map((o) => (
         <button
           key={o.key}

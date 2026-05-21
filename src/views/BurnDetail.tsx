@@ -2,6 +2,7 @@
 // `#burn=<slug>` activates this view regardless of the current tab.
 
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
@@ -14,7 +15,7 @@ import { tokens, bump, topN, normalizeArtistName } from '../lib/tokenize';
 import { hourOfDay, dayOfBurnLocal } from '../lib/timeBins';
 import { useIsMobile } from '../lib/useIsMobile';
 import {
-  attendanceFor, formatAttendance, confidenceLabel, type AttendanceRecord,
+  attendanceFor, formatAttendance, type AttendanceRecord,
 } from '../data/attendance';
 
 interface Props {
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: Props) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const bundle = allBundles.find((b) => b.festival.name === slug);
 
@@ -33,9 +35,9 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
   if (!bundle) {
     return (
       <div className="panel">
-        <button onClick={onBack} style={{ marginBottom: 12 }}>← back</button>
-        <h2>Burn not found</h2>
-        <div className="sub">No festival with slug <code>{slug}</code> in the current dataset.</div>
+        <button onClick={onBack} style={{ marginBottom: 12 }}>{t('burnDetail.back')}</button>
+        <h2>{t('burnDetail.notFound')}</h2>
+        <div className="sub">{t('burnDetail.notFoundSub', { slug })}</div>
       </div>
     );
   }
@@ -44,6 +46,10 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
   const region = regionForFestival(f);
   const regionColor = REGION_COLORS[region as keyof typeof REGION_COLORS];
   const sanctionInfo = sanction?.byFestival.get(f.name);
+
+  // Auto-scraped attendance is 'estimated'; only curated figures are 'reported'.
+  const attLabel = (a: AttendanceRecord | null) =>
+    !a || a.estimate == null ? t('attendance.na') : t(`attendance.${a.confidence}`);
 
   // Event-type mix for this burn.
   const mix = useMemo(() => {
@@ -122,7 +128,7 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
       <div className="panel" style={{ borderColor: regionColor }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
           <div>
-            <button onClick={onBack} style={{ marginBottom: 12, fontSize: 11 }}>← back</button>
+            <button onClick={onBack} style={{ marginBottom: 12, fontSize: 11 }}>{t('burnDetail.back')}</button>
             <h1 style={{ margin: 0, fontSize: 28, lineHeight: 1.1 }}>
               {sanctionInfo?.is_sanctioned && <span style={{ color: 'var(--accent)' }}>★ </span>}
               {f.title}
@@ -137,12 +143,12 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
               <span style={{ ...chipStyle, background: regionColor, color: '#1a1208' }}>{region}</span>
               {sanctionInfo?.is_sanctioned && (
                 <span style={{ ...chipStyle, background: 'rgba(255,138,61,0.2)', color: 'var(--accent)' }}>
-                  Official BM Regional
+                  {t('burnDetail.officialBmRegional')}
                 </span>
               )}
               {!sanctionInfo?.is_sanctioned && sanction?.index && (
                 <span style={{ ...chipStyle, background: 'var(--panel-2)', color: 'var(--muted)' }}>
-                  Unsanctioned / unrecognized
+                  {t('burnDetail.unsanctioned')}
                 </span>
               )}
               {f.website && (
@@ -152,22 +158,22 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
                   rel="noopener noreferrer"
                   style={{ ...chipStyle, background: 'var(--panel-2)', color: 'var(--text)', textDecoration: 'none' }}
                 >
-                  Official site ↗
+                  {t('burnDetail.officialSite')}
                 </a>
               )}
             </div>
             {f.programDepth === 'dates-only' && (
               <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>
                 {f.source === 'manual'
-                  ? 'Listed manually — schedule, camps and art aren’t published through a feed PlayaScope can read.'
-                  : 'Listed on the burningman.org directory — this burn doesn’t publish a Dust feed, so only its dates and location are known here.'}
+                  ? t('burnDetail.datesOnlyManual')
+                  : t('burnDetail.datesOnlyDirectory')}
               </div>
             )}
             {(() => {
               const att = attendanceFor(f.name, attendance);
               return (
                 <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
-                  Attendance:{' '}
+                  {t('burnDetail.attendanceLabel')}{' '}
                   <strong style={{ color: att?.estimate != null ? 'var(--text)' : 'var(--muted)' }}>
                     {formatAttendance(att)}
                   </strong>
@@ -176,10 +182,10 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
                       {' · '}
                       {att.sourceUrl ? (
                         <a href={att.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
-                          {confidenceLabel(att)}{att.year ? ` (${att.year})` : ''} ↗
+                          {attLabel(att)}{att.year ? ` (${att.year})` : ''} ↗
                         </a>
                       ) : (
-                        <span>{confidenceLabel(att)}{att.year ? ` (${att.year})` : ''}</span>
+                        <span>{attLabel(att)}{att.year ? ` (${att.year})` : ''}</span>
                       )}
                       {att.source && <span style={{ display: 'block', marginTop: 2, fontSize: 11 }}>{att.source}</span>}
                     </>
@@ -195,39 +201,39 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
               gap: isMobile ? 12 : 24,
             }}
           >
-            <Kpi label="Events" value={bundle.schedule.length} />
-            <Kpi label="Camps" value={bundle.camps.length} />
-            <Kpi label="Art" value={bundle.art.length} />
-            <Kpi label="Music sets" value={bundle.music.length} />
+            <Kpi label={t('burnDetail.kpiEvents')} value={bundle.schedule.length} />
+            <Kpi label={t('burnDetail.kpiCamps')} value={bundle.camps.length} />
+            <Kpi label={t('burnDetail.kpiArt')} value={bundle.art.length} />
+            <Kpi label={t('burnDetail.kpiMusic')} value={bundle.music.length} />
           </div>
         </div>
       </div>
 
       {bundle.schedule.length === 0 && (
         <div className="panel">
-          <div className="sub">No scheduled events have been published yet for this burn.</div>
+          <div className="sub">{t('burnDetail.noEvents')}</div>
         </div>
       )}
 
       <div className="grid cols-2">
         <div className="panel">
-          <h2>Schedule shape</h2>
-          <div className="sub">Events per day of burn. Day 0 is opening day.</div>
+          <h2>{t('burnDetail.scheduleShape')}</h2>
+          <div className="sub">{t('burnDetail.scheduleShapeSub')}</div>
           <EChart
             style={{ width: '100%', height: 220 }}
             option={{
               backgroundColor: 'transparent',
               tooltip: { trigger: 'axis' },
               grid: { left: 36, right: 16, top: 16, bottom: 30 },
-              xAxis: { type: 'category', data: perDay.map((d) => `Day ${d.day}`), axisLine: { lineStyle: { color: '#444' } }, axisLabel: { color: '#8b93a7' } },
+              xAxis: { type: 'category', data: perDay.map((d) => t('burnDetail.day', { n: d.day })), axisLine: { lineStyle: { color: '#444' } }, axisLabel: { color: '#8b93a7' } },
               yAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } }, axisLabel: { color: '#8b93a7' } },
               series: [{ type: 'bar', data: perDay.map((d) => d.count), itemStyle: { color: '#ff8a3d' } }],
             }}
           />
         </div>
         <div className="panel">
-          <h2>Time of day</h2>
-          <div className="sub">When the events fire. Hour 0 is local midnight.</div>
+          <h2>{t('burnDetail.timeOfDay')}</h2>
+          <div className="sub">{t('burnDetail.timeOfDaySub')}</div>
           <EChart
             style={{ width: '100%', height: 220 }}
             option={{
@@ -248,8 +254,8 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
       </div>
 
       <div className="panel">
-        <h2>Time of day × day of burn</h2>
-        <div className="sub">Darker = more events that hour/day. Shows the actual rhythm of the burn.</div>
+        <h2>{t('burnDetail.heatmap')}</h2>
+        <div className="sub">{t('burnDetail.heatmapSub')}</div>
         <EChart
           style={{ width: '100%', height: 320 }}
           option={{
@@ -265,7 +271,7 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
             grid: { left: 50, right: 60, top: 16, bottom: 40 },
             xAxis: {
               type: 'category',
-              data: Array.from({ length: heatmapCells.days }, (_, i) => `Day ${i - 1}`),
+              data: Array.from({ length: heatmapCells.days }, (_, i) => t('burnDetail.day', { n: i - 1 })),
               axisLabel: { color: '#8b93a7' },
             },
             yAxis: {
@@ -296,8 +302,8 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
 
       <div className="grid cols-2">
         <div className="panel">
-          <h2>What this burn does</h2>
-          <div className="sub">Top event-type categories by count.</div>
+          <h2>{t('burnDetail.whatItDoes')}</h2>
+          <div className="sub">{t('burnDetail.whatItDoesSub')}</div>
           <div className="table-wrap">
             <table className="data">
               <tbody>
@@ -313,10 +319,10 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
           </div>
         </div>
         <div className="panel">
-          <h2>Common event-title words</h2>
-          <div className="sub">Words that recur across this burn's program.</div>
+          <h2>{t('burnDetail.titleWords')}</h2>
+          <div className="sub">{t('burnDetail.titleWordsSub')}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 0' }}>
-            {topWords.length === 0 && <span className="sub">no events scheduled yet</span>}
+            {topWords.length === 0 && <span className="sub">{t('burnDetail.noEventsYet')}</span>}
             {topWords.map(([w, n]) => (
               <span key={w} style={{
                 background: 'var(--panel-2)',
@@ -334,8 +340,8 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
 
       {topPerformers.length > 0 && (
         <div className="panel">
-          <h2>Performers playing here</h2>
-          <div className="sub">Top {topPerformers.length} by music-set count at this burn.</div>
+          <h2>{t('burnDetail.performers')}</h2>
+          <div className="sub">{t('burnDetail.performersSub', { n: topPerformers.length })}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {topPerformers.map((p) => (
               <span key={p.display} style={{
@@ -346,7 +352,7 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
                 fontSize: 12,
               }}>
                 <strong>{p.display}</strong>
-                <span style={{ color: 'var(--muted)', marginLeft: 6 }}>{p.sets} set{p.sets === 1 ? '' : 's'}</span>
+                <span style={{ color: 'var(--muted)', marginLeft: 6 }}>{t('burnDetail.sets', { count: p.sets })}</span>
               </span>
             ))}
           </div>
@@ -355,8 +361,8 @@ export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: P
 
       {bundle.art.length > 0 && (
         <div className="panel">
-          <h2>Featured art ({bundle.art.length})</h2>
-          <div className="sub">First 20 pieces. All on the playa for the burn's run ({formatDateRangeInZone(f.start, f.end, f.timeZone)}).</div>
+          <h2>{t('burnDetail.featuredArt', { count: bundle.art.length })}</h2>
+          <div className="sub">{t('burnDetail.featuredArtSub', { dates: formatDateRangeInZone(f.start, f.end, f.timeZone) })}</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8, marginTop: 8 }}>
             {bundle.art.slice(0, 20).map((a) => {
               const clock = a.location?.hour

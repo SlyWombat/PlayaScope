@@ -1,38 +1,38 @@
 #!/usr/bin/env node
-// Scrapes the official Burning Man sanctioned-event sources and writes the
-// merged list to `public/sanctioned-events.json`. The SPA loads that JSON at
-// runtime to flag festivals with `is_sanctioned`.
+// Scrapes the official Burning Man events directory and writes the merged
+// sanctioned-event list to `public/sanctioned-events.json`. The SPA loads that
+// JSON at runtime to flag festivals with `is_sanctioned`.
 //
-// Two sources, merged:
+// Sources, merged:
 //   1. https://burningman.org/global-events-groups/find-a-burning-man-event/
-//      The events directory — upcoming/recurring official Regional Events.
-//   2. https://burningman.org/global-events-groups/burning-man-regional-network/
-//      connect-with-a-local-group/
-//      The Regional Network — every officially-recognized regional GROUP and
-//      the events those groups produce. Catches sanctioned events like
-//      SideBurn (Flame Ontario) that aren't on the events directory because
-//      they're not in the next-6-months window.
+//      The events directory — the authoritative list of official Regional
+//      Events. Parsed from the event cards only.
+//   2. public/sanctioned-extra.json — a small CURATED list of burns known to
+//      be official regionals but absent from the directory (date already
+//      passed this year, or outside the directory's window — e.g. SideBurn).
 //
-// The downstream matcher in src/data/sanctioned.ts handles fuzzy matching
-// against Dust slugs, so we can be permissive: dump every linked phrase from
-// regional group pages, false candidates harmlessly fail to match anything.
+// History: an earlier version also crawled the /connect-with-a-local-group/
+// subtree and harvested every <a> on every page. That produced ~650 junk
+// "events" — site nav, country names, city links, contact emails, social
+// links — which flooded the app's unmatched list. The directory page is the
+// real source of truth; anything it misses goes in sanctioned-extra.json.
 //
 // Usage:
 //   node scripts/scrape-bm-regionals.mjs           # write public/sanctioned-events.json
 //   node scripts/scrape-bm-regionals.mjs --print   # print to stdout, no write
 //   node scripts/scrape-bm-regionals.mjs --json    # raw JSON to stdout
 
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const EVENTS_URL = 'https://burningman.org/global-events-groups/find-a-burning-man-event/';
-const NETWORK_ROOT = 'https://burningman.org/global-events-groups/burning-man-regional-network/connect-with-a-local-group/';
-const NETWORK_PATH = '/global-events-groups/burning-man-regional-network/connect-with-a-local-group/';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const APP_DIR = resolve(HERE, '..');
 const OUT_PATH = resolve(APP_DIR, 'public', 'sanctioned-events.json');
+const EXTRA_PATH = resolve(APP_DIR, 'public', 'sanctioned-extra.json');
 
 const args = process.argv.slice(2);
 const PRINT_ONLY = args.includes('--print');
@@ -57,6 +57,8 @@ const ENTITIES = {
   '&#8216;': "'",
   '&#8211;': '–',
   '&#8212;': '—',
+  '&#8230;': '…',
+  '&#038;': '&',
   '&amp;': '&',
   '&quot;': '"',
   '&#039;': "'",
@@ -68,6 +70,8 @@ const ENTITIES = {
 function decodeEntities(s) {
   let out = s;
   for (const [k, v] of Object.entries(ENTITIES)) out = out.split(k).join(v);
+  // Catch any remaining numeric entity (&#NNN;).
+  out = out.replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)));
   return out;
 }
 
@@ -82,6 +86,7 @@ function cleanName(raw) {
 }
 
 // ----- Source 1: events directory -----
+// Event names are the <h3> with the bmp-events-list-item__title class.
 function parseEventDirectory(html) {
   const open = '__title">';
   const close = '</h3>';
@@ -90,119 +95,38 @@ function parseEventDirectory(html) {
   while ((i = html.indexOf(open, i + 1)) !== -1) {
     const end = html.indexOf(close, i);
     if (end < 0) continue;
-    const inner = html.slice(i + open.length, end);
-    const name = cleanName(inner);
+    const name = cleanName(html.slice(i + open.length, end));
     if (name) out.push(name);
   }
   return out;
 }
 
-// ----- Source 2: regional network crawl -----
-//
-// Walk the /connect-with-a-local-group/ subtree. Every page that's under that
-// path is fair game; we follow only same-domain links inside that subtree.
-// On each page, harvest every <a> link text — that's where event names live
-// when groups link to their events (e.g. SideBurn).
-
-const MAX_PAGES = 200;          // safety
-const CONCURRENCY = 4;
-const REQUEST_DELAY_MS = 80;    // small courtesy gap between requests
-
-function extractLinksAndNames(html) {
-  const links = new Set();
-  const names = [];
-
-  // Internal links (under the regional-network subtree) for further crawl.
-  const linkRe = /href="(https?:\/\/burningman\.org[^"]*)"/g;
-  let m;
-  while ((m = linkRe.exec(html))) {
-    const url = m[1];
-    if (url.includes(NETWORK_PATH)) {
-      links.add(url.split('#')[0].split('?')[0]);
-    }
+// ----- Source 2: curated extras -----
+async function readExtras() {
+  if (!existsSync(EXTRA_PATH)) return [];
+  try {
+    const json = JSON.parse(await readFile(EXTRA_PATH, 'utf8'));
+    return Array.isArray(json.events) ? json.events.filter((s) => typeof s === 'string' && s.trim()) : [];
+  } catch (err) {
+    console.error(`  ! could not read ${EXTRA_PATH}: ${err.message}`);
+    return [];
   }
-
-  // Every <a>...</a> text: candidate event names. Skip nav-ish stuff.
-  const aRe = /<a[^>]*>([^<]+)<\/a>/g;
-  while ((m = aRe.exec(html))) {
-    const raw = cleanName(m[1]);
-    if (!raw) continue;
-    // Skip nav links and other obviously non-event phrases.
-    if (raw.length < 3) continue;
-    if (raw.length > 80) continue;
-    if (/^(home|menu|search|donate|join|sign in|log in|subscribe|read more|click here|contact|email|website|facebook|instagram|twitter|x\b|here|more|learn more|view all|next|previous|find|connect|see all|view|details|register|tickets?)$/i.test(raw)) continue;
-    if (/^https?:\/\//.test(raw)) continue; // raw URL as link text
-    names.push(raw);
-  }
-
-  // Plus any bold/emphasized phrase that looks like a proper-noun event name
-  // (Title Case, 2+ words). Captures plain-text mentions like "Decompression"
-  // that aren't wrapped in <a>.
-  const strongRe = /<(?:strong|em|h[1-6])[^>]*>([^<]+)<\/(?:strong|em|h[1-6])>/g;
-  while ((m = strongRe.exec(html))) {
-    const raw = cleanName(m[1]);
-    if (!raw || raw.length < 3 || raw.length > 80) continue;
-    // Heuristic: starts with capital letter, has at least one space or burn-like keyword.
-    if (!/^[A-Z]/.test(raw)) continue;
-    if (/(burn|burning|fire|spectacle|flame|ember|spark|playa|decomp|regional|MOOP)/i.test(raw)) {
-      names.push(raw);
-    }
-  }
-
-  return { links: [...links], names };
-}
-
-async function crawlRegionalNetwork() {
-  const visited = new Set();
-  const queue = [NETWORK_ROOT];
-  const allNames = new Set();
-  let pageCount = 0;
-
-  // Simple worker pool.
-  async function worker() {
-    while (queue.length > 0 && pageCount < MAX_PAGES) {
-      const url = queue.shift();
-      if (!url || visited.has(url)) continue;
-      visited.add(url);
-      pageCount++;
-      try {
-        const html = await fetchHtml(url);
-        const { links, names } = extractLinksAndNames(html);
-        for (const n of names) allNames.add(n);
-        for (const l of links) if (!visited.has(l)) queue.push(l);
-        process.stderr.write(`\r  crawled ${pageCount} pages, ${allNames.size} candidate names, queue ${queue.length}     `);
-      } catch (err) {
-        process.stderr.write(`\n  ! ${url}: ${err.message}\n`);
-      }
-      await new Promise((r) => setTimeout(r, REQUEST_DELAY_MS));
-    }
-  }
-  await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
-  process.stderr.write('\n');
-  return { names: [...allNames], pageCount };
 }
 
 async function main() {
-  console.error(`▸ Source 1: events directory`);
+  console.error('▸ Source 1: events directory');
   const directoryHtml = await fetchHtml(EVENTS_URL);
   const directoryNames = parseEventDirectory(directoryHtml);
   console.error(`  ${directoryNames.length} events on the directory page`);
 
-  console.error(`▸ Source 2: crawling regional network`);
-  const { names: networkNames, pageCount } = await crawlRegionalNetwork();
-  console.error(`  ${pageCount} pages crawled, ${networkNames.length} candidate phrases`);
+  console.error('▸ Source 2: curated extras');
+  const extraNames = await readExtras();
+  console.error(`  ${extraNames.length} curated extra(s)`);
 
-  // Merge — dedupe case-insensitively, prefer the casing from the events
-  // directory when there's a conflict (it's the more authoritative source).
+  // Merge — dedupe case-insensitively, directory casing wins.
   const seen = new Set();
   const merged = [];
-  for (const n of directoryNames) {
-    const k = n.toLowerCase();
-    if (seen.has(k)) continue;
-    seen.add(k);
-    merged.push(n);
-  }
-  for (const n of networkNames) {
+  for (const n of [...directoryNames, ...extraNames]) {
     const k = n.toLowerCase();
     if (seen.has(k)) continue;
     seen.add(k);
@@ -210,18 +134,15 @@ async function main() {
   }
 
   if (merged.length === 0) {
-    throw new Error('Parsed 0 candidate names. Both sources may have changed markup.');
+    throw new Error('Parsed 0 events. The directory markup may have changed — check parseEventDirectory().');
   }
 
   const payload = {
-    sources: {
-      directory: EVENTS_URL,
-      network: NETWORK_ROOT,
-    },
+    sources: { directory: EVENTS_URL, extra: 'public/sanctioned-extra.json' },
     scrapedAt: new Date().toISOString(),
     counts: {
       directory: directoryNames.length,
-      network: networkNames.length,
+      extra: extraNames.length,
       merged: merged.length,
     },
     events: merged,
@@ -232,15 +153,15 @@ async function main() {
     return;
   }
   if (PRINT_ONLY) {
-    console.log(`Sources: ${EVENTS_URL} + ${NETWORK_ROOT}`);
+    console.log(`Source: ${EVENTS_URL} (+ curated extras)`);
     console.log(`Scraped: ${payload.scrapedAt}`);
-    console.log(`Count: directory=${directoryNames.length} network=${networkNames.length} merged=${merged.length}`);
+    console.log(`Count: directory=${directoryNames.length} extra=${extraNames.length} merged=${merged.length}`);
     for (const n of merged) console.log(`  ${n}`);
     return;
   }
   await writeFile(OUT_PATH, JSON.stringify(payload, null, 2) + '\n');
   console.log(`✓ Wrote ${OUT_PATH}`);
-  console.log(`  ${merged.length} merged sanctioned candidates (${directoryNames.length} directory + ${networkNames.length} network)`);
+  console.log(`  ${merged.length} sanctioned events (${directoryNames.length} directory + ${extraNames.length} curated)`);
 }
 
 main().catch((err) => {

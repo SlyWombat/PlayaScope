@@ -7,6 +7,7 @@
 // words. "Balanced", "varied", "lopsided" beat "Shannon entropy".
 
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FestivalBundle } from '../data/loader';
 import type { DustEvent } from '../data/types';
 import { tokens, bump, topN, normalizeArtistName } from '../lib/tokenize';
@@ -44,6 +45,7 @@ function variety(fractions: number[]): number {
 }
 
 export function Moop({ bundles, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const tiles = useMemo<Tile[]>(() => {
     const out: Tile[] = [];
 
@@ -58,11 +60,11 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     }
     if (longestCamp) {
       out.push({
-        title: 'Longest camp name',
-        value: `${longestCamp.name.length} characters`,
+        title: t('moop.tiles.longestCamp.title'),
+        value: t('moop.tiles.longestCamp.value', { n: longestCamp.name.length }),
         detail: `"${longestCamp.name}"`,
-        hint: `at ${longestCamp.burn}`,
-        how: 'Longest camps[].name across all burns. Click to open the burn.',
+        hint: t('moop.tiles.longestCamp.hint', { burn: longestCamp.burn }),
+        how: t('moop.tiles.longestCamp.how'),
         burnSlug: longestCamp.slug,
       });
     }
@@ -77,10 +79,12 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     const topWord = topN(wordCounts, 1)[0];
     if (topWord) {
       out.push({
-        title: 'Most-used event-title word',
+        title: t('moop.tiles.topWord.title'),
         value: `"${topWord[0]}"`,
-        detail: `${topWord[1].toLocaleString()} occurrences across ${titleSourceCount.toLocaleString()} event titles`,
-        how: 'Lowercased event titles, stop-words removed, frequency counted.',
+        detail: t('moop.tiles.topWord.detail', {
+          n: topWord[1].toLocaleString(), titles: titleSourceCount.toLocaleString(),
+        }),
+        how: t('moop.tiles.topWord.how'),
       });
     }
 
@@ -93,10 +97,13 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     const topPrefix = topN(prefixCounts, 3);
     if (topPrefix.length) {
       out.push({
-        title: 'Most-overused camp name prefix',
+        title: t('moop.tiles.topPrefix.title'),
         value: `"${topPrefix[0]![0]}"`,
-        detail: `${topPrefix[0]![1]}× — runner-ups: ${topPrefix.slice(1).map((p) => `${p[0]} (${p[1]})`).join(', ')}`,
-        how: 'First word of each camp name, stop-words excluded.',
+        detail: t('moop.tiles.topPrefix.detail', {
+          n: topPrefix[0]![1],
+          runners: topPrefix.slice(1).map((p) => `${p[0]} (${p[1]})`).join(', '),
+        }),
+        how: t('moop.tiles.topPrefix.how'),
       });
     }
 
@@ -115,17 +122,17 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     }
     if (widest && narrowest) {
       out.push({
-        title: 'Most varied program',
+        title: t('moop.tiles.varied.title'),
         value: widest.burn,
-        detail: `Spread evenly across event types — variety score ${(widest.v * 100).toFixed(0)}/100`,
-        how: 'Even split across all 19 event categories = top score. Click to open the burn.',
+        detail: t('moop.tiles.varied.detail', { score: (widest.v * 100).toFixed(0) }),
+        how: t('moop.tiles.varied.how'),
         burnSlug: widest.slug,
       });
       out.push({
-        title: 'Most one-track program',
+        title: t('moop.tiles.oneTrack.title'),
         value: narrowest.burn,
-        detail: `Programming dominated by a single category — variety score ${(narrowest.v * 100).toFixed(0)}/100`,
-        how: 'Lowest spread across event categories (≥5 events).',
+        detail: t('moop.tiles.oneTrack.detail', { score: (narrowest.v * 100).toFixed(0) }),
+        how: t('moop.tiles.oneTrack.how'),
         burnSlug: narrowest.slug,
       });
     }
@@ -138,10 +145,10 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     }
     if (bestAllDay && bestAllDay.n > 0) {
       out.push({
-        title: 'Hardest-working idle program',
-        value: `${bestAllDay.n} all-day events`,
+        title: t('moop.tiles.allDay.title'),
+        value: t('moop.tiles.allDay.value', { n: bestAllDay.n }),
         detail: bestAllDay.burn,
-        how: 'Count of events with all_day === true.',
+        how: t('moop.tiles.allDay.how'),
         burnSlug: bestAllDay.slug,
       });
     }
@@ -155,10 +162,10 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     }
     if (mostLocationless && mostLocationless.n > 0) {
       out.push({
-        title: 'Most "find it yourself" events',
-        value: `${mostLocationless.n} events with no location`,
+        title: t('moop.tiles.locationless.title'),
+        value: t('moop.tiles.locationless.value', { n: mostLocationless.n }),
         detail: mostLocationless.burn,
-        how: 'No hosting camp, no host art, no other_location.',
+        how: t('moop.tiles.locationless.how'),
         burnSlug: mostLocationless.slug,
       });
     }
@@ -173,10 +180,10 @@ export function Moop({ bundles, onOpenBurn }: Props) {
       if (ms > 0 && ms < 7 * 24 * 3600 * 1000) totalHours += ms / 3_600_000;
     }
     out.push({
-      title: 'Total programming this season',
+      title: t('moop.tiles.totalHours.title'),
       value: formatHourCount(totalHours),
-      detail: 'Sum of every scheduled event duration, across every burn in the current filter.',
-      how: 'Σ (end_time − start_time).',
+      detail: t('moop.tiles.totalHours.detail'),
+      how: t('moop.tiles.totalHours.how'),
     });
 
     // 8. "If every burn happened today"
@@ -184,10 +191,10 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     const totalCamps = bundles.reduce((s, b) => s + b.camps.length, 0);
     const totalArt = bundles.reduce((s, b) => s + b.art.length, 0);
     out.push({
-      title: 'If every burn happened today',
-      value: `${formatInt(totalEvents)} events`,
-      detail: `${formatInt(totalCamps)} camps · ${formatInt(totalArt)} art pieces. Society would not survive.`,
-      how: 'Summed across the current filter.',
+      title: t('moop.tiles.ifToday.title'),
+      value: t('moop.tiles.ifToday.value', { n: formatInt(totalEvents) }),
+      detail: t('moop.tiles.ifToday.detail', { camps: formatInt(totalCamps), art: formatInt(totalArt) }),
+      how: t('moop.tiles.ifToday.how'),
     });
 
     // 9. Weirdest event titles
@@ -201,10 +208,13 @@ export function Moop({ bundles, onOpenBurn }: Props) {
       .slice(0, 5);
     if (weird.length) {
       out.push({
-        title: 'Weirdest event title',
+        title: t('moop.tiles.weirdest.title'),
         value: weird[0]!.title.slice(0, 80) + (weird[0]!.title.length > 80 ? '…' : ''),
-        detail: `at ${weird[0]!.burn}. Runners-up: ${weird.slice(1, 3).map((w) => `"${w.title.slice(0, 40)}…"`).join(' · ')}`,
-        how: 'Title length + 4× punctuation count.',
+        detail: t('moop.tiles.weirdest.detail', {
+          burn: weird[0]!.burn,
+          runners: weird.slice(1, 3).map((w) => `"${w.title.slice(0, 40)}…"`).join(' · '),
+        }),
+        how: t('moop.tiles.weirdest.how'),
         burnSlug: weird[0]!.slug,
       });
     }
@@ -224,10 +234,13 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     const topArtist = [...artistMap.values()].sort((a, b) => b.burns.size - a.burns.size || b.sets - a.sets)[0];
     if (topArtist && topArtist.burns.size >= 1) {
       out.push({
-        title: 'Most-traveled performer',
+        title: t('moop.tiles.traveled.title'),
         value: topArtist.display,
-        detail: `${topArtist.burns.size} burn${topArtist.burns.size === 1 ? '' : 's'} · ${topArtist.sets} set${topArtist.sets === 1 ? '' : 's'}`,
-        how: 'Distinct burns played, placeholder names (TBD/TBA/unknown) excluded.',
+        detail: t('moop.tiles.traveled.detail', {
+          burns: t('moop.tiles.traveled.burns', { count: topArtist.burns.size }),
+          sets: t('moop.tiles.traveled.sets', { count: topArtist.sets }),
+        }),
+        how: t('moop.tiles.traveled.how'),
       });
     }
 
@@ -254,10 +267,12 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     }
     if (topDay) {
       out.push({
-        title: 'Most-overlapped date',
-        value: `${topDayBurns.length} burns at once`,
-        detail: `On ${topDay}: ${topDayBurns.slice().sort().join(', ')}.`,
-        how: 'Count of festivals whose date range includes each UTC day.',
+        title: t('moop.tiles.overlap.title'),
+        value: t('moop.tiles.overlap.value', { n: topDayBurns.length }),
+        detail: t('moop.tiles.overlap.detail', {
+          date: topDay, burns: topDayBurns.slice().sort().join(', '),
+        }),
+        how: t('moop.tiles.overlap.how'),
       });
     }
 
@@ -286,13 +301,13 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     const topSpicy = topN(spicyCounts, 5);
     if (topSpicy.length) {
       out.push({
-        title: 'After-dark lexicon',
+        title: t('moop.tiles.afterDark.title'),
         value: `"${topSpicy[0]![0]}" — ${topSpicy[0]![1]}×`,
-        detail:
-          `${spicyTitles} event titles got spicy. Also overheard: ` +
-          topSpicy.slice(1).map((s) => `${s[0]} (${s[1]})`).join(', ') +
-          '. The playa contains multitudes.',
-        how: `Event titles matched against an adult-themed word list (${SPICY.length} terms). Bring an open mind.`,
+        detail: t('moop.tiles.afterDark.detail', {
+          n: spicyTitles,
+          runners: topSpicy.slice(1).map((s) => `${s[0]} (${s[1]})`).join(', '),
+        }),
+        how: t('moop.tiles.afterDark.how', { terms: SPICY.length }),
       });
     }
 
@@ -310,10 +325,12 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     if (spiciestBurn && spiciestBurn.n > 0) {
       const pct = spiciestBurn.total > 0 ? (spiciestBurn.n / spiciestBurn.total) * 100 : 0;
       out.push({
-        title: 'Spiciest burn',
+        title: t('moop.tiles.spiciest.title'),
         value: spiciestBurn.burn,
-        detail: `${spiciestBurn.n} Mature Audiences events (${pct.toFixed(0)}% of its program). ${matureTotal} across the whole season. Pace yourself.`,
-        how: 'Count of events whose event_type is "Mature Audiences" — a real dust category.',
+        detail: t('moop.tiles.spiciest.detail', {
+          n: spiciestBurn.n, pct: pct.toFixed(0), total: matureTotal,
+        }),
+        how: t('moop.tiles.spiciest.how'),
         burnSlug: spiciestBurn.slug,
       });
     }
@@ -328,12 +345,12 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     if (spicyCamps.length) {
       const sample = spicyCamps.slice().sort().slice(0, 5);
       out.push({
-        title: 'Camps with a reputation',
-        value: `${spicyCamps.length} camps`,
-        detail:
-          `Theme camps whose names raise an eyebrow — e.g. ${sample.map((n) => `"${n}"`).join(', ')}` +
-          `${spicyCamps.length > 5 ? ', and more' : ''}. You know which neighbourhood to find. Or avoid.`,
-        how: `Camp names matched against the same ${SPICY.length}-term adult word list.`,
+        title: t('moop.tiles.reputation.title'),
+        value: t('moop.tiles.reputation.value', { n: spicyCamps.length }),
+        detail: t(spicyCamps.length > 5 ? 'moop.tiles.reputation.detailMore' : 'moop.tiles.reputation.detail', {
+          sample: sample.map((n) => `"${n}"`).join(', '),
+        }),
+        how: t('moop.tiles.reputation.how', { terms: SPICY.length }),
       });
     }
 
@@ -348,16 +365,16 @@ export function Moop({ bundles, onOpenBurn }: Props) {
       else notFire.push(b.festival.title);
     }
     out.push({
-      title: 'Burns named after fire',
-      value: `${fire.length} / ${bundles.length}`,
+      title: t('moop.tiles.fire.title'),
+      value: t('moop.tiles.fire.value', { n: fire.length, total: bundles.length }),
       detail: fire.slice(0, 6).join(', ') + (fire.length > 6 ? '…' : ''),
-      how: `Title contains: ${FIRE_WORDS.join(', ')}.`,
+      how: t('moop.tiles.fire.how', { words: FIRE_WORDS.join(', ') }),
     });
     out.push({
-      title: 'Burns NOT named after fire',
-      value: `${notFire.length} / ${bundles.length}`,
+      title: t('moop.tiles.notFire.title'),
+      value: t('moop.tiles.notFire.value', { n: notFire.length, total: bundles.length }),
       detail: notFire.slice(0, 6).join(', ') + (notFire.length > 6 ? '…' : ''),
-      how: 'Complement of the above.',
+      how: t('moop.tiles.notFire.how'),
     });
 
     // 17. Longest art walk (snark tile)
@@ -393,24 +410,28 @@ export function Moop({ bundles, onOpenBurn }: Props) {
       const steps = Math.round(bestArtBurn.meters / 0.762);
       const bananas = Math.round(bestArtBurn.meters / 0.18);
       out.push({
-        title: 'Longest art walk',
-        value: `${km.toFixed(2)} km`,
-        detail: `${bestArtBurn.burn} — ${bestArtBurn.count} art pieces, ${steps.toLocaleString()} steps, ${bananas.toLocaleString()} bananas end-to-end`,
-        how: 'Shortest path connecting every GPS-located art piece. 1 step ≈ 0.762 m, 1 banana ≈ 0.18 m.',
+        title: t('moop.tiles.artWalk.title'),
+        value: t('moop.tiles.artWalk.value', { km: km.toFixed(2) }),
+        detail: t('moop.tiles.artWalk.detail', {
+          burn: bestArtBurn.burn, count: bestArtBurn.count,
+          steps: steps.toLocaleString(), bananas: bananas.toLocaleString(),
+        }),
+        how: t('moop.tiles.artWalk.how'),
         burnSlug: bestArtBurn.slug,
       });
     }
 
     return out;
-  }, [bundles]);
+    // `t` in deps so tile copy re-translates on a language switch.
+  }, [bundles, t]);
 
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>The MOOP Report</h2>
+        <h2>{t('moop.title')}</h2>
         <div className="sub">
-          <em>Matter Out Of Place.</em> {tiles.length} trivia tiles across {bundles.length} burns in current filter.
-          Tiles with an <strong style={{ color: 'var(--accent)' }}>→</strong> arrow open the relevant burn page.
+          <em>{t('moop.tagline')}</em>{' '}
+          {t('moop.sub', { tiles: tiles.length, burns: bundles.length })}
         </div>
       </div>
       <div
