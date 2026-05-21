@@ -251,9 +251,9 @@
     "duration": "Distribución de duraciones",
     "durationSub": "Cuánto duran los burns, en días.",
     "durationBar": "{{n}} burn(s) de {{days}} días",
-    "byRegion": "Burns por región",
-    "byRegionSub": "Región autodeclarada. Ordenada por número.",
-    "colRegion": "Región",
+    "byRegion": "Burns por país",
+    "byRegionSub": "Burns agrupados por país, ordenados por número.",
+    "colRegion": "País",
     "colBurns": "Burns",
     "unknownRegion": "(desconocida)",
     "unmapped": "{{count}} burns del directorio no tienen coordenadas y no se muestran."

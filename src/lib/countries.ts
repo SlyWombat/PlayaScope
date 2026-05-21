@@ -4,8 +4,6 @@
 // a bare country, or sometimes just a town. We parse what we can from the
 // string, then fall back to a coarse coordinate bounding-box.
 
-import { burnKey } from './groupByBurn';
-
 export const COUNTRY_POPULATION: Record<string, number> = {
   'United States': 335_000_000,
   'Canada': 40_000_000,
@@ -32,6 +30,15 @@ export const COUNTRY_POPULATION: Record<string, number> = {
   'Denmark': 5_900_000,
   'Finland': 5_600_000,
   'Italy': 59_000_000,
+  'Russia': 144_000_000,
+  'Romania': 19_000_000,
+  'Lithuania': 2_800_000,
+  'Latvia': 1_900_000,
+  'Estonia': 1_300_000,
+  'Poland': 38_000_000,
+  'Czech Republic': 10_500_000,
+  'Argentina': 46_000_000,
+  'Brazil': 215_000_000,
 };
 
 // Country name / alias → canonical name. Checked as a substring of the region.
@@ -44,7 +51,10 @@ const COUNTRY_ALIASES: [string, string][] = [
   ['germany', 'Germany'], ['spain', 'Spain'], ['japan', 'Japan'], ['france', 'France'],
   ['ireland', 'Ireland'], ['switzerland', 'Switzerland'], ['austria', 'Austria'],
   ['belgium', 'Belgium'], ['norway', 'Norway'], ['denmark', 'Denmark'],
-  ['finland', 'Finland'], ['italy', 'Italy'],
+  ['finland', 'Finland'], ['italy', 'Italy'], ['russia', 'Russia'],
+  ['romania', 'Romania'], ['lithuania', 'Lithuania'], ['latvia', 'Latvia'],
+  ['estonia', 'Estonia'], ['poland', 'Poland'], ['czech republic', 'Czech Republic'],
+  ['czechia', 'Czech Republic'], ['argentina', 'Argentina'], ['brazil', 'Brazil'],
 ];
 
 const US_STATES = [
@@ -84,28 +94,29 @@ const COORD_BOXES: [string, number, number, number, number][] = [
   ['South Africa', -34.9, -22.1, 16.4, 32.9],
   ['Israel', 29.4, 33.4, 34.2, 35.9],
   ['Japan', 30.0, 45.6, 128.9, 145.9],
+  // Contiguous US — last resort for a US burn whose region string carries no
+  // state name (e.g. "Southeast"). Region-string matching runs first, and
+  // Canada/Mexico match their own names, so the overlap risk is negligible.
+  ['United States', 24.5, 49.0, -125.0, -66.9],
 ];
 
-// Per-burn country overrides — for a burn whose "market" isn't its host
-// country. Midburn is the regional burn for the wider Middle East, so its
-// per-capita reach is measured against that population, not Israel's alone.
-const COUNTRY_OVERRIDE: Record<string, string> = {
+// Per-burn "market" override, keyed by burnKey — for a burn whose audience
+// isn't its host country. Midburn draws the wider Middle East, so the
+// per-capita MOOP tile measures it against that population. Deliberately NOT
+// applied inside countryForFestival (which stays purely geographic) — the
+// caller opts in.
+export const COUNTRY_OVERRIDE: Record<string, string> = {
   midburn: 'Middle East',
 };
 
 interface CountryFest {
-  name?: string;
   region?: string;
   lat?: number | null;
   long?: number | null;
 }
 
-/** Best-effort country for a festival, or null if it can't be determined. */
+/** Best-effort geographic country for a festival, or null if undetermined. */
 export function countryForFestival(f: CountryFest): string | null {
-  if (f.name) {
-    const override = COUNTRY_OVERRIDE[burnKey(f.name)];
-    if (override) return override;
-  }
   const r = (f.region ?? '').toLowerCase();
   for (const [alias, country] of COUNTRY_ALIASES) {
     if (r.includes(alias)) return country;

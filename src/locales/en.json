@@ -299,9 +299,9 @@
     "duration": "Duration distribution",
     "durationSub": "How long burns run, in days.",
     "durationBar": "{{n}} burn(s) at {{days}} days",
-    "byRegion": "Burns by region",
-    "byRegionSub": "Self-reported region string. Sorted by count.",
-    "colRegion": "Region",
+    "byRegion": "Burns by country",
+    "byRegionSub": "Burns grouped by country, sorted by count.",
+    "colRegion": "Country",
     "colBurns": "Burns",
     "unknownRegion": "(unknown)",
     "unmapped": "{{count}} directory-listed burns have no coordinates and aren't pinned."

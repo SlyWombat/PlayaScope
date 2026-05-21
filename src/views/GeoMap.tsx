@@ -5,6 +5,7 @@ import L from 'leaflet';
 import { GestureHandling } from 'leaflet-gesture-handling';
 import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
 import { densityByFestival } from '../data/aggregate';
+import { countryForFestival } from '../lib/countries';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
 
@@ -140,14 +141,20 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
               </thead>
               <tbody>
                 {(() => {
+                  // Group by resolved country — the raw region string is a
+                  // mix of states / provinces / cities (issue: BC must roll
+                  // up to Canada, every US state to United States).
                   const unknown = t('geo.unknownRegion');
                   const m = new Map<string, number>();
-                  for (const r of rows) m.set(r.region || unknown, (m.get(r.region || unknown) ?? 0) + 1);
+                  for (const r of rows) {
+                    const c = countryForFestival(r) ?? unknown;
+                    m.set(c, (m.get(c) ?? 0) + 1);
+                  }
                   return [...m.entries()]
                     .sort((a, b) => b[1] - a[1])
-                    .map(([region, n]) => (
-                      <tr key={region}>
-                        <td>{region}</td>
+                    .map(([country, n]) => (
+                      <tr key={country}>
+                        <td>{country}</td>
                         <td className="num">{n}</td>
                       </tr>
                     ));

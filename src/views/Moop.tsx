@@ -14,7 +14,8 @@ import { tokens, bump, topN, normalizeArtistName } from '../lib/tokenize';
 import { formatHourCount, formatInt, distanceMeters } from '../lib/format';
 import { parseLocalToUtc } from '../data/normalize';
 import { attendanceFor, attendanceValue, type AttendanceRecord } from '../data/attendance';
-import { countryForFestival, COUNTRY_POPULATION } from '../lib/countries';
+import { countryForFestival, COUNTRY_POPULATION, COUNTRY_OVERRIDE } from '../lib/countries';
+import { burnKey } from '../lib/groupByBurn';
 
 interface Props {
   bundles: FestivalBundle[];
@@ -440,7 +441,9 @@ export function Moop({ bundles, attendance, onOpenBurn }: Props) {
     const byCountry = new Map<string, number>();
     for (const b of bundles) {
       if (b.festival.name.startsWith('black-rock-city')) continue;
-      const country = countryForFestival(b.festival);
+      // Market override (Midburn -> Middle East) opts in here; the geographic
+      // resolver is the fallback.
+      const country = COUNTRY_OVERRIDE[burnKey(b.festival.name)] ?? countryForFestival(b.festival);
       if (!country) continue;
       const att = attendanceValue(attendanceFor(b.festival.name, attendance));
       if (att <= 0) continue;
