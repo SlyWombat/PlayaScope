@@ -4,7 +4,7 @@
 // all-burns-aggregated or one-burn. This is the A-vs-B scorecard, with an
 // auto-generated snarky verdict.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
@@ -65,8 +65,18 @@ function statsFor(b: FestivalBundle, sanction: SanctionFlags | null): Stats {
   };
 }
 
+// Parse `#battle=slugA,slugB` from the URL — lets a battle be shared by link.
+function readBattleHash(): [string, string] | null {
+  if (typeof window === 'undefined') return null;
+  const m = window.location.hash.match(/battle=([^&]+)/);
+  if (!m) return null;
+  const parts = decodeURIComponent(m[1]!).split(',');
+  return parts.length === 2 && parts[0] && parts[1] ? [parts[0], parts[1]] : null;
+}
+
 export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
   const isMobile = useIsMobile();
+  const [copied, setCopied] = useState(false);
   // Alphabetical for the pickers; not a ranking.
   const sorted = useMemo(
     () => [...allBundles].sort((a, b) => a.festival.title.localeCompare(b.festival.title)),
@@ -77,8 +87,42 @@ export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
     () => [...allBundles].sort((a, b) => b.schedule.length - a.schedule.length),
     [allBundles],
   );
-  const [slugA, setSlugA] = useState(() => byEvents[0]?.festival.name ?? '');
-  const [slugB, setSlugB] = useState(() => byEvents[1]?.festival.name ?? '');
+  const has = (slug: string) => allBundles.some((b) => b.festival.name === slug);
+  const hashed = readBattleHash();
+  const [slugA, setSlugA] = useState(() =>
+    hashed && has(hashed[0]) ? hashed[0] : byEvents[0]?.festival.name ?? '',
+  );
+  const [slugB, setSlugB] = useState(() =>
+    hashed && has(hashed[1]) ? hashed[1] : byEvents[1]?.festival.name ?? '',
+  );
+
+  // Keep the URL hash in sync with the current matchup so it's shareable.
+  // replaceState (not assignment) avoids spamming browser history and avoids
+  // firing `hashchange`, which the app's burn-detail router also listens to.
+  useEffect(() => {
+    if (!slugA || !slugB) return;
+    const want = `#battle=${encodeURIComponent(slugA)},${encodeURIComponent(slugB)}`;
+    if (window.location.hash !== want) {
+      history.replaceState(null, '', window.location.pathname + window.location.search + want);
+    }
+    setCopied(false);
+  }, [slugA, slugB]);
+
+  // Clear the battle hash when leaving the tab so it doesn't linger in the URL.
+  useEffect(() => {
+    return () => {
+      if (/battle=/.test(window.location.hash)) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    };
+  }, []);
+
+  const copyLink = () => {
+    void navigator.clipboard?.writeText(window.location.href).then(
+      () => { setCopied(true); setTimeout(() => setCopied(false), 2000); },
+      () => { /* clipboard blocked — the URL is in the address bar regardless */ },
+    );
+  };
 
   const bundleA = allBundles.find((b) => b.festival.name === slugA);
   const bundleB = allBundles.find((b) => b.festival.name === slugB);
@@ -142,7 +186,7 @@ export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
         <h2>Burn Battle</h2>
-        <div className="sub">Pick two burns. Bigger number takes the round. Verdict is automatic and unkind.</div>
+        <div className="sub">Pick two burns. Bigger number takes the round. Verdict is automatic and unkind. The URL updates so you can share a matchup.</div>
         <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <BurnPicker label="A" color={A_COLOR} value={slugA} options={sorted} onChange={setSlugA} />
           <span style={{ fontWeight: 700, color: 'var(--muted)' }}>vs</span>
@@ -153,6 +197,14 @@ export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
             title="Swap sides"
           >
             ⇄ swap
+          </button>
+          <button
+            className={copied ? 'primary' : ''}
+            style={{ fontSize: 11 }}
+            onClick={copyLink}
+            title="Copy a shareable link to this matchup"
+          >
+            {copied ? 'link copied' : 'copy link'}
           </button>
         </div>
       </div>

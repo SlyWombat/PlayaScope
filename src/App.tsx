@@ -71,7 +71,10 @@ function readBurnHash(): string | null {
 }
 
 export function App() {
-  const [tab, setTab] = useState<Tab>('overview');
+  // A shared `#battle=a,b` link should land directly on the Burn Battle tab.
+  const [tab, setTab] = useState<Tab>(() =>
+    typeof window !== 'undefined' && /[#&]battle=/.test(window.location.hash) ? 'battle' : 'overview',
+  );
   // Default to "Official" so first-time visitors see the curated Burning Man
   // Regional Events list. They can opt into All / Other from the topbar toggle.
   const [filter, setFilter] = useState<SanctionFilter>('sanctioned');
