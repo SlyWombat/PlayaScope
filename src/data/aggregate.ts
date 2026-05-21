@@ -40,11 +40,11 @@ export function scheduleShape(bundles: FestivalBundle[]): ScheduleShapeRow[] {
     const dur = durationDays(b.festival.start, b.festival.end, b.festival.timeZone);
     const buckets = new Array<number>(dur + 2).fill(0);
     for (const ev of b.schedule) {
-      for (const occ of ev.occurrence_set ?? []) {
-        const d = dayOfBurn(occ.start_time, b.festival.start, b.festival.timeZone);
-        const idx = Math.max(0, Math.min(buckets.length - 1, d + 1));
-        buckets[idx] = (buckets[idx] ?? 0) + 1;
-      }
+      const occ = ev.occurrence;
+      if (!occ?.start_time) continue;
+      const d = dayOfBurn(occ.start_time, b.festival.start, b.festival.timeZone);
+      const idx = Math.max(0, Math.min(buckets.length - 1, d + 1));
+      buckets[idx] = (buckets[idx] ?? 0) + 1;
     }
     return { festival: b.festival.name, title: b.festival.title, duration: dur, perDay: buckets };
   });

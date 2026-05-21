@@ -15,23 +15,30 @@ across every active regional Burning Man-style burn worldwide.
 ## What it does
 
 PlayaScope pulls the public JSON feeds from `data.dust.events` and gives you a
-single dashboard for comparing burns at the regional level:
+single dashboard for comparing burns at the regional level. Eleven views:
 
 - **Overview** — KPI cards, top burns by event volume, global event-type mix,
-  distribution by continent.
-- **Event mix** — stacked bars and a burn-by-event-type heatmap across the
-  19-label Dust taxonomy (Fire/Spectacle, Live Music, Workshops, etc.).
-- **Schedule shape** — events-per-day-of-burn curves so you can see when the
-  programming peaks at each regional.
+  distribution by region (Canada / USA / Mexico broken out).
+- **MOOP Report** — a page of data-trivia tiles, snark included.
 - **Geography** — Leaflet world map with circle markers scaled to event count,
   plus a duration histogram and a region table.
-- **Data table** — sortable, filterable across every burn.
+- **Personality** — Spotify-Wrapped-style portraits: each burn z-scored against
+  the global event-type mix into trait tags + a radar chart.
+- **Event Mix** — stacked bars and a burn-by-event-type heatmap across the
+  19-label Dust taxonomy (Fire/Spectacle, Live Music, Workshops, etc.).
+- **Lexicon** — word cloud of the vocabulary in event titles and camp names.
+- **Artists** — search any performer across every burn's music sets.
+- **Schedule Shape** — events-per-day-of-burn curves + a time-of-day heatmap.
+- **Calendar** — Gantt-style timeline of the whole season with month nav.
+- **Continuity** — year-over-year trajectories for burns with multiple years.
+- **Data** — sortable, filterable table across every burn.
 
-A global **All / Official / Other** filter in the top bar segments burns by
-whether they appear on the
-[official Burning Man Regional Events directory](https://burningman.org/global-events-groups/find-a-burning-man-event/),
-with fuzzy name matching to handle subtitle drift like "Apogaea" vs
-"Apogaea – Mythos & Mechanica".
+Every burn name is a drilldown into a dedicated burn page. A global
+**All / Official / Other** filter segments burns by whether they appear in the
+official Burning Man Regional Network (the events directory plus the recognized
+regional groups), with fuzzy name matching to handle subtitle drift like
+"Apogaea" vs "Apogaea – Mythos & Mechanica". A current-year filter hides
+prior-year duplicates by default.
 
 ## Run it locally
 
@@ -55,7 +62,7 @@ npm run build               # production build into dist/
 npm run preview             # preview the production bundle
 npm run typecheck           # tsc --noEmit
 npm run lint                # eslint
-npm run test:e2e            # playwright smoke tests across all five tabs
+npm run test:e2e            # playwright validation across every tab + drilldown
 npm run scrape-sanctioned   # refresh public/sanctioned-events.json from burningman.org
 npm run refresh-snapshot    # update festivals.snapshot.json from upstream
 ```
@@ -80,8 +87,9 @@ on any static host.
 - **`https://data.dust.events/`** — public JSON feeds maintained by the
   [Dust](https://github.com/damiant/dust) project (MIT). Festival registry,
   schedules, theme camps, art installations, music sets.
-- **`https://burningman.org/global-events-groups/find-a-burning-man-event/`** —
-  scraped weekly for the canonical list of officially-sanctioned regional events.
+- **`https://burningman.org/global-events-groups/`** — the events directory
+  and the Regional Network group pages, scraped weekly for the canonical list
+  of officially-sanctioned regional events.
 
 PlayaScope is not affiliated with Burning Man Project or with the Dust
 maintainers. All festival data belongs to the regional event organizers who

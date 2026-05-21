@@ -1,7 +1,6 @@
-// Sanctioned-event matching.
+// Sanctioned-event matching (per Approved.md).
 //
-// We treat the official Burning Man Regional Events directory as the single
-// source of truth.
+// We treat the official Burning Man directory as the single source of truth.
 // `public/sanctioned-events.json` is regenerated weekly by
 // `scripts/scrape-bm-regionals.mjs`. The SPA fetches it at startup and tags
 // every festival pulled from dust.events with `is_sanctioned: boolean`.

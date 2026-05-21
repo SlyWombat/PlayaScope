@@ -53,12 +53,14 @@ button.primary:hover { background: var(--accent-soft); }
   padding: 10px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--panel);
+  flex-wrap: wrap;
 }
 .topbar h1 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 .topbar .accent { color: var(--accent); }
 .topbar .meta {
@@ -66,29 +68,59 @@ button.primary:hover { background: var(--accent-soft); }
   font-size: 12px;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.tabs {
+/* Tab nav — two segmented pill groups sitting side by side.
+   Each group reads as a single related set; no more 1px dividers.
+   At wide widths, both groups fit on one row with the meta to the right.
+   When the viewport runs out, the meta wraps to a second row. */
+.tab-bar {
   display: flex;
-  gap: 4px;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.tabs button {
+.tab-group {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+.tab-group button {
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  padding: 10px 14px;
+  border-radius: 7px;
+  padding: 6px 12px;
   color: var(--muted);
   font-weight: 500;
+  font-size: 12px;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
 }
-.tabs button.active {
+.tab-group button:hover {
+  background: rgba(255, 138, 61, 0.08);
   color: var(--text);
-  border-bottom-color: var(--accent);
 }
-.tabs button:hover { background: transparent; color: var(--text); }
+.tab-group button.active {
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--accent), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.tab-group button.active::after {
+  content: '';
+  display: block;
+  width: 12px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  margin: 3px auto -2px;
+}
 
 main { flex: 1; overflow: auto; padding: 20px; }
 
@@ -194,4 +226,67 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
 
 .leaflet-container {
   background: #0a0c10;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile (≤720px). Addresses GitHub issue #10:
+   - 44px minimum tap targets
+   - 16px input font (suppresses iOS focus-zoom)
+   - tighter padding, single-column grids
+   - sticky first column on the data table
+   - chart heights trimmed so they don't dominate a short viewport
+--------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  body { font-size: 13px; }
+
+  main { padding: 12px; }
+  .panel { padding: 12px; border-radius: 8px; }
+
+  /* Tap targets — every button gets a 44px-tall hit area. */
+  button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  /* Tab pills can be a touch shorter — they sit two-per-thumb. */
+  .tab-group button {
+    min-height: 40px;
+    font-size: 13px;
+  }
+  .tab-bar { gap: 6px; width: 100%; }
+  .tab-group { flex-wrap: wrap; }
+
+  /* Topbar: stack brand, tabs, meta vertically; let meta wrap freely. */
+  .topbar { padding: 10px 12px; gap: 10px; }
+  .topbar .meta {
+    margin-left: 0;
+    width: 100%;
+    font-size: 13px;
+    gap: 8px;
+  }
+  .topbar .meta button { min-height: 40px; }
+
+  /* Inputs/selects ≥16px so iOS doesn't zoom the viewport on focus. */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* KPI numbers are big — trim so a 3-up row fits. */
+  .kpi .value { font-size: 22px; }
+
+  /* Charts: shorter on mobile so they don't eat the whole screen. */
+  .chart { height: 300px; }
+  .chart.tall { height: 380px; }
+  .chart.short { height: 220px; }
+  .map { height: 360px; }
+
+  .progress { width: 100%; max-width: 320px; }
+
+  /* Data table: pin the burn-name column so horizontal scroll keeps context.
+     The title column is the 2nd cell (1st is the ★ sanction marker). */
+  table.data th:nth-child(2),
+  table.data td:nth-child(2) {
+    position: sticky;
+    left: 0;
+    background: var(--panel);
+    z-index: 1;
+  }
+  table.data tbody tr:hover td:nth-child(2) { background: var(--panel-2); }
 }

@@ -48,27 +48,40 @@ export interface EventType {
   abbr?: string;
 }
 
-export interface OccurrenceSet {
+export interface Occurrence {
   start_time: string;
   end_time: string;
+  short?: string;
+  long?: string;
+  brief?: string;
+  /** Present on music events — the performer for that occurrence. */
+  who?: string;
+  id?: string;
+  timeRange?: string;
+  time?: string;
 }
 
 export interface DustEvent {
   uid: string;
-  slug: string;
   title: string;
   description?: string;
-  year: string;
   event_type: EventType;
-  occurrence_set: OccurrenceSet[];
+  /** dust.events ships a single occurrence object per event, not an array. */
+  occurrence: Occurrence;
   hosted_by_camp?: string;
   located_at_art?: string;
   other_location?: string;
+  otherLocation?: string;
+  camp?: string;
+  art?: string;
   all_day?: boolean;
   check_location?: boolean;
   contact?: string;
   url?: string;
   imageUrl?: string;
+  moderation?: string;
+  location?: string;
+  day?: string;
 }
 
 export interface CampLocation {
@@ -120,11 +133,13 @@ export interface ArtPiece {
 export interface MusicSet {
   uid: string;
   title?: string;
-  artist?: string;
   description?: string;
-  year: string;
-  occurrence_set?: OccurrenceSet[];
-  hosted_by_camp?: string;
+  camp?: string;
+  campId?: string;
+  location?: string;
+  day?: string;
+  musicType?: string | null;
+  occurrence: Occurrence;
 }
 
 // The fixed 19-label taxonomy used across burns for event_type.label.

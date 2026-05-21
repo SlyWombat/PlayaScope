@@ -1,15 +1,24 @@
 import { useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
+import L from 'leaflet';
+import { GestureHandling } from 'leaflet-gesture-handling';
+import 'leaflet-gesture-handling/dist/leaflet-gesture-handling.css';
 import { densityByFestival } from '../data/aggregate';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
 
+// Require two fingers (or ctrl+scroll) to pan/zoom the map, so a one-finger
+// swipe scrolls the page instead of dragging the map. The plugin shows an
+// on-screen hint when the user tries the wrong gesture. (Issue #10 / #12.)
+L.Map.addInitHook('addHandler', 'gestureHandling', GestureHandling);
+
 interface Props {
   bundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  onOpenBurn?: (slug: string) => void;
 }
 
-export function GeoMap({ bundles, sanction }: Props) {
+export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
   const rows = useMemo(() => densityByFestival(bundles), [bundles]);
   const maxEvents = useMemo(() => Math.max(1, ...rows.map((r) => r.events)), [rows]);
 
@@ -21,7 +30,15 @@ export function GeoMap({ bundles, sanction }: Props) {
           Circle size scaled to event count. {rows.length} active burns. Click a marker for details.
         </div>
         <div className="map">
-          <MapContainer center={[20, 0]} zoom={2} worldCopyJump style={{ height: '100%', width: '100%' }}>
+          <MapContainer
+            center={[20, 0]}
+            zoom={2}
+            worldCopyJump
+            scrollWheelZoom={false}
+            style={{ height: '100%', width: '100%' }}
+            // @ts-expect-error — gestureHandling is added by the plugin's init hook.
+            gestureHandling
+          >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>'
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -38,6 +55,7 @@ export function GeoMap({ bundles, sanction }: Props) {
                     center={[r.lat, r.long]}
                     radius={radius}
                     pathOptions={{ color, fillColor: color, fillOpacity: 0.55, weight: 1 }}
+                    eventHandlers={onOpenBurn ? { click: () => onOpenBurn(r.festival) } : undefined}
                   >
                     <Tooltip direction="top" offset={[0, -4]} opacity={0.95}>
                       <div style={{ fontFamily: 'Inter, sans-serif' }}>

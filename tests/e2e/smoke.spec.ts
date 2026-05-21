@@ -1,8 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
 
 // End-to-end smoke test for the PlayaScope dashboard. We hit the local
-// vite dev server which reads the snapshot in public/data/. Run
-// `npm run fetch-data` once before invoking these tests.
+// vite dev server and let the SPA do its real fan-out fetch against
+// data.dust.events. Pulling ~60 active festivals' worth of JSON takes a
+// while, so the readiness wait is generous.
 
 const READY_TIMEOUT = 120_000;
 
@@ -34,27 +35,24 @@ test.describe('PlayaScope SPA smoke', () => {
     await waitForReady(page);
 
     const meta = page.locator('.topbar .meta');
-    const initial = (await meta.textContent()) ?? '';
-    const allMatch = initial.match(/(\d+)\/(\d+)/);
-    expect(allMatch).not.toBeNull();
-    const totalShown = Number(allMatch![1]);
-    const totalBundles = Number(allMatch![2]);
-    expect(totalShown).toBe(totalBundles); // "All" defaults
 
-    // Sanctioned list strip should show 50-ish events scraped from BM.
+    // The default filter is "Official". Capture the count, then flip to All
+    // to learn the universe total.
+    const initial = (await meta.textContent()) ?? '';
+    const officialMatch = initial.match(/(\d+)\/(\d+)/);
+    expect(officialMatch).not.toBeNull();
+    const officialShown = Number(officialMatch![1]);
+    const totalBundles = Number(officialMatch![2]);
+    expect(officialShown).toBeGreaterThan(0);
+    expect(officialShown).toBeLessThan(totalBundles);
+
     await expect(page.locator('text=Sanctioned list:')).toBeVisible();
 
-    // Click "Official" — count should drop.
-    await page.getByRole('button', { name: /^Official/ }).click();
-    await expect(meta).not.toContainText(`${totalShown}/${totalBundles}`);
-    const offText = (await meta.textContent()) ?? '';
-    const offMatch = offText.match(/(\d+)\/(\d+)/);
-    expect(offMatch).not.toBeNull();
-    const officialShown = Number(offMatch![1]);
-    expect(officialShown).toBeLessThan(totalShown);
-    expect(officialShown).toBeGreaterThan(0); // we should match >0 burns
+    // Click "All" — count should rise to total.
+    await page.getByRole('button', { name: /^All/ }).click();
+    await expect(meta).toContainText(`${totalBundles}/${totalBundles}`);
 
-    // "Other" complements: Official + Other = total (within filtered set).
+    // "Other" complements: Official + Other = total.
     await page.getByRole('button', { name: /^Other/ }).click();
     const otherText = (await meta.textContent()) ?? '';
     const otherMatch = otherText.match(/(\d+)\/(\d+)/);
@@ -62,11 +60,12 @@ test.describe('PlayaScope SPA smoke', () => {
     const otherShown = Number(otherMatch![1]);
     expect(otherShown + officialShown).toBe(totalBundles);
 
-    await page.getByRole('button', { name: /^All/ }).click();
-    await expect(meta).toContainText(`${totalBundles}/${totalBundles}`);
+    // Back to Official as the canonical default.
+    await page.getByRole('button', { name: /^Official/ }).click();
+    await expect(meta).toContainText(`${officialShown}/${totalBundles}`);
   });
 
-  test('All five tabs render without console errors', async ({ page }) => {
+  test('All tabs render without console errors', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (err) => errors.push(`pageerror: ${err.message}`));
     page.on('console', (msg) => {
@@ -75,11 +74,18 @@ test.describe('PlayaScope SPA smoke', () => {
     await page.goto('/');
     await waitForReady(page);
 
-    for (const tab of ['Event mix', 'Schedule shape', 'Geography', 'Data table', 'Overview']) {
-      await page.getByRole('button', { name: tab, exact: true }).click();
-      // Give each view a moment to mount its charts/map.
-      await page.waitForTimeout(400);
-      // Confirm at least one panel renders for the tab.
+    // Cover all 11 tabs after the planning-session expansion.
+    // Use `force: true` because the topbar nav uses flex-wrap and previous tab
+    // mounts (especially Geography → Leaflet) cause layout shifts that can
+    // make Playwright's actionability check race against the layout settle.
+    // The button is always there + resolvable; we just don't need its strict
+    // stability check.
+    for (const tab of [
+      'Overview', 'MOOP Report', 'Geography', 'Personality', 'Event Mix',
+      'Lexicon', 'Artists', 'Schedule Shape', 'Calendar', 'Continuity', 'Data',
+    ]) {
+      await page.getByRole('button', { name: tab, exact: true }).click({ force: true });
+      await page.waitForTimeout(600);
       await expect(page.locator('.panel').first()).toBeVisible();
     }
 
@@ -98,14 +104,17 @@ test.describe('PlayaScope SPA smoke', () => {
   test('Data table sorts and filters', async ({ page }) => {
     await page.goto('/');
     await waitForReady(page);
-    await page.getByRole('button', { name: 'Data table', exact: true }).click();
+    // Default filter is "Official"; switch to All so the table has every burn,
+    // making the row-count delta from a free-text filter more dramatic.
+    await page.getByRole('button', { name: /^All/ }).click();
+    await page.getByRole('button', { name: 'Data', exact: true }).click();
 
     const rows = page.locator('table.data tbody tr');
     const initialCount = await rows.count();
     expect(initialCount).toBeGreaterThan(0);
 
-    // Filter input narrows the row count.
-    await page.getByPlaceholder(/filter/).fill('snrg');
+    // Filter input narrows the row count. SOAK is on every active dataset.
+    await page.getByPlaceholder(/filter/).fill('soak');
     await expect(rows).not.toHaveCount(initialCount);
     const narrowed = await rows.count();
     expect(narrowed).toBeGreaterThan(0);

@@ -8,18 +8,48 @@ import { TypeMix } from './views/TypeMix';
 import { ScheduleShape } from './views/ScheduleShape';
 import { GeoMap } from './views/GeoMap';
 import { DataTable } from './views/DataTable';
+import { Lexicon } from './views/Lexicon';
+import { Calendar } from './views/Calendar';
+import { Continuity } from './views/Continuity';
+import { Artists } from './views/Artists';
+import { Personality } from './views/Personality';
+import { Moop } from './views/Moop';
+import { BurnDetail } from './views/BurnDetail';
+import { Countdown } from './components/Countdown';
+import { regionForFestival, REGION_COLORS } from './lib/region';
+import type { RegionLabel } from './lib/region';
 
 declare const __APP_VERSION__: string;
 
-type Tab = 'overview' | 'type-mix' | 'schedule' | 'geo' | 'table';
+type Tab =
+  | 'overview'
+  | 'type-mix'
+  | 'personality'
+  | 'lexicon'
+  | 'artists'
+  | 'schedule'
+  | 'calendar'
+  | 'continuity'
+  | 'geo'
+  | 'moop'
+  | 'table';
+
 export type SanctionFilter = 'all' | 'sanctioned' | 'unsanctioned';
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'type-mix', label: 'Event mix' },
-  { key: 'schedule', label: 'Schedule shape' },
-  { key: 'geo', label: 'Geography' },
-  { key: 'table', label: 'Data table' },
+const TABS: { key: Tab; label: string; group: 'explore' | 'detail' }[] = [
+  // First group: high-level summaries you'd open first.
+  { key: 'overview', label: 'Overview', group: 'explore' },
+  { key: 'moop', label: 'MOOP Report', group: 'explore' },
+  { key: 'geo', label: 'Geography', group: 'explore' },
+  { key: 'personality', label: 'Personality', group: 'explore' },
+  { key: 'type-mix', label: 'Event Mix', group: 'explore' },
+  // Second group: deeper dives + raw data.
+  { key: 'lexicon', label: 'Lexicon', group: 'detail' },
+  { key: 'artists', label: 'Artists', group: 'detail' },
+  { key: 'schedule', label: 'Schedule Shape', group: 'detail' },
+  { key: 'calendar', label: 'Calendar', group: 'detail' },
+  { key: 'continuity', label: 'Continuity', group: 'detail' },
+  { key: 'table', label: 'Data', group: 'detail' },
 ];
 
 interface LoadState {
@@ -31,9 +61,45 @@ interface LoadState {
   error?: string;
 }
 
+/** Read the current `#burn=<slug>` hash, if any. */
+function readBurnHash(): string | null {
+  const h = window.location.hash.match(/burn=([^&]+)/);
+  return h ? decodeURIComponent(h[1]!) : null;
+}
+
 export function App() {
   const [tab, setTab] = useState<Tab>('overview');
-  const [filter, setFilter] = useState<SanctionFilter>('all');
+  // Default to "Official" so first-time visitors see the curated Burning Man
+  // Regional Events list. They can opt into All / Other from the topbar toggle.
+  const [filter, setFilter] = useState<SanctionFilter>('sanctioned');
+  const [regionFilter, setRegionFilter] = useState<RegionLabel | null>(null);
+  // Hide prior-year duplicates by default — most burns repeat annually, no
+  // value showing both `soak-2025` and `soak-2026` on every chart.
+  const [yearFilter, setYearFilter] = useState<'current' | 'all'>('current');
+  const [showUnmatched, setShowUnmatched] = useState(false);
+  // Hash-routed drilldown: when set, the BurnDetail view takes over the main area.
+  const [burnHash, setBurnHash] = useState<string | null>(() =>
+    typeof window === 'undefined' ? null : readBurnHash(),
+  );
+
+  // Sync the burn drilldown with the URL hash so back/forward + sharing work.
+  useEffect(() => {
+    const onHashChange = () => setBurnHash(readBurnHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const openBurn = useCallback((slug: string) => {
+    window.location.hash = `burn=${encodeURIComponent(slug)}`;
+    setBurnHash(slug);
+  }, []);
+
+  const closeBurn = useCallback(() => {
+    // Clear the hash without scrolling.
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    setBurnHash(null);
+  }, []);
+
   const [state, setState] = useState<LoadState>({
     status: 'idle',
     festivals: [],
@@ -78,13 +144,27 @@ export function App() {
     void load();
   }, [load]);
 
+  const currentYear = new Date().getUTCFullYear();
+
   const filteredBundles = useMemo(() => {
-    if (!state.sanction || filter === 'all') return state.bundles;
-    return state.bundles.filter((b) => {
-      const flag = state.sanction!.byFestival.get(b.festival.name)?.is_sanctioned ?? false;
-      return filter === 'sanctioned' ? flag : !flag;
-    });
-  }, [state.bundles, state.sanction, filter]);
+    let out = state.bundles;
+    if (yearFilter === 'current') {
+      out = out.filter((b) => {
+        const y = new Date(b.festival.start).getUTCFullYear();
+        return y === currentYear;
+      });
+    }
+    if (state.sanction && filter !== 'all') {
+      out = out.filter((b) => {
+        const flag = state.sanction!.byFestival.get(b.festival.name)?.is_sanctioned ?? false;
+        return filter === 'sanctioned' ? flag : !flag;
+      });
+    }
+    if (regionFilter) {
+      out = out.filter((b) => regionForFestival(b.festival) === regionFilter);
+    }
+    return out;
+  }, [state.bundles, state.sanction, filter, regionFilter, yearFilter, currentYear]);
 
   const sanctionedCount = useMemo(() => {
     if (!state.sanction) return 0;
@@ -98,17 +178,60 @@ export function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>
-          playa<span className="accent">scope</span>
+        <h1
+          onClick={() => { closeBurn(); setTab('overview'); }}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+          title="Home"
+        >
+          <img
+            src={`${import.meta.env.BASE_URL}playascope.svg`}
+            alt=""
+            width={28}
+            height={28}
+            style={{ display: 'block' }}
+          />
+          <span>playa<span className="accent">scope</span></span>
         </h1>
-        <nav className="tabs" style={{ borderBottom: 'none', padding: 0 }}>
-          {TABS.map((t) => (
-            <button key={t.key} className={tab === t.key ? 'active' : ''} onClick={() => setTab(t.key)}>
-              {t.label}
-            </button>
+        <nav className="tab-bar" aria-label="Primary">
+          {(['explore', 'detail'] as const).map((group) => (
+            <div key={group} className="tab-group" aria-label={group}>
+              {TABS.filter((t) => t.group === group).map((t) => (
+                <button
+                  key={t.key}
+                  aria-current={tab === t.key && !burnHash ? 'page' : undefined}
+                  className={tab === t.key && !burnHash ? 'active' : ''}
+                  onClick={() => {
+                    // Leaving a BurnDetail drilldown is the user's most-likely
+                    // intent when they click a top-level tab. Clear the hash
+                    // before switching, otherwise BurnDetail keeps rendering.
+                    if (burnHash) closeBurn();
+                    setTab(t.key);
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="meta">
+          <Countdown
+            bundles={state.bundles}
+            sanction={state.sanction}
+            filter={filter}
+            onJump={(slug) => openBurn(slug)}
+          />
+          {' '}
+          {' '}
+          <button
+            onClick={() => setYearFilter(yearFilter === 'current' ? 'all' : 'current')}
+            className={yearFilter === 'current' ? 'primary' : ''}
+            style={{ fontSize: 11, padding: '3px 8px', marginLeft: 6 }}
+            title={yearFilter === 'current' ? `Only burns in ${currentYear}` : 'Showing all years (incl. prior-year duplicates)'}
+          >
+            {yearFilter === 'current' ? `${currentYear} only` : 'all years'}
+          </button>
+          {' '}
           <SanctionToggle
             value={filter}
             onChange={setFilter}
@@ -116,7 +239,7 @@ export function App() {
             totalCount={state.bundles.length}
             disabled={!state.sanction || state.status !== 'ready'}
           />
-          <span style={{ marginLeft: 12 }}>v{__APP_VERSION__}</span>
+          <span style={{ marginLeft: 12 }}>v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
           <span style={{ marginLeft: 6 }}>
             · {state.status === 'ready' ? `${filteredBundles.length}/${state.bundles.length}` : state.status}
           </span>
@@ -129,6 +252,42 @@ export function App() {
           </button>
         </div>
       </header>
+
+      {/* Prominent active-filter bar. The region filter in particular is set
+          by clicking the Overview pie and is otherwise easy to forget about —
+          it silently narrows every view, so it gets a loud, obvious clear. */}
+      {regionFilter && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '8px 20px',
+            background: 'rgba(255, 138, 61, 0.12)',
+            borderBottom: '1px solid var(--accent)',
+            fontSize: 13,
+          }}
+        >
+          <span
+            style={{
+              width: 10, height: 10, borderRadius: '50%',
+              background: REGION_COLORS[regionFilter], display: 'inline-block',
+            }}
+          />
+          <span>
+            Filtered to <strong style={{ color: 'var(--accent)' }}>{regionFilter}</strong> —
+            showing {filteredBundles.length} burn{filteredBundles.length === 1 ? '' : 's'}.
+            Every tab is scoped to this region.
+          </span>
+          <button
+            className="primary"
+            style={{ marginLeft: 'auto', fontSize: 12, padding: '5px 12px' }}
+            onClick={() => setRegionFilter(null)}
+          >
+            ✕ Clear region filter
+          </button>
+        </div>
+      )}
 
       {state.sanction?.index && (
         <div
@@ -148,11 +307,21 @@ export function App() {
           {state.sanction.unmatched.length > 0 && (
             <>
               {' · '}
-              {state.sanction.unmatched.length} on official list with no active dust match
-              {' '}
-              <span title={state.sanction.unmatched.join('\n')} style={{ cursor: 'help', textDecoration: 'underline dotted' }}>
-                (hover)
-              </span>
+              <button
+                onClick={() => setShowUnmatched((v) => !v)}
+                style={{
+                  background: 'none', border: 'none', padding: 0, font: 'inherit',
+                  color: 'inherit', textDecoration: 'underline dotted', cursor: 'pointer',
+                }}
+              >
+                {state.sanction.unmatched.length} on official list with no active dust match
+                {' '}{showUnmatched ? '▲' : '▼'}
+              </button>
+              {showUnmatched && (
+                <div style={{ marginTop: 4, color: 'var(--muted)', lineHeight: 1.5 }}>
+                  {state.sanction.unmatched.join(' · ')}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -181,15 +350,45 @@ export function App() {
             <div style={{ fontSize: 11 }}>data via data.dust.events</div>
           </div>
         )}
-        {state.status === 'ready' && filteredBundles.length > 0 && (
+        {state.status === 'ready' && burnHash && (
+          <BurnDetail
+            slug={burnHash}
+            allBundles={state.bundles}
+            sanction={state.sanction}
+            onBack={closeBurn}
+          />
+        )}
+        {state.status === 'ready' && !burnHash && filteredBundles.length > 0 && (
           <>
             {tab === 'overview' && (
-              <Overview bundles={filteredBundles} sanction={state.sanction} filter={filter} />
+              <Overview
+                bundles={filteredBundles}
+                sanction={state.sanction}
+                filter={filter}
+                onSelectRegion={setRegionFilter}
+                onOpenBurn={openBurn}
+              />
             )}
-            {tab === 'type-mix' && <TypeMix bundles={filteredBundles} />}
-            {tab === 'schedule' && <ScheduleShape bundles={filteredBundles} />}
-            {tab === 'geo' && <GeoMap bundles={filteredBundles} sanction={state.sanction} />}
-            {tab === 'table' && <DataTable bundles={filteredBundles} sanction={state.sanction} />}
+            {tab === 'type-mix' && <TypeMix bundles={filteredBundles} onOpenBurn={openBurn} />}
+            {tab === 'personality' && (
+              <Personality bundles={filteredBundles} allBundles={state.bundles} onOpenBurn={openBurn} />
+            )}
+            {tab === 'lexicon' && <Lexicon bundles={filteredBundles} />}
+            {tab === 'artists' && <Artists bundles={filteredBundles} />}
+            {tab === 'schedule' && <ScheduleShape bundles={filteredBundles} onOpenBurn={openBurn} />}
+            {tab === 'calendar' && (
+              <Calendar bundles={filteredBundles} sanction={state.sanction} onOpenBurn={openBurn} />
+            )}
+            {tab === 'continuity' && (
+              <Continuity bundles={filteredBundles} allBundles={state.bundles} onOpenBurn={openBurn} />
+            )}
+            {tab === 'geo' && (
+              <GeoMap bundles={filteredBundles} sanction={state.sanction} onOpenBurn={openBurn} />
+            )}
+            {tab === 'moop' && <Moop bundles={filteredBundles} onOpenBurn={openBurn} />}
+            {tab === 'table' && (
+              <DataTable bundles={filteredBundles} sanction={state.sanction} onOpenBurn={openBurn} />
+            )}
           </>
         )}
         {state.status === 'ready' && filteredBundles.length === 0 && (

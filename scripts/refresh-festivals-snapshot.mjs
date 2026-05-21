@@ -8,7 +8,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(HERE, '..');
+const REPO_ROOT = resolve(HERE, '..', '..');
 const OUT_PATH = resolve(REPO_ROOT, 'festivals.snapshot.json');
 
 const res = await fetch('https://data.dust.events/festivals.json');

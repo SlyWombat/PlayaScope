@@ -6,11 +6,12 @@ import type { SanctionFlags } from '../data/sanctioned';
 interface Props {
   bundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  onOpenBurn?: (slug: string) => void;
 }
 
 type SortKey = keyof Pick<DensityRow, 'title' | 'events' | 'camps' | 'art' | 'music' | 'duration' | 'region' | 'timeZone'> | 'sanctioned';
 
-export function DataTable({ bundles, sanction }: Props) {
+export function DataTable({ bundles, sanction, onOpenBurn }: Props) {
   const rows = useMemo(() => densityByFestival(bundles), [bundles]);
   const sanctionLookup = sanction?.byFestival;
   const [sortKey, setSortKey] = useState<SortKey>('events');
@@ -106,7 +107,11 @@ export function DataTable({ bundles, sanction }: Props) {
               const sanctionInfo = sanctionLookup?.get(r.festival);
               const official = sanctionInfo?.is_sanctioned ?? false;
               return (
-                <tr key={r.festival}>
+                <tr
+                  key={r.festival}
+                  onClick={() => onOpenBurn?.(r.festival)}
+                  style={onOpenBurn ? { cursor: 'pointer' } : undefined}
+                >
                   <td className="num" title={sanctionInfo?.officialName ?? 'not on official BM list'}>
                     {official ? (
                       <span style={{ color: '#ff8a3d', fontWeight: 700 }}>★</span>
@@ -114,7 +119,7 @@ export function DataTable({ bundles, sanction }: Props) {
                       <span style={{ color: 'var(--muted)' }}>—</span>
                     )}
                   </td>
-                  <td>{r.title}</td>
+                  <td style={{ color: onOpenBurn ? 'var(--accent)' : 'var(--text)' }}>{r.title}</td>
                   <td>{r.region}</td>
                   <td style={{ color: 'var(--muted)' }}>{r.timeZone}</td>
                   <td className="num">{r.duration}</td>

@@ -3,17 +3,23 @@ import { EChart } from '../components/EChart';
 import { eventTypeMix } from '../data/aggregate';
 import { EVENT_TYPE_LABELS } from '../data/types';
 import type { FestivalBundle } from '../data/loader';
+import { useIsMobile } from '../lib/useIsMobile';
 
 interface Props {
   bundles: FestivalBundle[];
+  onOpenBurn?: (slug: string) => void;
 }
 
 type Mode = 'fractions' | 'counts';
 
-export function TypeMix({ bundles }: Props) {
+export function TypeMix({ bundles, onOpenBurn }: Props) {
+  const isMobile = useIsMobile();
   const [mode, setMode] = useState<Mode>('fractions');
   const rows = useMemo(() => eventTypeMix(bundles).filter((r) => r.total > 0), [bundles]);
-  const sorted = useMemo(() => [...rows].sort((a, b) => b.total - a.total), [rows]);
+  // Alphabetical by title — this chart isn't a ranking, so a stable A→Z
+  // axis is more useful than a value-sorted one that scrambles on every
+  // filter toggle. See memory feedback_chart_ordering.
+  const sorted = useMemo(() => [...rows].sort((a, b) => a.title.localeCompare(b.title)), [rows]);
 
   const series = useMemo(
     () =>
@@ -68,6 +74,13 @@ export function TypeMix({ bundles }: Props) {
         </div>
         <EChart
           className="chart tall"
+          onEvents={onOpenBurn ? {
+            click: (p: { dataIndex: number; componentType: string }) => {
+              if (p.componentType !== 'series') return;
+              const burn = sorted[p.dataIndex];
+              if (burn) onOpenBurn(burn.festival);
+            },
+          } : undefined}
           option={{
             backgroundColor: 'transparent',
             tooltip: {
@@ -79,7 +92,12 @@ export function TypeMix({ bundles }: Props) {
               },
             },
             legend: { type: 'scroll', textStyle: { color: '#8b93a7' }, top: 0 },
-            grid: { left: 60, right: 24, top: 40, bottom: 100 },
+            grid: { left: isMobile ? 44 : 60, right: 24, top: 40, bottom: isMobile ? 60 : 100 },
+            // On mobile a 60+ burn x-axis is illegible; a dataZoom slider lets
+            // the user scrub through ~10 burns at a time at a readable size.
+            dataZoom: isMobile
+              ? [{ type: 'slider', startValue: 0, endValue: Math.min(9, sorted.length - 1), bottom: 8, height: 18 }]
+              : undefined,
             xAxis: {
               type: 'category',
               data: sorted.map((r) => r.title),
@@ -121,7 +139,10 @@ export function TypeMix({ bundles }: Props) {
                 return `${burn.title}<br/>${label}<br/><b>${txt}</b>`;
               }) as never,
             },
-            grid: { left: 220, right: 60, top: 16, bottom: 100 },
+            grid: { left: isMobile ? 120 : 220, right: isMobile ? 24 : 60, top: 16, bottom: isMobile ? 60 : 100 },
+            dataZoom: isMobile
+              ? [{ type: 'slider', startValue: 0, endValue: Math.min(9, sorted.length - 1), bottom: 8, height: 18 }]
+              : undefined,
             xAxis: {
               type: 'category',
               data: sorted.map((r) => r.title),

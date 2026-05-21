@@ -59,11 +59,35 @@ async function fetchOne(festival) {
   return out;
 }
 
+// Known upstream coord bugs in data.dust.events/festivals.json. Each entry is
+// a sign-flip in the longitude that drops the burn on the wrong continent.
+// Verified against the burn's official site / Google Maps. Remove an entry
+// here once upstream fixes it.
+const COORD_OVERRIDES = {
+  'sideburn':         { lat: 44.356739, long: -76.845419 },  // Stone Mills, Ontario
+  'youtopia-2025':    { lat: 32.65452,  long: -116.18326 },  // DeAnza Springs, California
+  'burn-after-meeting': { lat: 40.441,  long: -80.006 },     // Pittsburgh, PA
+};
+
+function applyCoordOverrides(festivals) {
+  let patched = 0;
+  for (const f of festivals) {
+    const fix = COORD_OVERRIDES[f.name];
+    if (fix && (f.lat !== fix.lat || f.long !== fix.long)) {
+      f.lat = fix.lat;
+      f.long = fix.long;
+      patched++;
+    }
+  }
+  if (patched) console.log(`▸ Applied ${patched} coord override(s) (upstream data bugs).`);
+  return festivals;
+}
+
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
   console.log(`▸ Fetching registry from ${DATA_ROOT}/festivals.json`);
   const allFestivals = await getJson(`${DATA_ROOT}/festivals.json`);
-  const active = allFestivals.filter((f) => f.active && !f.unknownDates);
+  const active = applyCoordOverrides(allFestivals.filter((f) => f.active && !f.unknownDates));
   console.log(`▸ ${active.length} active festivals (${allFestivals.length} total)`);
 
   await writeFile(
