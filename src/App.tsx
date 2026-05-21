@@ -20,8 +20,10 @@ import { BurnBattle } from './views/BurnBattle';
 import { BurnDetail } from './views/BurnDetail';
 import { Countdown } from './components/Countdown';
 import { LangSwitcher } from './components/LangSwitcher';
+import { NavDrawer } from './components/NavDrawer';
 import { regionForFestival, REGION_COLORS } from './lib/region';
 import type { RegionLabel } from './lib/region';
+import { useIsMobile } from './lib/useIsMobile';
 
 declare const __APP_VERSION__: string;
 
@@ -89,6 +91,9 @@ export function App() {
   // value showing both `soak-2025` and `soak-2026` on every chart.
   const [yearFilter, setYearFilter] = useState<'current' | 'all'>('current');
   const [showUnmatched, setShowUnmatched] = useState(false);
+  // Mobile nav drawer (issue #13 P0) — collapses the 12-tab bar on phones.
+  const isMobile = useIsMobile();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   // Hash-routed drilldown: when set, the BurnDetail view takes over the main area.
   const [burnHash, setBurnHash] = useState<string | null>(() =>
     typeof window === 'undefined' ? null : readBurnHash(),
@@ -189,6 +194,46 @@ export function App() {
 
   const stale = state.sanction?.index ? state.sanction.index.ageDays > 7 : false;
 
+  // Meta controls — the filter/refresh/version/language cluster. On desktop it
+  // sits in the topbar's .meta strip; on mobile it rides in the nav drawer's
+  // footer. Only one branch renders per breakpoint, so no duplicate DOM.
+  const metaControls = (
+    <>
+      <button
+        onClick={() => setYearFilter(yearFilter === 'current' ? 'all' : 'current')}
+        className={yearFilter === 'current' ? 'primary' : ''}
+        style={{ fontSize: 11, padding: '3px 8px' }}
+        title={yearFilter === 'current'
+          ? t('filter.currentYearTitle', { year: currentYear })
+          : t('filter.allYearsTitle')}
+      >
+        {yearFilter === 'current'
+          ? t('filter.currentYearOnly', { year: currentYear })
+          : t('filter.allYears')}
+      </button>
+      {' '}
+      <SanctionToggle
+        value={filter}
+        onChange={setFilter}
+        sanctionedCount={sanctionedCount}
+        totalCount={state.bundles.length}
+        disabled={!state.sanction || state.status !== 'ready'}
+      />
+      <span style={{ marginLeft: 12 }}>v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
+      <span style={{ marginLeft: 6 }}>
+        · {state.status === 'ready' ? `${filteredBundles.length}/${state.bundles.length}` : state.status}
+      </span>
+      <button
+        style={{ padding: '2px 8px', fontSize: 11, marginLeft: 10 }}
+        disabled={state.status === 'loading-registry' || state.status === 'loading-bundles'}
+        onClick={() => void load({ force: true })}
+      >
+        {t('topbar.refresh')}
+      </button>
+      <LangSwitcher />
+    </>
+  );
+
   return (
     <div className="app">
       <header className="topbar">
@@ -206,71 +251,82 @@ export function App() {
           />
           <span>playa<span className="accent">scope</span></span>
         </h1>
-        <nav className="tab-bar" aria-label={t('nav.primary')}>
-          {(['explore', 'detail'] as const).map((group) => (
-            <div key={group} className="tab-group" aria-label={group}>
-              {TABS.filter((tb) => tb.group === group).map((tb) => (
-                <button
-                  key={tb.key}
-                  aria-current={tab === tb.key && !burnHash ? 'page' : undefined}
-                  className={tab === tb.key && !burnHash ? 'active' : ''}
-                  onClick={() => {
-                    // Leaving a BurnDetail drilldown is the user's most-likely
-                    // intent when they click a top-level tab. Clear the hash
-                    // before switching, otherwise BurnDetail keeps rendering.
-                    if (burnHash) closeBurn();
-                    setTab(tb.key);
-                  }}
-                >
-                  {t(tb.labelKey)}
-                </button>
+        {isMobile ? (
+          <>
+            {/* Row 1 ends here (brand + hamburger); the countdown wraps to its
+                own full-width row 2 via `flex: 1 1 100%` — see index.css. */}
+            <button
+              className="hamburger"
+              aria-label={t('nav.menu')}
+              aria-expanded={drawerOpen}
+              onClick={() => setDrawerOpen(true)}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <Countdown
+              bundles={state.bundles}
+              sanction={state.sanction}
+              filter={filter}
+              onJump={(slug) => openBurn(slug)}
+            />
+          </>
+        ) : (
+          <>
+            <nav className="tab-bar" aria-label={t('nav.primary')}>
+              {(['explore', 'detail'] as const).map((group) => (
+                <div key={group} className="tab-group" aria-label={group}>
+                  {TABS.filter((tb) => tb.group === group).map((tb) => (
+                    <button
+                      key={tb.key}
+                      aria-current={tab === tb.key && !burnHash ? 'page' : undefined}
+                      className={tab === tb.key && !burnHash ? 'active' : ''}
+                      onClick={() => {
+                        // Leaving a BurnDetail drilldown is the user's most-likely
+                        // intent when they click a top-level tab. Clear the hash
+                        // before switching, otherwise BurnDetail keeps rendering.
+                        if (burnHash) closeBurn();
+                        setTab(tb.key);
+                      }}
+                    >
+                      {t(tb.labelKey)}
+                    </button>
+                  ))}
+                </div>
               ))}
+            </nav>
+            <div className="meta">
+              <Countdown
+                bundles={state.bundles}
+                sanction={state.sanction}
+                filter={filter}
+                onJump={(slug) => openBurn(slug)}
+              />
+              {' '}
+              {metaControls}
             </div>
-          ))}
-        </nav>
-        <div className="meta">
-          <Countdown
-            bundles={state.bundles}
-            sanction={state.sanction}
-            filter={filter}
-            onJump={(slug) => openBurn(slug)}
-          />
-          {' '}
-          {' '}
-          <button
-            onClick={() => setYearFilter(yearFilter === 'current' ? 'all' : 'current')}
-            className={yearFilter === 'current' ? 'primary' : ''}
-            style={{ fontSize: 11, padding: '3px 8px', marginLeft: 6 }}
-            title={yearFilter === 'current'
-              ? t('filter.currentYearTitle', { year: currentYear })
-              : t('filter.allYearsTitle')}
-          >
-            {yearFilter === 'current'
-              ? t('filter.currentYearOnly', { year: currentYear })
-              : t('filter.allYears')}
-          </button>
-          {' '}
-          <SanctionToggle
-            value={filter}
-            onChange={setFilter}
-            sanctionedCount={sanctionedCount}
-            totalCount={state.bundles.length}
-            disabled={!state.sanction || state.status !== 'ready'}
-          />
-          <span style={{ marginLeft: 12 }}>v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
-          <span style={{ marginLeft: 6 }}>
-            · {state.status === 'ready' ? `${filteredBundles.length}/${state.bundles.length}` : state.status}
-          </span>
-          <button
-            style={{ padding: '2px 8px', fontSize: 11, marginLeft: 10 }}
-            disabled={state.status === 'loading-registry' || state.status === 'loading-bundles'}
-            onClick={() => void load({ force: true })}
-          >
-            {t('topbar.refresh')}
-          </button>
-          <LangSwitcher />
-        </div>
+          </>
+        )}
       </header>
+
+      {isMobile && (
+        <NavDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          tabs={TABS}
+          activeTab={tab}
+          onBurnDetail={!!burnHash}
+          onSelectTab={(key) => {
+            if (burnHash) closeBurn();
+            setTab(key as Tab);
+            setDrawerOpen(false);
+          }}
+          footer={metaControls}
+        />
+      )}
 
       {/* Prominent active-filter bar. The region filter in particular is set
           by clicking the Overview pie and is otherwise easy to forget about —

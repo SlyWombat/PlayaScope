@@ -13,7 +13,11 @@
     "continuity": "Continuité",
     "table": "Données",
     "home": "Accueil",
-    "primary": "Navigation principale"
+    "primary": "Navigation principale",
+    "groupExplore": "Explorer",
+    "groupDetail": "Détails",
+    "menu": "Menu",
+    "close": "Fermer"
   },
   "filter": {
     "all": "Tous",

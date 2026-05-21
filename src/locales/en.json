@@ -13,7 +13,11 @@
     "continuity": "Continuity",
     "table": "Data",
     "home": "Home",
-    "primary": "Primary"
+    "primary": "Primary",
+    "groupExplore": "Explore",
+    "groupDetail": "Detail",
+    "menu": "Menu",
+    "close": "Close"
   },
   "filter": {
     "all": "All",

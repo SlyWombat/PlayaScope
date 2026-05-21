@@ -229,6 +229,116 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
 }
 
 /* ---------------------------------------------------------------------------
+   Mobile nav drawer (issue #13 P0). Rendered only when useIsMobile() is true,
+   so these rules are inert on desktop.
+--------------------------------------------------------------------------- */
+.hamburger {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nav-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 90;
+}
+.nav-drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 82%;
+  max-width: 320px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  transform: translateX(-100%);
+  transition: transform 0.22s ease;
+  z-index: 91;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.nav-drawer.open { transform: translateX(0); }
+
+.nav-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
+  font-weight: 700;
+}
+.nav-drawer-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.nav-drawer-nav { flex: 1; padding: 4px 0; }
+.nav-drawer-group { margin-bottom: 8px; }
+.nav-drawer-group-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 12px 16px 4px;
+}
+.nav-drawer-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 11px 16px;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+}
+.nav-drawer-item:hover { background: rgba(255, 138, 61, 0.06); }
+.nav-drawer-item.active {
+  color: var(--accent);
+  font-weight: 700;
+  background: rgba(255, 138, 61, 0.1);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.nav-drawer-footer {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ---------------------------------------------------------------------------
    Mobile (≤720px). Addresses GitHub issue #10:
    - 44px minimum tap targets
    - 16px input font (suppresses iOS focus-zoom)
@@ -247,23 +357,17 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
     min-height: 44px;
     padding: 10px 14px;
   }
-  /* Tab pills can be a touch shorter — they sit two-per-thumb. */
-  .tab-group button {
-    min-height: 40px;
-    font-size: 13px;
-  }
-  .tab-bar { gap: 6px; width: 100%; }
-  .tab-group { flex-wrap: wrap; }
 
-  /* Topbar: stack brand, tabs, meta vertically; let meta wrap freely. */
-  .topbar { padding: 10px 12px; gap: 10px; }
-  .topbar .meta {
-    margin-left: 0;
-    width: 100%;
-    font-size: 13px;
-    gap: 8px;
-  }
-  .topbar .meta button { min-height: 40px; }
+  /* Topbar: brand + hamburger on row 1; the countdown wraps to its own
+     full-width row 2. The 12-tab bar and meta strip move into the NavDrawer
+     (issue #13 P0). */
+  .topbar { padding: 10px 12px; gap: 8px; }
+  .topbar .countdown { flex: 1 1 100%; }
+  /* The countdown's inline link-buttons are not tap targets — exempt them
+     from the 44px min-height so the chip stays one or two lines. */
+  .countdown button { min-height: 0; padding: 0; }
+  /* The drawer footer reuses the meta controls — keep them thumb-sized. */
+  .nav-drawer-footer button { min-height: 40px; }
 
   /* Inputs/selects ≥16px so iOS doesn't zoom the viewport on focus. */
   input, select, textarea { font-size: 16px !important; }
