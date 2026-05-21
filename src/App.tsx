@@ -21,6 +21,7 @@ import { BurnDetail } from './views/BurnDetail';
 import { Countdown } from './components/Countdown';
 import { LangSwitcher } from './components/LangSwitcher';
 import { NavDrawer } from './components/NavDrawer';
+import { InfoPopover } from './components/InfoPopover';
 import { regionForFestival, REGION_COLORS } from './lib/region';
 import type { RegionLabel } from './lib/region';
 import { useIsMobile } from './lib/useIsMobile';
@@ -253,6 +254,7 @@ export function App() {
           />
           <span>playa<span className="accent">scope</span></span>
         </h1>
+        <InfoPopover />
         {isMobile ? (
           <>
             {/* Row 1 ends here (brand + hamburger); the countdown wraps to its
@@ -459,6 +461,7 @@ export function App() {
               <Overview
                 bundles={filteredBundles}
                 sanction={state.sanction}
+                attendance={state.attendance}
                 filter={filter}
                 onSelectRegion={setRegionFilter}
                 onOpenBurn={openBurn}

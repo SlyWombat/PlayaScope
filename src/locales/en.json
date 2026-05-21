@@ -68,10 +68,18 @@
     "aggregate": "aggregate across burns",
     "topBurns": "Top burns by event count",
     "topBurnsSub": "Largest scheduled programs across the current filter. Click any bar to open its page.",
+    "byPopulation": "Top burns by population",
+    "byPopulationSub": "Burns ranked by attendance. Burns with no figure are omitted. Click a bar to open its page.",
     "byRegion": "Distribution by region",
     "byRegionSub": "Geographic spread. Click a slice to filter to just that region.",
     "typeMix": "Global event-type mix",
     "typeMixSub": "Summed across burns in current filter. The 19-label dust taxonomy."
+  },
+  "info": {
+    "title": "About PlayaScope",
+    "blurb": "A cross-regional look at Burning Man regional events — event mix, geography, scheduling and attendance across the official burn network.",
+    "dataCredit": "Burn data comes from Dust, the open-source app many regional burns publish their events on. Credit to the Dust project:",
+    "github": "Star PlayaScope on GitHub"
   },
   "moop": {
     "title": "The MOOP Report",

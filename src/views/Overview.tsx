@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import { densityByFestival, globalTypeMix } from '../data/aggregate';
+import { attendanceFor, attendanceValue, type AttendanceRecord } from '../data/attendance';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
 import type { SanctionFilter } from '../App';
@@ -12,16 +13,28 @@ import { useIsMobile } from '../lib/useIsMobile';
 interface Props {
   bundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  attendance: Map<string, AttendanceRecord>;
   filter: SanctionFilter;
   onSelectRegion?: (region: RegionLabel) => void;
   onOpenBurn?: (slug: string) => void;
 }
 
-export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn }: Props) {
+export function Overview({ bundles, sanction, attendance, filter, onSelectRegion, onOpenBurn }: Props) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const density = useMemo(() => densityByFestival(bundles), [bundles]);
   const topByEvents = useMemo(() => [...density].sort((a, b) => b.events - a.events).slice(0, 12), [density]);
+  // Top burns by attendance — only burns with a known figure; ranked by the
+  // midpoint of any range so a "2,000–3,000" sorts sensibly.
+  const topByPopulation = useMemo(
+    () =>
+      density
+        .map((r) => ({ ...r, att: attendanceFor(r.festival, attendance) }))
+        .filter((r) => r.att != null && r.att.estimate != null)
+        .sort((a, b) => attendanceValue(b.att) - attendanceValue(a.att))
+        .slice(0, 12),
+    [density, attendance],
+  );
   const typeMix = useMemo(() => globalTypeMix(bundles), [bundles]);
 
   const totals = useMemo(
@@ -152,6 +165,40 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
                 label: { color: '#e6e9ef' },
                 itemStyle: { borderColor: '#161922', borderWidth: 2 },
                 cursor: 'pointer',
+              },
+            ],
+          }}
+        />
+      </div>
+
+      <div className="panel" style={{ gridColumn: 'span 3' }}>
+        <h2>{t('overview.byPopulation')}</h2>
+        <div className="sub">{t('overview.byPopulationSub')}</div>
+        <EChart
+          className="chart"
+          onRowClick={onOpenBurn ? (axisIdx) => {
+            const row = topByPopulation[topByPopulation.length - 1 - axisIdx];
+            if (row) onOpenBurn(row.festival);
+          } : undefined}
+          option={{
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: isMobile ? 96 : 160, right: 24, top: 12, bottom: 24 },
+            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            yAxis: {
+              type: 'category',
+              data: topByPopulation
+                .map((r) => decoratedTitle(r.title, r.festival, sanction))
+                .reverse(),
+              axisLine: { lineStyle: { color: '#444' } },
+              axisLabel: { color: '#8b93a7', fontSize: 11 },
+            },
+            series: [
+              {
+                type: 'bar',
+                data: topByPopulation.map((r) => attendanceValue(r.att)).reverse(),
+                itemStyle: { color: '#c98bdb' },
+                barWidth: 14,
               },
             ],
           }}

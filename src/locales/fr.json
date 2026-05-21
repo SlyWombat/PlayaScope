@@ -68,10 +68,18 @@
     "aggregate": "total sur tous les burns",
     "topBurns": "Top des burns par nombre d'événements",
     "topBurnsSub": "Les plus grandes programmations selon le filtre actuel. Cliquez sur une barre pour ouvrir sa page.",
+    "byPopulation": "Top des burns par fréquentation",
+    "byPopulationSub": "Burns classés par fréquentation. Les burns sans chiffre sont omis. Cliquez sur une barre pour ouvrir sa page.",
     "byRegion": "Répartition par région",
     "byRegionSub": "Répartition géographique. Cliquez sur une part pour filtrer sur cette région.",
     "typeMix": "Répartition globale des types d'événements",
     "typeMixSub": "Cumulé sur les burns du filtre actuel. La taxonomie dust à 19 catégories."
+  },
+  "info": {
+    "title": "À propos de PlayaScope",
+    "blurb": "Un regard inter-régional sur les événements régionaux Burning Man — types d'événements, géographie, calendrier et fréquentation à travers le réseau officiel des burns.",
+    "dataCredit": "Les données des burns proviennent de Dust, l'application open source utilisée par de nombreux burns régionaux pour publier leurs événements. Merci au projet Dust :",
+    "github": "Mettre une étoile à PlayaScope sur GitHub"
   },
   "moop": {
     "title": "Le rapport MOOP",
