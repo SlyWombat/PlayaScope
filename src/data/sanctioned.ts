@@ -166,14 +166,22 @@ export function attachSanctioned(festivals: Festival[], index: SanctionedIndex |
     // Black Rock City IS Burning Man — definitionally sanctioned. It's a
     // manually-injected festival (not on dust), and its title "Burning Man"
     // won't fuzzy-match the directory entry "Black Rock City 2026", so we
-    // flag it directly rather than relying on the scrape.
+    // flag it directly rather than relying on the scrape — and we claim the
+    // matching official names so they don't show up as "unmatched".
     if (f.name.startsWith('black-rock-city')) {
       byFestival.set(f.name, { is_sanctioned: true, officialName: 'Black Rock City', via: 'exact' });
+      for (const ev of index.events) {
+        if (/black rock city|burning man/i.test(ev)) matchedOfficial.add(ev);
+      }
       continue;
     }
     const m = matchFestival(f, index);
     byFestival.set(f.name, { is_sanctioned: m.matched, officialName: m.officialName, via: m.via });
-    if (m.officialName) matchedOfficial.add(m.officialName);
+    // "Unmatched" means an official event with no *dust* coverage. A
+    // directory-sourced festival matching its own directory-derived name is
+    // circular — it doesn't mean dust has the burn — so directory festivals
+    // don't claim official names. Dust + manual festivals do.
+    if (m.officialName && f.source !== 'bm-directory') matchedOfficial.add(m.officialName);
   }
   const unmatched = index.events.filter((n) => !matchedOfficial.has(n));
   return { byFestival, index, unmatched };

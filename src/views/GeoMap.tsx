@@ -23,12 +23,22 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
   const { t } = useTranslation();
   const rows = useMemo(() => densityByFestival(bundles), [bundles]);
   const maxEvents = useMemo(() => Math.max(1, ...rows.map((r) => r.events)), [rows]);
+  // Directory-listed burns carry no coordinates — they can't be pinned, so
+  // surface them as a count rather than dropping them silently (issue #13).
+  const unmapped = useMemo(
+    () => rows.filter((r) => r.lat == null || r.long == null
+      || !Number.isFinite(r.lat) || !Number.isFinite(r.long)).length,
+    [rows],
+  );
 
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
         <h2>{t('geo.worldMap')}</h2>
-        <div className="sub">{t('geo.worldMapSub', { n: rows.length })}</div>
+        <div className="sub">
+          {t('geo.worldMapSub', { n: rows.length })}
+          {unmapped > 0 && ' ' + t('geo.unmapped', { count: unmapped })}
+        </div>
         <div className="map">
           <MapContainer
             center={[20, 0]}

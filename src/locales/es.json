@@ -247,7 +247,8 @@
     "byRegionSub": "Región autodeclarada. Ordenada por número.",
     "colRegion": "Región",
     "colBurns": "Burns",
-    "unknownRegion": "(desconocida)"
+    "unknownRegion": "(desconocida)",
+    "unmapped": "{{count}} burns del directorio no tienen coordenadas y no se muestran."
   },
   "battle": {
     "title": "Duelo de burns",

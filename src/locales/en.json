@@ -295,7 +295,8 @@
     "byRegionSub": "Self-reported region string. Sorted by count.",
     "colRegion": "Region",
     "colBurns": "Burns",
-    "unknownRegion": "(unknown)"
+    "unknownRegion": "(unknown)",
+    "unmapped": "{{count}} directory-listed burns have no coordinates and aren't pinned."
   },
   "countdown": {
     "onPlaya": "On a playa now",

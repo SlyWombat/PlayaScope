@@ -91,9 +91,9 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
         <EChart
           className="chart"
           onEvents={onOpenBurn ? {
-            click: (p: { dataIndex: number }) => {
-              const idx = topByEvents.length - 1 - p.dataIndex;
-              const row = topByEvents[idx];
+            click: (p: { dataIndex?: number }) => {
+              if (typeof p.dataIndex !== 'number') return;
+              const row = topByEvents[topByEvents.length - 1 - p.dataIndex];
               if (row) onOpenBurn(row.festival);
             },
           } : undefined}
@@ -122,6 +122,9 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
                   }))
                   .reverse(),
                 barWidth: 14,
+                // Burns with 0 events (e.g. directory-only entries) still get
+                // a small clickable nub so every burn can be opened from here.
+                barMinHeight: 6,
               },
             ],
           }}
