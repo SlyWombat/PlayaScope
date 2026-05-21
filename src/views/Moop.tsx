@@ -471,6 +471,12 @@ export function Moop({ bundles, attendance, onOpenBurn }: Props) {
       });
     }
 
+    // Shuffle (Fisher-Yates) so the MOOP page lands in a fresh order on every
+    // visit — makes the trivia feel larger and more varied than it is.
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [out[i], out[j]] = [out[j]!, out[i]!];
+    }
     return out;
     // `t` in deps so tile copy re-translates on a language switch.
   }, [bundles, attendance, t]);
@@ -491,11 +497,11 @@ export function Moop({ bundles, attendance, onOpenBurn }: Props) {
           gap: 12,
         }}
       >
-        {tiles.map((t, i) => {
+        {tiles.map((t) => {
           const clickable = t.burnSlug && onOpenBurn;
           return (
             <div
-              key={i}
+              key={t.title}
               className="panel"
               onClick={() => clickable && onOpenBurn!(t.burnSlug!)}
               style={{

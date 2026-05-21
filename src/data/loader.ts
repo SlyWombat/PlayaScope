@@ -7,8 +7,26 @@
 import { fetchArt, fetchCamps, fetchMusic, fetchSchedule, fetchOrEmpty } from './api';
 import type { ArtPiece, Camp, DustEvent, Festival, MusicSet } from './types';
 
+declare const __BUILD_ID__: string;
+
 const CONCURRENCY = 6;
-const CACHE_PREFIX = 'dust-cache:v1:';
+// Build-stamped: a new deploy gets a new namespace, so a previous build's
+// sessionStorage cache (which a browser hard-reload does NOT clear) can never
+// mask fresh data. CACHE_ROOT is the stable part used to sweep all generations.
+const CACHE_ROOT = 'dust-cache:';
+const CACHE_PREFIX = `${CACHE_ROOT}${__BUILD_ID__}:`;
+
+// Drop cache entries left by older builds so they don't accumulate.
+try {
+  const stale: string[] = [];
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const k = sessionStorage.key(i);
+    if (k && k.startsWith(CACHE_ROOT) && !k.startsWith(CACHE_PREFIX)) stale.push(k);
+  }
+  for (const k of stale) sessionStorage.removeItem(k);
+} catch {
+  /* sessionStorage unavailable — nothing to clean */
+}
 
 export interface FestivalBundle {
   festival: Festival;
@@ -94,7 +112,8 @@ export function clearCache(): void {
   const toRemove: string[] = [];
   for (let i = 0; i < sessionStorage.length; i++) {
     const k = sessionStorage.key(i);
-    if (k && k.startsWith(CACHE_PREFIX)) toRemove.push(k);
+    // Sweep every generation, not just the current build's.
+    if (k && k.startsWith(CACHE_ROOT)) toRemove.push(k);
   }
   for (const k of toRemove) sessionStorage.removeItem(k);
 }

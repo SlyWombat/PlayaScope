@@ -11,8 +11,8 @@ const pkg = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'ut
 const APP_VERSION = pkg.version;
 
 // DEPLOY_BASE controls the public URL prefix the bundle uses for `<script src=...>`
-// and `import()` chunk URLs. Set it (e.g. '/playascope/') if you serve from a
-// subpath; default '/' covers a root deploy.
+// and `import()` chunk URLs. The cPanel deploy script sets it to '/dust-analysis/'
+// so the SPA can live at electricrv.ca/dust-analysis/. Default '/' for dev.
 const BASE = process.env.DEPLOY_BASE ?? '/';
 
 export default defineConfig({
@@ -20,6 +20,9 @@ export default defineConfig({
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(APP_VERSION),
+    // Unique per build — used to namespace the sessionStorage data cache so a
+    // fresh deploy's data is never masked by a previous build's cache.
+    __BUILD_ID__: JSON.stringify(Date.now().toString(36)),
   },
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },

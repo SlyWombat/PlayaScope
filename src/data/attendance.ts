@@ -27,7 +27,9 @@ const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '/');
 
 export async function loadAttendance(signal?: AbortSignal): Promise<Map<string, AttendanceRecord>> {
   try {
-    const res = await fetch(`${BASE}attendance.json`, { signal });
+    // no-cache: revalidate so a deploy's fresh figures aren't masked by a
+    // browser-cached copy of this small index file.
+    const res = await fetch(`${BASE}attendance.json`, { signal, cache: 'no-cache' });
     if (!res.ok) return new Map();
     const json = (await res.json()) as { burns?: Record<string, AttendanceRecord> };
     return new Map(Object.entries(json.burns ?? {}));

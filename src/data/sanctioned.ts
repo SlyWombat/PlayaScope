@@ -32,7 +32,9 @@ const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '/');
 
 export async function loadSanctioned(signal?: AbortSignal): Promise<SanctionedIndex | null> {
   try {
-    const res = await fetch(`${BASE}sanctioned-events.json`, { signal });
+    // no-cache: revalidate so a deploy's fresh sanctioned list isn't masked by
+    // a browser-cached copy of this small index file.
+    const res = await fetch(`${BASE}sanctioned-events.json`, { signal, cache: 'no-cache' });
     if (!res.ok) return null;
     const snap = (await res.json()) as SanctionedSnapshot;
     const events = Array.isArray(snap.events) ? snap.events : [];

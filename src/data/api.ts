@@ -13,8 +13,8 @@ import type { ArtPiece, Camp, DustEvent, Festival, MusicSet } from './types';
 const BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/+$/, '/');
 const DATA_ROOT = `${BASE}data`;
 
-async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(url, { signal });
+async function getJson<T>(url: string, signal?: AbortSignal, noCache = false): Promise<T> {
+  const res = await fetch(url, { signal, ...(noCache ? { cache: 'no-cache' as const } : {}) });
   if (!res.ok) {
     throw new Error(`GET ${url} → HTTP ${res.status} ${res.statusText}`);
   }
@@ -22,7 +22,9 @@ async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
 }
 
 export async function fetchFestivals(signal?: AbortSignal): Promise<Festival[]> {
-  return getJson<Festival[]>(`${DATA_ROOT}/festivals.json`, signal);
+  // no-cache: the registry must be fresh after a deploy; a browser-cached copy
+  // here desyncs the whole dashboard. Per-festival files keep normal caching.
+  return getJson<Festival[]>(`${DATA_ROOT}/festivals.json`, signal, true);
 }
 
 export async function fetchSchedule(festivalSlug: string, signal?: AbortSignal): Promise<DustEvent[]> {
