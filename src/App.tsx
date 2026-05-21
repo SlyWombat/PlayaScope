@@ -3,6 +3,7 @@ import { fetchFestivals } from './data/api';
 import { loadFestivals, clearCache, type FestivalBundle } from './data/loader';
 import type { Festival } from './data/types';
 import { attachSanctioned, loadSanctioned, type SanctionFlags } from './data/sanctioned';
+import { loadAttendance, type AttendanceRecord } from './data/attendance';
 import { Overview } from './views/Overview';
 import { TypeMix } from './views/TypeMix';
 import { ScheduleShape } from './views/ScheduleShape';
@@ -60,6 +61,7 @@ interface LoadState {
   festivals: Festival[];
   bundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  attendance: Map<string, AttendanceRecord>;
   progress: { done: number; total: number };
   error?: string;
 }
@@ -111,6 +113,7 @@ export function App() {
     festivals: [],
     bundles: [],
     sanction: null,
+    attendance: new Map(),
     progress: { done: 0, total: 0 },
   });
 
@@ -119,9 +122,10 @@ export function App() {
     const ac = new AbortController();
     setState((s) => ({ ...s, status: 'loading-registry', error: undefined }));
     try {
-      const [all, sanctionedIndex] = await Promise.all([
+      const [all, sanctionedIndex, attendance] = await Promise.all([
         fetchFestivals(ac.signal),
         loadSanctioned(ac.signal),
+        loadAttendance(ac.signal),
       ]);
       const active = all.filter((f) => f.active && !f.unknownDates);
       setState((s) => ({
@@ -138,7 +142,7 @@ export function App() {
         },
       });
       const sanction = attachSanctioned(active, sanctionedIndex);
-      setState((s) => ({ ...s, status: 'ready', bundles, sanction }));
+      setState((s) => ({ ...s, status: 'ready', bundles, sanction, attendance }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setState((s) => ({ ...s, status: 'error', error: msg }));
@@ -361,6 +365,7 @@ export function App() {
             slug={burnHash}
             allBundles={state.bundles}
             sanction={state.sanction}
+            attendance={state.attendance}
             onBack={closeBurn}
           />
         )}
@@ -380,7 +385,12 @@ export function App() {
               <Personality bundles={filteredBundles} allBundles={state.bundles} onOpenBurn={openBurn} />
             )}
             {tab === 'battle' && (
-              <BurnBattle allBundles={state.bundles} sanction={state.sanction} onOpenBurn={openBurn} />
+              <BurnBattle
+                allBundles={state.bundles}
+                sanction={state.sanction}
+                attendance={state.attendance}
+                onOpenBurn={openBurn}
+              />
             )}
             {tab === 'lexicon' && <Lexicon bundles={filteredBundles} />}
             {tab === 'artists' && <Artists bundles={filteredBundles} />}
@@ -396,7 +406,12 @@ export function App() {
             )}
             {tab === 'moop' && <Moop bundles={filteredBundles} onOpenBurn={openBurn} />}
             {tab === 'table' && (
-              <DataTable bundles={filteredBundles} sanction={state.sanction} onOpenBurn={openBurn} />
+              <DataTable
+                bundles={filteredBundles}
+                sanction={state.sanction}
+                attendance={state.attendance}
+                onOpenBurn={openBurn}
+              />
             )}
           </>
         )}

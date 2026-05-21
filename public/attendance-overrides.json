@@ -1,0 +1,88 @@
+{
+  "_comment": "Curated, AUTHORITATIVE attendance figures keyed by burnKey. scripts/scrape-attendance.mjs merges these on top of whatever it auto-scrapes — an entry here always wins. Use this for: figures from PDF AfterBurn reports the scraper can't read, grounded estimates, and corrections to bad auto-scraped values. confidence: 'reported' | 'estimated' | 'capacity'.",
+  "burns": {
+    "black-rock-city": {
+      "estimate": 72000,
+      "low": 70000,
+      "high": 72000,
+      "confidence": "reported",
+      "source": "Burning Man 2025 census / press coverage",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Burning_Man",
+      "year": 2025
+    },
+    "sideburn": {
+      "estimate": 1046,
+      "confidence": "reported",
+      "source": "SideBurn 2025 AfterBurn Report — sold out, 1,046 participants",
+      "sourceUrl": "https://sideburn.ca/wp-content/uploads/2026/01/2025-SideBurn-AfterBurn-Report.pdf",
+      "year": 2025
+    },
+    "blazing-swan": {
+      "estimate": 3000,
+      "low": 2500,
+      "high": 3500,
+      "confidence": "estimated",
+      "source": "Reported as \"over 3,000 participants\" — no crisp single source",
+      "year": 2024
+    },
+    "apogaea": {
+      "estimate": 2000,
+      "low": 1500,
+      "high": 2500,
+      "confidence": "estimated",
+      "source": "Wikipedia recorded ~1,100 in 2010; grown since — recent figure estimated",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Apogaea",
+      "year": 2024
+    },
+    "transformus": {
+      "estimate": 2000,
+      "low": 1500,
+      "high": 2500,
+      "confidence": "estimated",
+      "source": "Wikipedia recorded 2,059 tickets in 2012; event now on hiatus",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Transformus",
+      "year": 2012
+    },
+    "lakes-of-fire": {
+      "estimate": 2500,
+      "low": 2000,
+      "high": 3000,
+      "confidence": "estimated",
+      "source": "Great Lakes region's flagship regional — no published figure; estimated by comparable regionals",
+      "year": 2024
+    },
+    "soak": {
+      "estimate": 2000,
+      "low": 2000,
+      "confidence": "reported",
+      "source": "Wikipedia — List of regional Burning Man events (\"more than 2,000\")",
+      "sourceUrl": "https://en.wikipedia.org/wiki/List_of_regional_Burning_Man_events",
+      "year": 2023
+    },
+    "kiwiburn": {
+      "estimate": 2300,
+      "confidence": "reported",
+      "source": "Wikipedia — Kiwiburn, 2023 attendance",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Kiwiburn",
+      "year": 2023
+    },
+    "nowhere": {
+      "estimate": 2980,
+      "low": 2980,
+      "high": 3600,
+      "confidence": "reported",
+      "source": "Wikipedia — Nowhere (event); 2,980 tickets sold 2023, ~3,600 in 2018–19",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Nowhere_(event)",
+      "year": 2023
+    },
+    "burning-flipside": {
+      "estimate": 2500,
+      "low": 2000,
+      "high": 3100,
+      "confidence": "reported",
+      "source": "Wikipedia — Burning Flipside; ticket sales 2,300–3,131 across 2022–2024",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Burning_Flipside",
+      "year": 2024
+    }
+  }
+}

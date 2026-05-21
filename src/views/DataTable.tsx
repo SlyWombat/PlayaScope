@@ -2,16 +2,21 @@ import { useMemo, useState } from 'react';
 import { densityByFestival, type DensityRow } from '../data/aggregate';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
+import {
+  attendanceFor, formatAttendance, attendanceValue, confidenceLabel,
+  type AttendanceRecord,
+} from '../data/attendance';
 
 interface Props {
   bundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  attendance: Map<string, AttendanceRecord>;
   onOpenBurn?: (slug: string) => void;
 }
 
-type SortKey = keyof Pick<DensityRow, 'title' | 'events' | 'camps' | 'art' | 'music' | 'duration' | 'region' | 'timeZone'> | 'sanctioned';
+type SortKey = keyof Pick<DensityRow, 'title' | 'events' | 'camps' | 'art' | 'music' | 'duration' | 'region' | 'timeZone'> | 'sanctioned' | 'attendees';
 
-export function DataTable({ bundles, sanction, onOpenBurn }: Props) {
+export function DataTable({ bundles, sanction, attendance, onOpenBurn }: Props) {
   const rows = useMemo(() => densityByFestival(bundles), [bundles]);
   const sanctionLookup = sanction?.byFestival;
   const [sortKey, setSortKey] = useState<SortKey>('events');
@@ -38,13 +43,18 @@ export function DataTable({ bundles, sanction, onOpenBurn }: Props) {
         const bv = sanctionLookup?.get(b.festival)?.is_sanctioned ? 1 : 0;
         return desc ? bv - av : av - bv;
       }
+      if (sortKey === 'attendees') {
+        const av = attendanceValue(attendanceFor(a.festival, attendance));
+        const bv = attendanceValue(attendanceFor(b.festival, attendance));
+        return desc ? bv - av : av - bv;
+      }
       const av = a[sortKey];
       const bv = b[sortKey];
       if (typeof av === 'number' && typeof bv === 'number') return desc ? bv - av : av - bv;
       return desc ? String(bv).localeCompare(String(av)) : String(av).localeCompare(String(bv));
     });
     return out;
-  }, [filtered, sortKey, desc, sanctionLookup]);
+  }, [filtered, sortKey, desc, sanctionLookup, attendance]);
 
   const toggleSort = (k: SortKey) => {
     if (k === sortKey) setDesc(!desc);
@@ -100,12 +110,14 @@ export function DataTable({ bundles, sanction, onOpenBurn }: Props) {
               {headerCell('camps', 'Camps', true)}
               {headerCell('art', 'Art', true)}
               {headerCell('music', 'Music', true)}
+              {headerCell('attendees', 'Attendees', true)}
             </tr>
           </thead>
           <tbody>
             {sorted.map((r) => {
               const sanctionInfo = sanctionLookup?.get(r.festival);
               const official = sanctionInfo?.is_sanctioned ?? false;
+              const att = attendanceFor(r.festival, attendance);
               return (
                 <tr
                   key={r.festival}
@@ -127,6 +139,16 @@ export function DataTable({ bundles, sanction, onOpenBurn }: Props) {
                   <td className="num">{r.camps.toLocaleString()}</td>
                   <td className="num">{r.art.toLocaleString()}</td>
                   <td className="num">{r.music.toLocaleString()}</td>
+                  <td
+                    className="num"
+                    title={att ? `${confidenceLabel(att)}${att.source ? ' — ' + att.source : ''}` : 'No attendance figure available'}
+                    style={{ color: att ? 'var(--text)' : 'var(--muted)' }}
+                  >
+                    {formatAttendance(att)}
+                    {att && att.confidence !== 'reported' && (
+                      <span style={{ color: 'var(--muted)', fontSize: 9, marginLeft: 3 }}>est</span>
+                    )}
+                  </td>
                 </tr>
               );
             })}

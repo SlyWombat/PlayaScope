@@ -15,10 +15,14 @@ import { scheduleShape } from '../data/aggregate';
 import { regionForFestival } from '../lib/region';
 import { formatInt } from '../lib/format';
 import { useIsMobile } from '../lib/useIsMobile';
+import {
+  attendanceFor, formatAttendance, attendanceValue, type AttendanceRecord,
+} from '../data/attendance';
 
 interface Props {
   allBundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  attendance: Map<string, AttendanceRecord>;
   onOpenBurn?: (slug: string) => void;
 }
 
@@ -74,7 +78,7 @@ function readBattleHash(): [string, string] | null {
   return parts.length === 2 && parts[0] && parts[1] ? [parts[0], parts[1]] : null;
 }
 
-export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
+export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Props) {
   const isMobile = useIsMobile();
   const [copied, setCopied] = useState(false);
   // Alphabetical for the pickers; not a ranking.
@@ -148,7 +152,17 @@ export function BurnBattle({ allBundles, sanction, onOpenBurn }: Props) {
   const titleB = bundleB.festival.title;
 
   // Scorecard rows. `winner`: 1 = A, -1 = B, 0 = tie/neutral.
+  const attA = attendanceFor(slugA, attendance);
+  const attB = attendanceFor(slugB, attendance);
+
   const rows: Array<{ label: string; av: string; bv: string; winner: number; note?: string }> = [
+    {
+      label: 'Attendees',
+      av: formatAttendance(attA),
+      bv: formatAttendance(attB),
+      winner: cmp(attendanceValue(attA), attendanceValue(attB)),
+      note: attA?.confidence === 'estimated' || attB?.confidence === 'estimated' ? 'some estimated' : undefined,
+    },
     metric('Events', a.events, b.events),
     metric('Theme camps', a.camps, b.camps),
     metric('Art installations', a.art, b.art),

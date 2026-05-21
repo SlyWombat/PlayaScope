@@ -13,15 +13,19 @@ import { regionForFestival, REGION_COLORS } from '../lib/region';
 import { tokens, bump, topN, normalizeArtistName } from '../lib/tokenize';
 import { hourOfDay, dayOfBurnLocal } from '../lib/timeBins';
 import { useIsMobile } from '../lib/useIsMobile';
+import {
+  attendanceFor, formatAttendance, confidenceLabel, type AttendanceRecord,
+} from '../data/attendance';
 
 interface Props {
   slug: string;
   allBundles: FestivalBundle[];
   sanction: SanctionFlags | null;
+  attendance: Map<string, AttendanceRecord>;
   onBack: () => void;
 }
 
-export function BurnDetail({ slug, allBundles, sanction, onBack }: Props) {
+export function BurnDetail({ slug, allBundles, sanction, attendance, onBack }: Props) {
   const isMobile = useIsMobile();
   const bundle = allBundles.find((b) => b.festival.name === slug);
 
@@ -159,6 +163,30 @@ export function BurnDetail({ slug, allBundles, sanction, onBack }: Props) {
                   : 'Listed on the burningman.org directory — this burn doesn’t publish a Dust feed, so only its dates and location are known here.'}
               </div>
             )}
+            {(() => {
+              const att = attendanceFor(f.name, attendance);
+              return (
+                <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+                  Attendance:{' '}
+                  <strong style={{ color: att?.estimate != null ? 'var(--text)' : 'var(--muted)' }}>
+                    {formatAttendance(att)}
+                  </strong>
+                  {att?.estimate != null && (
+                    <>
+                      {' · '}
+                      {att.sourceUrl ? (
+                        <a href={att.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>
+                          {confidenceLabel(att)}{att.year ? ` (${att.year})` : ''} ↗
+                        </a>
+                      ) : (
+                        <span>{confidenceLabel(att)}{att.year ? ` (${att.year})` : ''}</span>
+                      )}
+                      {att.source && <span style={{ display: 'block', marginTop: 2, fontSize: 11 }}>{att.source}</span>}
+                    </>
+                  )}
+                </div>
+              );
+            })()}
           </div>
           <div
             style={{

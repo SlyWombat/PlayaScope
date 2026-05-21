@@ -16,6 +16,7 @@
     "test:e2e:ui": "playwright test --ui",
     "fetch-data": "node scripts/fetch-data.mjs",
     "scrape-sanctioned": "node scripts/scrape-bm-regionals.mjs",
+    "scrape-attendance": "node scripts/scrape-attendance.mjs",
     "refresh-snapshot": "node scripts/refresh-festivals-snapshot.mjs"
   },
   "dependencies": {

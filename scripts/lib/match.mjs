@@ -58,3 +58,8 @@ export function festivalYear(festival) {
   const y = new Date(festival.start).getUTCFullYear();
   return Number.isFinite(y) ? y : 0;
 }
+
+// Slug minus a trailing -YYYY — the stable cross-year key for a burn.
+export function burnKey(slug) {
+  return String(slug).replace(/-(\d{4})$/, '');
+}
