@@ -3,6 +3,7 @@
 // `custom` series with a renderItem callback drawing the date-range bars.
 
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
@@ -31,6 +32,7 @@ interface Row {
 }
 
 export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
+  const { t, i18n } = useTranslation();
   const isMobile = useIsMobile();
   const [regionFilter, setRegionFilter] = useState<Set<string>>(new Set());
   // Windowed view: 3 months wide, anchored on a movable start.
@@ -142,32 +144,35 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
       <div className="panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h2 style={{ margin: 0 }}>Burn calendar — the season at a glance</h2>
+            <h2 style={{ margin: 0 }}>{t('calendar.title')}</h2>
             <div className="sub">
-              {inWindow.length} of {visible.length} burn{visible.length === 1 ? '' : 's'} in view across {[...new Set(inWindow.map((r) => r.region))].length} region{inWindow.length === 1 ? '' : 's'}.
-              Click a bar to open the burn. Today line in white.
+              {t('calendar.sub', {
+                shown: inWindow.length,
+                total: visible.length,
+                regions: [...new Set(inWindow.map((r) => r.region))].length,
+              })}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
               {!showFullYear && (
                 <>
                   <button onClick={() => setWindowStart(new Date(Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth() - 1, 1)))} style={{ fontSize: 12 }}>‹</button>
                   <span style={{ fontSize: 12, color: 'var(--text)', fontFamily: "'JetBrains Mono', monospace", minWidth: 160, textAlign: 'center' }}>
-                    {new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(windowStart)} – {new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(windowStart.getTime() + 3 * MONTH_MS - 24 * 3600 * 1000))}
+                    {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(windowStart)} – {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(windowStart.getTime() + 3 * MONTH_MS - 24 * 3600 * 1000))}
                   </span>
                   <button onClick={() => setWindowStart(new Date(Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth() + 1, 1)))} style={{ fontSize: 12 }}>›</button>
                   <button onClick={() => {
                     const now = new Date();
                     setWindowStart(startOfMonth(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1))));
-                  }} style={{ fontSize: 11, marginLeft: 6 }}>today</button>
+                  }} style={{ fontSize: 11, marginLeft: 6 }}>{t('calendar.navToday')}</button>
                 </>
               )}
               <button onClick={() => setShowFullYear(!showFullYear)} style={{ fontSize: 11, marginLeft: 12 }} className={showFullYear ? 'primary' : ''}>
-                {showFullYear ? 'show 3-month window' : 'show full year'}
+                {showFullYear ? t('calendar.showWindow') : t('calendar.showYear')}
               </button>
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>regions</span>
+            <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>{t('calendar.regionsLabel')}</span>
             {regionsPresent.map((r) => {
               const on = regionFilter.has(r);
               return (
@@ -189,7 +194,7 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
               );
             })}
             {regionFilter.size > 0 && (
-              <button style={{ fontSize: 11 }} onClick={() => setRegionFilter(new Set())}>clear</button>
+              <button style={{ fontSize: 11 }} onClick={() => setRegionFilter(new Set())}>{t('calendar.clear')}</button>
             )}
           </div>
         </div>
@@ -267,7 +272,7 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
                   silent: true,
                   symbol: 'none',
                   lineStyle: { color: '#fff', width: 1.5, type: 'dashed' },
-                  label: { color: '#fff', formatter: 'today', position: 'insideEndTop' },
+                  label: { color: '#fff', formatter: t('calendar.todayLine'), position: 'insideEndTop' },
                   data: [{ xAxis: today }],
                 },
               },
@@ -278,18 +283,18 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
 
       {stats && (
         <div className="panel">
-          <h2>Calendar snark</h2>
+          <h2>{t('calendar.snark')}</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, fontSize: 12 }}>
             {stats.longestGapDays > 0 && (
               <div>
-                <div style={{ color: 'var(--muted)', fontSize: 11 }}>Longest dry spell</div>
-                <div style={{ fontSize: 18, color: 'var(--accent)', fontWeight: 700 }}>{stats.longestGapDays} days</div>
+                <div style={{ color: 'var(--muted)', fontSize: 11 }}>{t('calendar.drySpell')}</div>
+                <div style={{ fontSize: 18, color: 'var(--accent)', fontWeight: 700 }}>{t('calendar.days', { n: stats.longestGapDays })}</div>
                 <div>{stats.gapFrom} → {stats.gapTo}</div>
               </div>
             )}
             <div>
-              <div style={{ color: 'var(--muted)', fontSize: 11 }}>Most-overlapped day</div>
-              <div style={{ fontSize: 18, color: 'var(--accent)', fontWeight: 700 }}>{stats.topCount} burns</div>
+              <div style={{ color: 'var(--muted)', fontSize: 11 }}>{t('calendar.overlapDay')}</div>
+              <div style={{ fontSize: 18, color: 'var(--accent)', fontWeight: 700 }}>{t('calendar.burns', { n: stats.topCount })}</div>
               <div>{stats.topDay}</div>
             </div>
           </div>

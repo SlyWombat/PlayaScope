@@ -6,6 +6,7 @@
 // when the user is filtering to "Official" or "Other".
 
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
 import { groupByBurn, yearFromSlug, withMultipleYears } from '../lib/groupByBurn';
@@ -35,6 +36,7 @@ function yearFromBundle(b: FestivalBundle): number {
 }
 
 export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const grouped = useMemo(() => {
     const visible = new Set(bundles.map((b) => b.festival.name));
     // Only show groups where ≥1 of the years is currently visible (respect filter)
@@ -81,10 +83,8 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
   if (alpha.length === 0) {
     return (
       <div className="panel">
-        <h2>Year-over-year continuity</h2>
-        <div className="sub">
-          No multi-year burns in the current filter. Most burns in dust.events only have a single year ({allBundles.length} burns total, {grouped.length} of those have ≥2 years).
-        </div>
+        <h2>{t('continuity.title')}</h2>
+        <div className="sub">{t('continuity.emptySub', { total: allBundles.length, multi: grouped.length })}</div>
       </div>
     );
   }
@@ -92,11 +92,8 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>Multi-year trajectories</h2>
-        <div className="sub">
-          {alpha.length} burn{alpha.length === 1 ? '' : 's'} have ≥2 years of data in dust.events.
-          Lines show events / camps / art / music counts across years.
-        </div>
+        <h2>{t('continuity.trajectories')}</h2>
+        <div className="sub">{t('continuity.trajectoriesSub', { n: alpha.length })}</div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: 12 }}>
@@ -143,10 +140,10 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
                   axisLabel: { color: '#8b93a7' },
                 },
                 series: [
-                  { name: 'events', type: 'line', data: b.years.map((y) => y.events), itemStyle: { color: '#ff8a3d' }, smooth: true },
-                  { name: 'camps',  type: 'line', data: b.years.map((y) => y.camps),  itemStyle: { color: '#5ad19a' }, smooth: true },
-                  { name: 'art',    type: 'line', data: b.years.map((y) => y.art),    itemStyle: { color: '#5a9dd1' }, smooth: true },
-                  { name: 'music',  type: 'line', data: b.years.map((y) => y.music),  itemStyle: { color: '#d15a9d' }, smooth: true },
+                  { name: t('continuity.seriesEvents'), type: 'line', data: b.years.map((y) => y.events), itemStyle: { color: '#ff8a3d' }, smooth: true },
+                  { name: t('continuity.seriesCamps'),  type: 'line', data: b.years.map((y) => y.camps),  itemStyle: { color: '#5ad19a' }, smooth: true },
+                  { name: t('continuity.seriesArt'),    type: 'line', data: b.years.map((y) => y.art),    itemStyle: { color: '#5a9dd1' }, smooth: true },
+                  { name: t('continuity.seriesMusic'),  type: 'line', data: b.years.map((y) => y.music),  itemStyle: { color: '#d15a9d' }, smooth: true },
                 ],
               }}
             />
@@ -156,11 +153,11 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
 
       <div className="grid cols-2">
         <div className="panel">
-          <h2>Biggest growers</h2>
-          <div className="sub">Top 10 by % change in event count.</div>
+          <h2>{t('continuity.growers')}</h2>
+          <div className="sub">{t('continuity.byPctChange')}</div>
           <div className="table-wrap">
             <table className="data">
-              <thead><tr><th>Burn</th><th className="num">Δ events</th></tr></thead>
+              <thead><tr><th>{t('continuity.colBurn')}</th><th className="num">{t('continuity.colDelta')}</th></tr></thead>
               <tbody>
                 {growers.map((g) => (
                   <tr key={g.key}>
@@ -173,11 +170,11 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
           </div>
         </div>
         <div className="panel">
-          <h2>Biggest shrinkers</h2>
-          <div className="sub">Top 10 by % change in event count.</div>
+          <h2>{t('continuity.shrinkers')}</h2>
+          <div className="sub">{t('continuity.byPctChange')}</div>
           <div className="table-wrap">
             <table className="data">
-              <thead><tr><th>Burn</th><th className="num">Δ events</th></tr></thead>
+              <thead><tr><th>{t('continuity.colBurn')}</th><th className="num">{t('continuity.colDelta')}</th></tr></thead>
               <tbody>
                 {shrinkers.map((g) => (
                   <tr key={g.key}>
@@ -195,8 +192,8 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
 
       {debut.length > 0 && (
         <div className="panel">
-          <h2>Debut burns this year</h2>
-          <div className="sub">Burns in the latest year with no prior-year entry in dust.events.</div>
+          <h2>{t('continuity.debut')}</h2>
+          <div className="sub">{t('continuity.debutSub')}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {debut.map((b) => (
               <span key={b.festival.name} style={{

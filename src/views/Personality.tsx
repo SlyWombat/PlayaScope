@@ -20,28 +20,6 @@ interface Props {
   onOpenBurn?: (slug: string) => void;
 }
 
-// Trait copy keyed by event-type label. Mapped from the issue spec.
-const TRAIT_LABEL: Record<EventTypeLabel, string> = {
-  'Arts & Crafts': 'Maker-Forward',
-  'Class/Workshop': 'Workshop-Heavy',
-  'Diversity & Inclusion': 'Community-Centered',
-  'Fire/Spectacle': 'Spectacle-Forward',
-  'Food & Drink': 'Hospitality-Coded',
-  'For Kids': 'Family-Friendly',
-  'Games': 'Playful',
-  'Gathering/Party': 'Party-Coded',
-  'Live Music': 'Music Capital',
-  'Mature Audiences': 'Adults-Only Energy',
-  'Miscellaneous': 'Mystery Box',
-  'Parade': 'Parade-Heavy',
-  'Performance': 'Performance Hub',
-  'Repair': 'Practical Burn',
-  'Ritual/Ceremony': 'Ritual-Heavy',
-  'Self Care': 'Self-Care Sanctuary',
-  'Sustainability/Greening Your Burn': 'Sustainability-Coded',
-  'Yoga/Movement/Fitness': 'Healing-Coded',
-};
-
 function fractionsFor(bundle: FestivalBundle): Record<EventTypeLabel, number> {
   const counts = Object.fromEntries(EVENT_TYPE_LABELS.map((l) => [l, 0])) as Record<EventTypeLabel, number>;
   for (const ev of bundle.schedule) {
@@ -125,17 +103,16 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>Burn personality profiles</h2>
+        <h2>{t('personality.title')}</h2>
         <div className="sub">
-          Each card scores its burn against the global baseline ({allBundles.filter((b) => b.schedule.length > 0).length} burns) on the 19-label dust taxonomy.
-          Z-score &gt; +0.5 becomes a trait; lowest z-score is the "doesn't really do" call-out. Click a card for similar burns.
+          {t('personality.sub', { n: allBundles.filter((b) => b.schedule.length > 0).length })}
         </div>
       </div>
 
       {similarity && (
         <div className="panel" style={{ borderColor: 'var(--accent)' }}>
-          <h2>Similar to "{similarity.target.bundle.festival.title}"</h2>
-          <div className="sub">Cosine similarity on event-type fractions.</div>
+          <h2>{t('personality.similarTo', { burn: similarity.target.bundle.festival.title })}</h2>
+          <div className="sub">{t('personality.similarSub')}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
             {similarity.neighbors.map((n) => (
               <button
@@ -147,7 +124,7 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
                 <span style={{ color: 'var(--muted)' }}>{(n.score * 100).toFixed(0)}%</span>
               </button>
             ))}
-            <button onClick={() => setSelectedSlug(null)} style={{ fontSize: 11 }}>clear</button>
+            <button onClick={() => setSelectedSlug(null)} style={{ fontSize: 11 }}>{t('personality.clear')}</button>
           </div>
         </div>
       )}
@@ -167,15 +144,15 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
               <strong
                 style={{ fontSize: 15, cursor: 'pointer', color: 'var(--accent)' }}
                 onClick={(e) => { e.stopPropagation(); onOpenBurn?.(c.bundle.festival.name); }}
-                title="Open this burn's page"
+                title={t('personality.openBurn')}
               >
                 {c.bundle.festival.title} →
               </strong>
-              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{c.bundle.schedule.length} events</span>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{t('personality.events', { n: c.bundle.schedule.length })}</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
-              {c.topTraits.length > 0 ? c.topTraits.map((t) => (
-                <span key={t.label} style={{
+              {c.topTraits.length > 0 ? c.topTraits.map((tr) => (
+                <span key={tr.label} style={{
                   fontSize: 10,
                   padding: '2px 6px',
                   borderRadius: 4,
@@ -183,7 +160,7 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
                   color: 'var(--accent)',
                   fontWeight: 600,
                 }}>
-                  {TRAIT_LABEL[t.label]}
+                  {t(`personality.traits.${tr.label}`)}
                 </span>
               )) : (
                 <span style={{ fontSize: 10, color: 'var(--muted)' }}>{t('personality.blurbs.average')}</span>
@@ -196,7 +173,11 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
             )}
             {c.lowest && c.lowest.z < -0.5 && (
               <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                Notably light on <strong>{c.lowest.label}</strong> ({(c.lowest.pct * 100).toFixed(0)}%, z={c.lowest.z.toFixed(1)})
+                {t('personality.notablyLight', {
+                  label: c.lowest.label,
+                  pct: (c.lowest.pct * 100).toFixed(0),
+                  z: c.lowest.z.toFixed(1),
+                })}
               </div>
             )}
             <RadarMini frac={c.frac} mean={globalMean} />
@@ -208,6 +189,7 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
 }
 
 function RadarMini({ frac, mean }: { frac: Record<EventTypeLabel, number>; mean: Record<EventTypeLabel, number> }) {
+  const { t } = useTranslation();
   const indicators = EVENT_TYPE_LABELS.map((l) => ({
     name: l.split('/')[0]!.slice(0, 10),
     max: Math.max(...EVENT_TYPE_LABELS.map((m) => Math.max(frac[m], mean[m] * 2))),
@@ -230,14 +212,14 @@ function RadarMini({ frac, mean }: { frac: Record<EventTypeLabel, number>; mean:
             data: [
               {
                 value: EVENT_TYPE_LABELS.map((l) => mean[l]),
-                name: 'Global avg',
+                name: t('personality.radarGlobal'),
                 lineStyle: { color: '#5a9dd1', width: 1, type: 'dashed' },
                 itemStyle: { color: '#5a9dd1' },
                 areaStyle: { color: 'rgba(90,157,209,0.05)' },
               },
               {
                 value: EVENT_TYPE_LABELS.map((l) => frac[l]),
-                name: 'This burn',
+                name: t('personality.radarThis'),
                 lineStyle: { color: '#ff8a3d', width: 2 },
                 itemStyle: { color: '#ff8a3d' },
                 areaStyle: { color: 'rgba(255,138,61,0.25)' },

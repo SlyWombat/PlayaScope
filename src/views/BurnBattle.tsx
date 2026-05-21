@@ -160,33 +160,38 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
 
   const rows: Array<{ label: string; av: string; bv: string; winner: number; note?: string }> = [
     {
-      label: 'Attendees',
+      label: t('battle.rowAttendees'),
       av: formatAttendance(attA),
       bv: formatAttendance(attB),
       winner: cmp(attendanceValue(attA), attendanceValue(attB)),
-      note: attA?.confidence === 'estimated' || attB?.confidence === 'estimated' ? 'some estimated' : undefined,
+      note: attA?.confidence === 'estimated' || attB?.confidence === 'estimated' ? t('battle.noteEstimated') : undefined,
     },
-    metric('Events', a.events, b.events),
-    metric('Theme camps', a.camps, b.camps),
-    metric('Art installations', a.art, b.art),
-    metric('Music sets', a.music, b.music),
-    { label: 'Duration', av: `${a.duration} days`, bv: `${b.duration} days`, winner: cmp(a.duration, b.duration) },
+    metric(t('battle.rowEvents'), a.events, b.events),
+    metric(t('battle.rowCamps'), a.camps, b.camps),
+    metric(t('battle.rowArt'), a.art, b.art),
+    metric(t('battle.rowMusic'), a.music, b.music),
     {
-      label: 'Events per day',
+      label: t('battle.rowDuration'),
+      av: t('battle.daysValue', { n: a.duration }),
+      bv: t('battle.daysValue', { n: b.duration }),
+      winner: cmp(a.duration, b.duration),
+    },
+    {
+      label: t('battle.rowPerDay'),
       av: a.perDay.toFixed(1),
       bv: b.perDay.toFixed(1),
       winner: cmp(a.perDay, b.perDay),
-      note: 'intensity',
+      note: t('battle.noteIntensity'),
     },
-    { label: 'Region', av: a.region, bv: b.region, winner: 0 },
+    { label: t('battle.rowRegion'), av: a.region, bv: b.region, winner: 0 },
     {
-      label: 'Official BM regional',
-      av: a.sanctioned ? 'Yes ★' : 'No',
-      bv: b.sanctioned ? 'Yes ★' : 'No',
+      label: t('battle.rowOfficial'),
+      av: a.sanctioned ? t('battle.yes') : t('battle.no'),
+      bv: b.sanctioned ? t('battle.yes') : t('battle.no'),
       winner: a.sanctioned === b.sanctioned ? 0 : a.sanctioned ? 1 : -1,
     },
     {
-      label: 'Signature vibe',
+      label: t('battle.rowVibe'),
       av: a.topTrait ?? '—',
       bv: b.topTrait ?? '—',
       winner: 0,
@@ -202,52 +207,50 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>Burn Battle</h2>
-        <div className="sub">Pick two burns. Bigger number takes the round. Verdict is automatic and unkind. The URL updates so you can share a matchup.</div>
+        <h2>{t('battle.title')}</h2>
+        <div className="sub">{t('battle.sub')}</div>
         <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <BurnPicker label="A" color={A_COLOR} value={slugA} options={sorted} onChange={setSlugA} />
-          <span style={{ fontWeight: 700, color: 'var(--muted)' }}>vs</span>
+          <span style={{ fontWeight: 700, color: 'var(--muted)' }}>{t('battle.vs')}</span>
           <BurnPicker label="B" color={B_COLOR} value={slugB} options={sorted} onChange={setSlugB} />
           <button
             style={{ fontSize: 11 }}
             onClick={() => { setSlugA(slugB); setSlugB(slugA); }}
-            title="Swap sides"
+            title={t('battle.swapTitle')}
           >
-            ⇄ swap
+            {t('battle.swap')}
           </button>
           <button
             className={copied ? 'primary' : ''}
             style={{ fontSize: 11 }}
             onClick={copyLink}
-            title="Copy a shareable link to this matchup"
+            title={t('battle.copyTitle')}
           >
-            {copied ? 'link copied' : 'copy link'}
+            {copied ? t('battle.linkCopied') : t('battle.copyLink')}
           </button>
         </div>
       </div>
 
       {slugA === slugB ? (
         <div className="panel">
-          <div className="sub">A burn can't battle itself. Pick two different burns.</div>
+          <div className="sub">{t('battle.sameError')}</div>
         </div>
       ) : (
         <>
           <div className="panel">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-              <h2 style={{ margin: 0 }}>Scorecard</h2>
+              <h2 style={{ margin: 0 }}>{t('battle.scorecard')}</h2>
               <div style={{ fontSize: 13 }}>
-                {verdict ? (
-                  <>Verdict: <strong style={{ color: verdict === titleA ? A_COLOR : B_COLOR }}>{verdict}</strong> takes it, {Math.max(aWins, bWins)}–{Math.min(aWins, bWins)}.</>
-                ) : (
-                  <>Verdict: <strong>dead heat</strong>, {aWins}–{bWins}.</>
-                )}
+                {verdict
+                  ? t('battle.verdict', { winner: verdict, win: Math.max(aWins, bWins), loss: Math.min(aWins, bWins) })
+                  : t('battle.verdictTie', { a: aWins, b: bWins })}
               </div>
             </div>
             <div className="table-wrap" style={{ marginTop: 8 }}>
               <table className="data">
                 <thead>
                   <tr>
-                    <th>Metric</th>
+                    <th>{t('battle.metric')}</th>
                     <th className="num" style={{ color: A_COLOR }}>
                       {onOpenBurn ? (
                         <button onClick={() => onOpenBurn(slugA)} style={linkBtn(A_COLOR)}>{titleA} →</button>
@@ -277,7 +280,7 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
           </div>
 
           <div className="panel">
-            <h2>The tale of the tape</h2>
+            <h2>{t('battle.taleOfTape')}</h2>
             <ul style={{ margin: '8px 0 0', paddingLeft: 18, lineHeight: 1.7, fontSize: 13 }}>
               {snark.map((s, i) => <li key={i}>{s}</li>)}
             </ul>
@@ -285,8 +288,8 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
 
           <div className="grid cols-2">
             <div className="panel">
-              <h2>Event-type fingerprint</h2>
-              <div className="sub">How each burn's program splits across the 19 categories.</div>
+              <h2>{t('battle.fingerprint')}</h2>
+              <div className="sub">{t('battle.fingerprintSub')}</div>
               <EChart
                 style={{ width: '100%', height: isMobile ? 300 : 360 }}
                 option={{
@@ -328,8 +331,8 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
               />
             </div>
             <div className="panel">
-              <h2>Schedule shape</h2>
-              <div className="sub">Events per day of burn — Day 0 is opening day.</div>
+              <h2>{t('battle.scheduleShape')}</h2>
+              <div className="sub">{t('battle.scheduleShapeSub')}</div>
               <ScheduleVs bundleA={bundleA} bundleB={bundleB} titleA={titleA} titleB={titleB} />
             </div>
           </div>
@@ -400,11 +403,12 @@ function ScheduleVs({
   titleA: string;
   titleB: string;
 }) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const rowA = scheduleShape([bundleA])[0]!;
   const rowB = scheduleShape([bundleB])[0]!;
   const maxLen = Math.max(rowA.perDay.length, rowB.perDay.length, 1);
-  const days = Array.from({ length: maxLen }, (_, i) => `Day ${i - 1}`);
+  const days = Array.from({ length: maxLen }, (_, i) => t('battle.day', { n: i - 1 }));
   return (
     <EChart
       style={{ width: '100%', height: isMobile ? 300 : 360 }}

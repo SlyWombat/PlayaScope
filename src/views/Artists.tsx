@@ -3,6 +3,7 @@
 // types.ts suggested) and indexes appearances across every burn.
 
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FestivalBundle } from '../data/loader';
 import { normalizeArtistName } from '../lib/tokenize';
 import { formatDateInZone, formatKm, distanceMeters } from '../lib/format';
@@ -33,6 +34,7 @@ interface ArtistRow {
 }
 
 export function Artists({ bundles }: Props) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
 
   const PLACEHOLDER_RE = /^(tbd|tba|t\.b\.d\.?|unknown|various|none|none yet|n\/a|to be announced|to be confirmed|various artists|dj tbd)$/i;
@@ -106,7 +108,12 @@ export function Artists({ bundles }: Props) {
           if (d > maxKm) maxKm = d;
         }
       }
-      marathonNote = `Most-traveled: ${top.display} — ${burns.length} burns (${burns.join(', ')})${maxKm > 0 ? `, ${formatKm(maxKm)} between the furthest two` : ''}.`;
+      marathonNote = t('artists.snark.marathon', {
+        display: top.display,
+        n: burns.length,
+        list: burns.join(', '),
+        distance: maxKm > 0 ? t('artists.snark.marathonDist', { km: formatKm(maxKm) }) : '',
+      });
     }
 
     // Date-overlap conflict scan — same artist booked at two burns whose
@@ -124,7 +131,9 @@ export function Artists({ bundles }: Props) {
           const aiStart = new Date(ai.startISO).getTime();
           const ajStart = new Date(aj.startISO).getTime();
           if (Math.abs(aiStart - ajStart) < 24 * 3600 * 1000) {
-            conflicts.push(`${r.display}: ${ai.burnTitle} and ${aj.burnTitle} both within 24h`);
+            conflicts.push(t('artists.snark.conflict', {
+              display: r.display, burnA: ai.burnTitle, burnB: aj.burnTitle,
+            }));
           }
         }
       }
@@ -139,12 +148,18 @@ export function Artists({ bundles }: Props) {
     if (topPlaceholder) {
       const rank = rows.indexOf(topPlaceholder) + 1;
       if (rank <= 5) {
-        placeholderNote = `"${topPlaceholder.display}" is ranked #${rank} this season with ${topPlaceholder.distinctBurns} burns and ${topPlaceholder.appearances.length} sets. Nobody has confirmed yet — and they're already touring.`;
+        placeholderNote = t('artists.snark.placeholder', {
+          display: topPlaceholder.display,
+          rank,
+          burns: topPlaceholder.distinctBurns,
+          sets: topPlaceholder.appearances.length,
+        });
       }
     }
 
     return { index: rows, leaderboard, marathonNote, conflictNote, placeholderNote };
-  }, [bundles]);
+    // `t` in deps so the generated notes re-translate on a language switch.
+  }, [bundles, t]);
 
   const queryNorm = normalizeArtistName(query);
   const searchResults = useMemo(() => {
@@ -157,11 +172,11 @@ export function Artists({ bundles }: Props) {
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>Artist search</h2>
-        <div className="sub">Type any artist / DJ / performer name. Fuzzy match across all {index.length.toLocaleString()} performers indexed.</div>
+        <h2>{t('artists.search')}</h2>
+        <div className="sub">{t('artists.searchSub', { n: index.length.toLocaleString() })}</div>
         <input
           autoFocus
-          placeholder="e.g. Bunny X, Magdalena, Tycho…"
+          placeholder={t('artists.placeholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={{
@@ -178,18 +193,18 @@ export function Artists({ bundles }: Props) {
         />
         {searchResults && (
           <div style={{ marginTop: 12 }}>
-            {searchResults.length === 0 && <div className="sub">No match. Names come from music.json `occurrence.who`.</div>}
+            {searchResults.length === 0 && <div className="sub">{t('artists.noMatch')}</div>}
             {searchResults.map((r) => (
               <details key={r.key} style={{ marginBottom: 6, background: 'var(--panel-2)', borderRadius: 6, padding: '8px 12px' }}>
                 <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
                   {r.display} <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 11, marginLeft: 8 }}>
-                    {r.distinctBurns} burn{r.distinctBurns === 1 ? '' : 's'} · {r.appearances.length} set{r.appearances.length === 1 ? '' : 's'}
+                    {t('artists.burnCount', { count: r.distinctBurns })} · {t('artists.setCount', { count: r.appearances.length })}
                   </span>
                 </summary>
                 <div className="table-wrap" style={{ marginTop: 8 }}>
                   <table className="data">
                     <thead>
-                      <tr><th>Burn</th><th>Date / time</th><th>Camp</th><th>Set title</th></tr>
+                      <tr><th>{t('artists.colBurn')}</th><th>{t('artists.colDateTime')}</th><th>{t('artists.colCamp')}</th><th>{t('artists.colSetTitle')}</th></tr>
                     </thead>
                     <tbody>
                       {r.appearances.sort((a, b) => a.startISO.localeCompare(b.startISO)).map((a, i) => (
@@ -211,29 +226,29 @@ export function Artists({ bundles }: Props) {
 
       {marathonNote && (
         <div className="panel">
-          <h2>Touring this season</h2>
+          <h2>{t('artists.touring')}</h2>
           <div className="sub">{marathonNote}</div>
         </div>
       )}
 
       {placeholderNote && (
         <div className="panel" style={{ borderColor: 'var(--warn)' }}>
-          <h2>Suspicious leaderboard entry</h2>
+          <h2>{t('artists.suspicious')}</h2>
           <div className="sub">{placeholderNote}</div>
         </div>
       )}
 
       <div className="panel">
-        <h2>Leaderboard — top 50 by burns played</h2>
-        <div className="sub">Ranked by number of distinct burns. They will not sleep.</div>
+        <h2>{t('artists.leaderboard')}</h2>
+        <div className="sub">{t('artists.leaderboardSub')}</div>
         <div className="table-wrap" style={{ maxHeight: 480, overflowY: 'auto' }}>
           <table className="data">
             <thead>
               <tr>
                 <th style={{ width: 40 }}>#</th>
-                <th>Artist</th>
-                <th className="num">Burns</th>
-                <th className="num">Sets</th>
+                <th>{t('artists.colArtist')}</th>
+                <th className="num">{t('artists.colBurns')}</th>
+                <th className="num">{t('artists.colSets')}</th>
               </tr>
             </thead>
             <tbody>
@@ -252,8 +267,8 @@ export function Artists({ bundles }: Props) {
 
       {conflictNote && (
         <div className="panel">
-          <h2>Spotted: scheduling collisions</h2>
-          <div className="sub">Same name appears at two burns within 24h — likely a data quirk, possibly a tour-de-force.</div>
+          <h2>{t('artists.collisions')}</h2>
+          <div className="sub">{t('artists.collisionsSub')}</div>
           <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: 'var(--muted)' }}>
             {conflictNote.map((c, i) => <li key={i}>{c}</li>)}
           </ul>

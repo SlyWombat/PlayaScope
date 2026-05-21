@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import { GestureHandling } from 'leaflet-gesture-handling';
@@ -19,16 +20,15 @@ interface Props {
 }
 
 export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const rows = useMemo(() => densityByFestival(bundles), [bundles]);
   const maxEvents = useMemo(() => Math.max(1, ...rows.map((r) => r.events)), [rows]);
 
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>World map — burn locations</h2>
-        <div className="sub">
-          Circle size scaled to event count. {rows.length} active burns. Click a marker for details.
-        </div>
+        <h2>{t('geo.worldMap')}</h2>
+        <div className="sub">{t('geo.worldMapSub', { n: rows.length })}</div>
         <div className="map">
           <MapContainer
             center={[20, 0]}
@@ -67,13 +67,17 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
                           {isOfficial && '★ '}
                           {r.title}
                         </strong>
-                        {isOfficial && <span style={{ color: '#ff8a3d', marginLeft: 6, fontSize: 11 }}>official</span>}
+                        {isOfficial && <span style={{ color: '#ff8a3d', marginLeft: 6, fontSize: 11 }}>{t('geo.official')}</span>}
                         <br />
                         <span style={{ color: '#666' }}>{r.region}</span>
                         <br />
-                        {r.events.toLocaleString()} events · {r.camps.toLocaleString()} camps · {r.art.toLocaleString()} art
+                        {t('geo.tooltipCounts', {
+                          events: r.events.toLocaleString(),
+                          camps: r.camps.toLocaleString(),
+                          art: r.art.toLocaleString(),
+                        })}
                         <br />
-                        {r.duration} days · {r.timeZone}
+                        {t('geo.tooltipDuration', { days: r.duration, tz: r.timeZone })}
                       </div>
                     </Tooltip>
                   </CircleMarker>
@@ -85,8 +89,8 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
 
       <div className="grid cols-2">
         <div className="panel">
-          <h2>Duration distribution</h2>
-          <div className="sub">How long burns run, in days.</div>
+          <h2>{t('geo.duration')}</h2>
+          <div className="sub">{t('geo.durationSub')}</div>
           <div className="chart short" style={{ display: 'flex', alignItems: 'flex-end', gap: 4, padding: '8px 4px' }}>
             {(() => {
               const bins = new Map<number, number>();
@@ -103,7 +107,7 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
                       background: '#ff8a3d',
                       borderRadius: '4px 4px 0 0',
                     }}
-                    title={`${bins.get(k)} burn(s) at ${k} days`}
+                    title={t('geo.durationBar', { n: bins.get(k), days: k })}
                   />
                   <div style={{ fontSize: 10, color: 'var(--muted)' }}>{k}d</div>
                   <div style={{ fontSize: 11, fontWeight: 600 }}>{bins.get(k)}</div>
@@ -114,20 +118,21 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
         </div>
 
         <div className="panel">
-          <h2>Burns by region</h2>
-          <div className="sub">Self-reported region string. Sorted by count.</div>
+          <h2>{t('geo.byRegion')}</h2>
+          <div className="sub">{t('geo.byRegionSub')}</div>
           <div className="table-wrap" style={{ maxHeight: 260, overflowY: 'auto' }}>
             <table className="data">
               <thead>
                 <tr>
-                  <th>Region</th>
-                  <th className="num">Burns</th>
+                  <th>{t('geo.colRegion')}</th>
+                  <th className="num">{t('geo.colBurns')}</th>
                 </tr>
               </thead>
               <tbody>
                 {(() => {
+                  const unknown = t('geo.unknownRegion');
                   const m = new Map<string, number>();
-                  for (const r of rows) m.set(r.region || '(unknown)', (m.get(r.region || '(unknown)') ?? 0) + 1);
+                  for (const r of rows) m.set(r.region || unknown, (m.get(r.region || unknown) ?? 0) + 1);
                   return [...m.entries()]
                     .sort((a, b) => b[1] - a[1])
                     .map(([region, n]) => (

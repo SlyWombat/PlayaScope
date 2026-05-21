@@ -1,0 +1,191 @@
+{
+  "_comment": "ALL generated snark for PlayaScope, consolidated into one file. English-only by policy — fr.json / es.json fall back here until a deliberate, idiomatic translation pass. Deep-merged into the `en` resource at load time (see src/i18n.ts), so keys still resolve under their normal namespaces (moop.tiles.*, battle.snark.*, …). To translate snark for a locale, create snark.<lang>.json with this same shape and register it in src/i18n.ts. Translate the JOKE, not the words — literal translation kills the punchline. Profanity is welcome and encouraged (see the MOOP tone). NEVER alter {{placeholders}} — the code fills them.",
+  "moop": {
+    "tiles": {
+      "longestCamp": {
+        "title": "The camp name that would not shut up",
+        "value": "{{n}} characters",
+        "hint": "at {{burn}}",
+        "how": "Longest camp name across every burn. A committee fought over this. Click to open the burn."
+      },
+      "topWord": {
+        "title": "The word every burner is legally required to use",
+        "detail": "{{n}} times across {{titles}} event titles. Originality died on the playa and nobody held a funeral.",
+        "how": "Lowercased event titles, stop-words yeeted, frequency counted."
+      },
+      "topPrefix": {
+        "title": "The prefix that launched a thousand camps",
+        "detail": "{{n}} camps opened with it. Runners-up: {{runners}}. Imagination: sold separately.",
+        "how": "First word of each camp name, stop-words excluded."
+      },
+      "varied": {
+        "title": "The absolute overachiever",
+        "detail": "Spread across every event type like a caffeinated maniac — variety score {{score}}/100. This burn physically cannot sit still.",
+        "how": "Even split across all 19 event categories = top score. Click to open the burn."
+      },
+      "oneTrack": {
+        "title": "The gloriously one-trick pony",
+        "detail": "One category, all damn week — variety score {{score}}/100. They know what they like and you will not move them.",
+        "how": "Lowest spread across event categories (≥5 events)."
+      },
+      "allDay": {
+        "title": "Most events that technically do nothing, all day long",
+        "value": "{{n}} all-day events",
+        "how": "Count of events with all_day === true."
+      },
+      "locationless": {
+        "title": "Most \"good luck finding it, dipshit\" events",
+        "value": "{{n}} events with zero directions",
+        "how": "No hosting camp, no host art, no other_location."
+      },
+      "totalHours": {
+        "title": "Total programming this season",
+        "detail": "Every scheduled minute of every burn, stacked end to end. Nobody is sleeping. Nobody.",
+        "how": "Σ (end_time − start_time)."
+      },
+      "ifToday": {
+        "title": "If every burn on Earth happened today",
+        "value": "{{n}} events",
+        "detail": "{{camps}} camps · {{art}} art pieces all at once. Society would not survive — and honestly? Worth it.",
+        "how": "Summed across the current filter."
+      },
+      "weirdest": {
+        "title": "What in the actual fuck is this event",
+        "detail": "at {{burn}}. Runners-up: {{runners}}. Someone typed that stone-cold sober. Allegedly.",
+        "how": "Title length + 4× punctuation count."
+      },
+      "traveled": {
+        "title": "The DJ who has not seen their own bed since March",
+        "detail": "{{burns}} · {{sets}}",
+        "burns_one": "{{count}} burn",
+        "burns_other": "{{count}} burns",
+        "sets_one": "{{count}} set",
+        "sets_other": "{{count}} sets",
+        "how": "Distinct burns played, placeholder names (TBD/TBA/unknown) excluded."
+      },
+      "overlap": {
+        "title": "The day you need to clone yourself",
+        "value": "{{n}} burns at once",
+        "detail": "On {{date}}: {{burns}}. Pick one. Disappoint literally everyone else.",
+        "how": "Count of festivals whose date range includes each UTC day."
+      },
+      "afterDark": {
+        "title": "The after-dark lexicon",
+        "detail": "{{n}} event titles got filthy. Also overheard: {{runners}}. The playa contains multitudes, and most of them are naked.",
+        "how": "Event titles matched against an adult-themed word list ({{terms}} terms). Bring an open mind."
+      },
+      "spiciest": {
+        "title": "Horniest burn on the whole damn circuit",
+        "detail": "{{n}} Mature Audiences events — {{pct}}% of the entire program. {{total}} across the season. Hydrate, stretch, pace yourself.",
+        "how": "Count of events whose event_type is \"Mature Audiences\" — a real dust category."
+      },
+      "reputation": {
+        "title": "Camps with a goddamn reputation",
+        "value": "{{n}} camps",
+        "detail": "Camp names that would make your mother nervous — e.g. {{sample}}. You know exactly which neighbourhood you're walking to tonight.",
+        "detailMore": "Camp names that would make your mother nervous — e.g. {{sample}}, and plenty more. You know exactly which neighbourhood you're walking to tonight.",
+        "how": "Camp names matched against the same {{terms}}-term adult word list."
+      },
+      "fire": {
+        "title": "Burns that just slapped 'fire' on it and called it a day",
+        "value": "{{n}} / {{total}}",
+        "how": "Title contains: {{words}}."
+      },
+      "notFire": {
+        "title": "Burns with the sheer imagination to NOT say 'fire'",
+        "value": "{{n}} / {{total}}",
+        "how": "Complement of the above. Brave souls."
+      },
+      "artWalk": {
+        "title": "Longest art walk — wear better shoes, jackass",
+        "value": "{{km}} km",
+        "detail": "{{burn}} — {{count}} art pieces, {{steps}} steps, {{bananas}} bananas end to end. Your feet will be filing a formal complaint.",
+        "how": "Shortest path connecting every GPS-located art piece. 1 step ≈ 0.762 m, 1 banana ≈ 0.18 m."
+      }
+    }
+  },
+  "battle": {
+    "snark": {
+      "eventsRunaway": "{{big}} runs {{ratio}}× the events of {{small}}. One of you will not sleep for a week; the other will be bored shitless by Tuesday.",
+      "eventsClose": "{{big}} barely edges out {{small}} — so close that arguing about it just makes you the asshole.",
+      "art": "{{big}} has {{bigArt}} art installations to the other's measly {{smallArt}}. Bring a wide-angle lens to one and a forgiving attitude to the other.",
+      "music": "{{big}} is the louder, sweatier night out — {{bigMusic}} music sets vs {{smallMusic}}. Pack earplugs or kiss your hearing goodbye.",
+      "durationLonger": "{{longer}} runs longer — {{longDays}} days vs {{shortDays}}. One's an endurance sport; the other you can actually explain to your boss.",
+      "durationDenser": "Same number of days, but {{denser}} crams more into every single one. Sleep was an option and {{denser}} said no thanks.",
+      "regionSame": "Civil war — both burns are in {{region}}. Someone is getting un-friended over this.",
+      "regionDiff": "{{regionA}} vs {{regionB}} — pack a passport and a really convincing excuse.",
+      "sanctionBoth": "Both card-carrying official BM regionals. The Org smiles upon this beautiful nonsense.",
+      "sanctionNeither": "Neither one's on the official list. Two gorgeous outlaws, zero adult supervision.",
+      "sanctionOne": "{{official}} has the official BM badge; {{other}} is out there doing whatever the hell it wants. Respect to both, frankly.",
+      "vibeClash": "Vibe clash: {{titleA}} is all {{traitA}}, {{titleB}} is all {{traitB}}. You already know which one your therapist would pick.",
+      "vibeSame": "Both burns share a hard {{trait}} streak. Twins separated at birth, raised by the same dusty cult."
+    }
+  },
+  "personality": {
+    "traits": {
+      "Arts & Crafts": "Glue-Gun Energy",
+      "Class/Workshop": "Death by Workshop",
+      "Diversity & Inclusion": "Group-Hug Coded",
+      "Fire/Spectacle": "Shit's On Fire, Yo",
+      "Food & Drink": "Always Feeding You",
+      "For Kids": "Genuinely Bring the Kids",
+      "Games": "Unserious (Affectionate)",
+      "Gathering/Party": "No Notes, Just Rage",
+      "Live Music": "Bass In Your Chest Cavity",
+      "Mature Audiences": "Pants Strongly Optional",
+      "Miscellaneous": "Nobody Has Any Idea",
+      "Parade": "Always Marching Somewhere",
+      "Performance": "Look At Me, Look At Me",
+      "Repair": "Actually Has Its Shit Together",
+      "Ritual/Ceremony": "Big Ceremony Hours",
+      "Self Care": "Cuddle-Puddle Central",
+      "Sustainability/Greening Your Burn": "Leave-No-Trace Zealots",
+      "Yoga/Movement/Fitness": "Sound-Bath Industrial Complex"
+    },
+    "blurbs": {
+      "noSleep": "You will not sleep. You will not even sit down. Godspeed, you magnificent idiot.",
+      "soundBowl": "Everyone here owns a sound bowl and they are NOT afraid to use it on you.",
+      "seeThings": "You are going to see some shit. Hydrate first.",
+      "practical": "The most suspiciously well-organized burn on the circuit. Who hurt you? Who taught you logistics?",
+      "kids": "Bring the kids. No, seriously, actual children — it is that wholesome.",
+      "parade": "Hope you like parades, because congratulations, you are IN one now.",
+      "subtle": "A subtle little burn. Bring vibes; leave the flamethrower at home.",
+      "noLearning": "This burn does not fuck with workshops. Zero. Learning is for the default world.",
+      "average": "Painfully, heroically well-rounded"
+    }
+  },
+  "artists": {
+    "snark": {
+      "marathon": "{{display}} played {{n}} burns ({{list}}){{distance}}. This person has not seen their own bed since spring.",
+      "marathonDist": ", {{km}} between the two furthest — that is not a tour, that is a fugitive",
+      "placeholder": "\"{{display}}\" is ranked #{{rank}} this season — {{burns}} burns, {{sets}} sets — and not one organizer can tell you who the hell that actually is. A legend made entirely of TBD.",
+      "conflict": "{{display}} is somehow at {{burnA}} AND {{burnB}} within 24h. Either a data gremlin or a genuine teleportation incident."
+    }
+  },
+  "schedule": {
+    "snark": {
+      "noCommentary": "no comment, honestly we are as surprised as you are",
+      "hourVibe": {
+        "0": "the witching hour",
+        "2": "deep-playa goblin hour",
+        "4": "sunrise-rave, questionable-decisions hour",
+        "6": "sunrise-set, somehow-still-up hour",
+        "8": "grilled-cheese-and-regret hour",
+        "10": "hungover-yoga hour",
+        "12": "the workshop nobody attends",
+        "14": "peak-workshop, why-am-I-learning hour",
+        "16": "art-walk and aggressive-sunscreen hour",
+        "18": "aperitif and bad-idea-planning hour",
+        "20": "dinner, fire, and poor choices hour",
+        "22": "the-night-officially-begins hour"
+      }
+    }
+  },
+  "countdown": {
+    "snark": {
+      "eggBrc": "Put the phone down. You are at Burning goddamn Man. GO.",
+      "eggAprilFool": "There are no burns. There is no spoon. There is only dust.",
+      "offSeason": "Off-season. Go touch some grass, you beautiful dust-rat."
+    }
+  }
+}

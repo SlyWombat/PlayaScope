@@ -71,110 +71,7 @@
   "moop": {
     "title": "The MOOP Report",
     "tagline": "Matter Out Of Place.",
-    "sub": "{{tiles}} trivia tiles across {{burns}} burns in current filter. Tiles with an → arrow open the relevant burn page.",
-    "tiles": {
-      "_comment": "Generated MOOP trivia-tile copy. English-only by policy — fr.json (and every locale) falls back here automatically. Translate idiomatically: jokes, not literal.",
-      "longestCamp": {
-        "title": "Longest camp name",
-        "value": "{{n}} characters",
-        "hint": "at {{burn}}",
-        "how": "Longest camps[].name across all burns. Click to open the burn."
-      },
-      "topWord": {
-        "title": "Most-used event-title word",
-        "detail": "{{n}} occurrences across {{titles}} event titles",
-        "how": "Lowercased event titles, stop-words removed, frequency counted."
-      },
-      "topPrefix": {
-        "title": "Most-overused camp name prefix",
-        "detail": "{{n}}× — runner-ups: {{runners}}",
-        "how": "First word of each camp name, stop-words excluded."
-      },
-      "varied": {
-        "title": "Most varied program",
-        "detail": "Spread evenly across event types — variety score {{score}}/100",
-        "how": "Even split across all 19 event categories = top score. Click to open the burn."
-      },
-      "oneTrack": {
-        "title": "Most one-track program",
-        "detail": "Programming dominated by a single category — variety score {{score}}/100",
-        "how": "Lowest spread across event categories (≥5 events)."
-      },
-      "allDay": {
-        "title": "Hardest-working idle program",
-        "value": "{{n}} all-day events",
-        "how": "Count of events with all_day === true."
-      },
-      "locationless": {
-        "title": "Most \"find it yourself\" events",
-        "value": "{{n}} events with no location",
-        "how": "No hosting camp, no host art, no other_location."
-      },
-      "totalHours": {
-        "title": "Total programming this season",
-        "detail": "Sum of every scheduled event duration, across every burn in the current filter.",
-        "how": "Σ (end_time − start_time)."
-      },
-      "ifToday": {
-        "title": "If every burn happened today",
-        "value": "{{n}} events",
-        "detail": "{{camps}} camps · {{art}} art pieces. Society would not survive.",
-        "how": "Summed across the current filter."
-      },
-      "weirdest": {
-        "title": "Weirdest event title",
-        "detail": "at {{burn}}. Runners-up: {{runners}}",
-        "how": "Title length + 4× punctuation count."
-      },
-      "traveled": {
-        "title": "Most-traveled performer",
-        "detail": "{{burns}} · {{sets}}",
-        "burns_one": "{{count}} burn",
-        "burns_other": "{{count}} burns",
-        "sets_one": "{{count}} set",
-        "sets_other": "{{count}} sets",
-        "how": "Distinct burns played, placeholder names (TBD/TBA/unknown) excluded."
-      },
-      "overlap": {
-        "title": "Most-overlapped date",
-        "value": "{{n}} burns at once",
-        "detail": "On {{date}}: {{burns}}.",
-        "how": "Count of festivals whose date range includes each UTC day."
-      },
-      "afterDark": {
-        "title": "After-dark lexicon",
-        "detail": "{{n}} event titles got spicy. Also overheard: {{runners}}. The playa contains multitudes.",
-        "how": "Event titles matched against an adult-themed word list ({{terms}} terms). Bring an open mind."
-      },
-      "spiciest": {
-        "title": "Spiciest burn",
-        "detail": "{{n}} Mature Audiences events ({{pct}}% of its program). {{total}} across the whole season. Pace yourself.",
-        "how": "Count of events whose event_type is \"Mature Audiences\" — a real dust category."
-      },
-      "reputation": {
-        "title": "Camps with a reputation",
-        "value": "{{n}} camps",
-        "detail": "Theme camps whose names raise an eyebrow — e.g. {{sample}}. You know which neighbourhood to find. Or avoid.",
-        "detailMore": "Theme camps whose names raise an eyebrow — e.g. {{sample}}, and more. You know which neighbourhood to find. Or avoid.",
-        "how": "Camp names matched against the same {{terms}}-term adult word list."
-      },
-      "fire": {
-        "title": "Burns named after fire",
-        "value": "{{n}} / {{total}}",
-        "how": "Title contains: {{words}}."
-      },
-      "notFire": {
-        "title": "Burns NOT named after fire",
-        "value": "{{n}} / {{total}}",
-        "how": "Complement of the above."
-      },
-      "artWalk": {
-        "title": "Longest art walk",
-        "value": "{{km}} km",
-        "detail": "{{burn}} — {{count}} art pieces, {{steps}} steps, {{bananas}} bananas end-to-end",
-        "how": "Shortest path connecting every GPS-located art piece. 1 step ≈ 0.762 m, 1 banana ≈ 0.18 m."
-      }
-    }
+    "sub": "{{tiles}} trivia tiles across {{burns}} burns in current filter. Tiles with an → arrow open the relevant burn page."
   },
   "data": {
     "allBurns": "All burns",
@@ -235,35 +132,175 @@
     "sets_other": "{{count}} sets"
   },
   "battle": {
-    "snark": {
-      "_comment": "Generated head-to-head snark. English-only by policy — fr.json (and every other locale) falls back here automatically. When translating, rewrite idiomatically: these are jokes, and a literal translation kills the punchline.",
-      "eventsRunaway": "{{big}} runs {{ratio}}× the events of {{small}}. One of you will not sleep; the other will be bored by Tuesday.",
-      "eventsClose": "{{big}} edges out {{small}} on raw event count — but it's close enough to call it a draw if you squint.",
-      "art": "{{big}} has {{bigArt}} art installations to the other's {{smallArt}}. Bring a wide-angle lens to one and your imagination to the other.",
-      "music": "{{big}} is the louder night out — {{bigMusic}} music sets vs {{smallMusic}}. Pack earplugs accordingly.",
-      "durationLonger": "{{longer}} runs longer ({{longDays}} days vs {{shortDays}}) — endurance event vs weekend warm-up.",
-      "durationDenser": "Same number of days, but {{denser}} crams more into each one. Choose your pace.",
-      "regionSame": "Civil war: both burns are in {{region}}. Loyalties will be tested.",
-      "regionDiff": "{{regionA}} vs {{regionB}} — this battle requires a passport.",
-      "sanctionBoth": "Both are official Burning Man regionals. The Org blesses this matchup.",
-      "sanctionNeither": "Neither is on the official BM list. Two rebels enter.",
-      "sanctionOne": "{{official}} carries the official BM regional badge; {{other}} is doing its own thing. Respect either way.",
-      "vibeClash": "Vibe clash: {{titleA}} leans {{traitA}}, {{titleB}} leans {{traitB}}. You already know which one is your scene.",
-      "vibeSame": "Both burns are {{trait}}-forward. Twins separated at birth."
-    }
+    "title": "Burn Battle",
+    "sub": "Pick two burns. Bigger number takes the round. Verdict is automatic and unkind. The URL updates so you can share a matchup.",
+    "vs": "vs",
+    "swap": "⇄ swap",
+    "swapTitle": "Swap sides",
+    "copyLink": "copy link",
+    "linkCopied": "link copied",
+    "copyTitle": "Copy a shareable link to this matchup",
+    "sameError": "A burn can't battle itself. Pick two different burns.",
+    "scorecard": "Scorecard",
+    "verdict": "Verdict: {{winner}} takes it, {{win}}–{{loss}}.",
+    "verdictTie": "Verdict: dead heat, {{a}}–{{b}}.",
+    "metric": "Metric",
+    "rowAttendees": "Attendees",
+    "rowEvents": "Events",
+    "rowCamps": "Theme camps",
+    "rowArt": "Art installations",
+    "rowMusic": "Music sets",
+    "rowDuration": "Duration",
+    "rowPerDay": "Events per day",
+    "rowRegion": "Region",
+    "rowOfficial": "Official BM regional",
+    "rowVibe": "Signature vibe",
+    "noteEstimated": "some estimated",
+    "noteIntensity": "intensity",
+    "yes": "Yes ★",
+    "no": "No",
+    "daysValue": "{{n}} days",
+    "taleOfTape": "The tale of the tape",
+    "fingerprint": "Event-type fingerprint",
+    "fingerprintSub": "How each burn's program splits across the 19 categories.",
+    "scheduleShape": "Schedule shape",
+    "scheduleShapeSub": "Events per day of burn — Day 0 is opening day.",
+    "day": "Day {{n}}"
   },
   "personality": {
-    "blurbs": {
-      "_comment": "Generated burn-personality one-liners. English-only by policy — fr.json falls back here. Translate idiomatically (jokes), never literally.",
-      "noSleep": "This is the burn where you do not sleep.",
-      "soundBowl": "This is the burn where everyone has a sound bowl.",
-      "seeThings": "You will see things.",
-      "practical": "The most practical burn on the circuit.",
-      "kids": "Bring the kids. Actually bring them.",
-      "parade": "Get ready to walk in formation.",
-      "subtle": "A subtler burn — bring vibes, not spectacle.",
-      "noLearning": "This burn does not believe in learning.",
-      "average": "Average across the board"
-    }
+    "title": "Burn personality profiles",
+    "sub": "Each card scores its burn against the global baseline ({{n}} burns) on the 19-label dust taxonomy. Z-score > +0.5 becomes a trait; lowest z-score is the \"doesn't really do\" call-out. Click a card for similar burns.",
+    "similarTo": "Similar to \"{{burn}}\"",
+    "similarSub": "Cosine similarity on event-type fractions.",
+    "clear": "clear",
+    "events": "{{n}} events",
+    "openBurn": "Open this burn's page",
+    "notablyLight": "Notably light on {{label}} ({{pct}}%, z={{z}})",
+    "radarGlobal": "Global avg",
+    "radarThis": "This burn"
+  },
+  "artists": {
+    "search": "Artist search",
+    "searchSub": "Type any artist / DJ / performer name. Fuzzy match across all {{n}} performers indexed.",
+    "placeholder": "e.g. Bunny X, Magdalena, Tycho…",
+    "noMatch": "No match. Names come from music.json `occurrence.who`.",
+    "burnCount_one": "{{count}} burn",
+    "burnCount_other": "{{count}} burns",
+    "setCount_one": "{{count}} set",
+    "setCount_other": "{{count}} sets",
+    "colBurn": "Burn",
+    "colDateTime": "Date / time",
+    "colCamp": "Camp",
+    "colSetTitle": "Set title",
+    "touring": "Touring this season",
+    "suspicious": "Suspicious leaderboard entry",
+    "leaderboard": "Leaderboard — top 50 by burns played",
+    "leaderboardSub": "Ranked by number of distinct burns. They will not sleep.",
+    "colArtist": "Artist",
+    "colBurns": "Burns",
+    "colSets": "Sets",
+    "collisions": "Spotted: scheduling collisions",
+    "collisionsSub": "Same name appears at two burns within 24h — likely a data quirk, possibly a tour-de-force."
+  },
+  "continuity": {
+    "title": "Year-over-year continuity",
+    "emptySub": "No multi-year burns in the current filter. Most burns in dust.events only have a single year ({{total}} burns total, {{multi}} of those have ≥2 years).",
+    "trajectories": "Multi-year trajectories",
+    "trajectoriesSub": "{{n}} burns have ≥2 years of data in dust.events. Lines show events / camps / art / music counts across years.",
+    "seriesEvents": "events",
+    "seriesCamps": "camps",
+    "seriesArt": "art",
+    "seriesMusic": "music",
+    "growers": "Biggest growers",
+    "shrinkers": "Biggest shrinkers",
+    "byPctChange": "Top 10 by % change in event count.",
+    "colBurn": "Burn",
+    "colDelta": "Δ events",
+    "debut": "Debut burns this year",
+    "debutSub": "Burns in the latest year with no prior-year entry in dust.events."
+  },
+  "calendar": {
+    "title": "Burn calendar — the season at a glance",
+    "sub": "{{shown}} of {{total}} burns in view across {{regions}} regions. Click a bar to open the burn. Today line in white.",
+    "navToday": "today",
+    "showWindow": "show 3-month window",
+    "showYear": "show full year",
+    "regionsLabel": "regions",
+    "clear": "clear",
+    "todayLine": "today",
+    "snark": "Calendar snark",
+    "drySpell": "Longest dry spell",
+    "days": "{{n}} days",
+    "overlapDay": "Most-overlapped day",
+    "burns": "{{n}} burns"
+  },
+  "schedule": {
+    "title": "Schedule shape — events per day of burn",
+    "sub_one": "X axis is days from the festival's local start (Day -1 = pre-burn, Day 0 = opening). Y axis is event count per day. Showing {{count}} burn.",
+    "sub_other": "X axis is days from the festival's local start (Day -1 = pre-burn, Day 0 = opening). Y axis is event count per day. Showing {{count}} burns.",
+    "pick": "Pick burns to compare",
+    "pickSub": "Click to toggle on the chart. Shift-click (or use the arrow) to open the burn page. Empty selection = top 8 by event volume.",
+    "openBurn": "Open burn page",
+    "heatmapTitle": "Time-of-day heatmap — {{burn}}",
+    "peakHour": "Peak hour: {{hour}} — {{vibe}}. Hour 0 is midnight local time.",
+    "computing": "Computing heatmap for {{n}} events…",
+    "rendering": "Rendering 24h × {{days}}-day grid…",
+    "day": "Day {{n}}"
+  },
+  "typeMix": {
+    "title": "Event-type mix per burn",
+    "modeFractions": "fractions",
+    "modeCounts": "counts",
+    "sub": "Stacked: each bar is one burn, segments are the 19 dust event-type labels. {{n}} burns with scheduled events.",
+    "heatmap": "Heatmap — burn × event type",
+    "heatmapSub": "Same data, denser layout. Darker = larger share / count."
+  },
+  "lexicon": {
+    "title": "Lexicon — what burners actually say",
+    "sub": "{{unique}} distinct {{units}}, {{occurrences}} total occurrences across {{scope}}. Bigger = more frequent.",
+    "scopeLabel": "scope",
+    "unitsLabel": "units",
+    "scopeEvents": "events",
+    "scopeCamps": "camps",
+    "scopeBoth": "both",
+    "scopeBothLong": "events + camps",
+    "unitWords": "words",
+    "unitPhrases": "phrases (2–3 grams)",
+    "granWords": "words",
+    "granPhrases": "phrases",
+    "ranked": "Top {{n}} — ranked",
+    "rankedSub": "Same data, tabular — the Examples column shows where each term appears.",
+    "colWord": "Word",
+    "colPhrase": "Phrase",
+    "colCount": "Count",
+    "colExamples": "Examples"
+  },
+  "geo": {
+    "worldMap": "World map — burn locations",
+    "worldMapSub": "Circle size scaled to event count. {{n}} active burns. Click a marker for details.",
+    "official": "official",
+    "tooltipCounts": "{{events}} events · {{camps}} camps · {{art}} art",
+    "tooltipDuration": "{{days}} days · {{tz}}",
+    "duration": "Duration distribution",
+    "durationSub": "How long burns run, in days.",
+    "durationBar": "{{n}} burn(s) at {{days}} days",
+    "byRegion": "Burns by region",
+    "byRegionSub": "Self-reported region string. Sorted by count.",
+    "colRegion": "Region",
+    "colBurns": "Burns",
+    "unknownRegion": "(unknown)"
+  },
+  "countdown": {
+    "onPlaya": "On a playa now",
+    "next": "Next",
+    "endsIn": "ends in {{hours}}",
+    "today": "today",
+    "tomorrow": "tomorrow",
+    "inDays_one": "in {{count}} day",
+    "inDays_other": "in {{count}} days",
+    "more": "+ {{n}} more",
+    "moreActive": "{{title}} (ends in {{hours}})",
+    "moreUpcoming": "{{title}} ({{when}})",
+    "openBurn": "Open this burn's page"
   }
 }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import { eventTypeMix } from '../data/aggregate';
 import { EVENT_TYPE_LABELS } from '../data/types';
@@ -13,6 +14,7 @@ interface Props {
 type Mode = 'fractions' | 'counts';
 
 export function TypeMix({ bundles, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [mode, setMode] = useState<Mode>('fractions');
   const rows = useMemo(() => eventTypeMix(bundles).filter((r) => r.total > 0), [bundles]);
@@ -59,19 +61,17 @@ export function TypeMix({ bundles, onOpenBurn }: Props) {
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
-          <h2>Event-type mix per burn</h2>
+          <h2>{t('typeMix.title')}</h2>
           <div style={{ display: 'flex', gap: 6 }}>
             <button className={mode === 'fractions' ? 'primary' : ''} onClick={() => setMode('fractions')}>
-              fractions
+              {t('typeMix.modeFractions')}
             </button>
             <button className={mode === 'counts' ? 'primary' : ''} onClick={() => setMode('counts')}>
-              counts
+              {t('typeMix.modeCounts')}
             </button>
           </div>
         </div>
-        <div className="sub">
-          Stacked: each bar is one burn, segments are the 19 dust event-type labels. {sorted.length} burns with scheduled events.
-        </div>
+        <div className="sub">{t('typeMix.sub', { n: sorted.length })}</div>
         <EChart
           className="chart tall"
           onEvents={onOpenBurn ? {
@@ -119,8 +119,8 @@ export function TypeMix({ bundles, onOpenBurn }: Props) {
       </div>
 
       <div className="panel">
-        <h2>Heatmap — burn × event type</h2>
-        <div className="sub">Same data, denser layout. Darker = larger share / count.</div>
+        <h2>{t('typeMix.heatmap')}</h2>
+        <div className="sub">{t('typeMix.heatmapSub')}</div>
         <EChart
           className="chart tall"
           option={{

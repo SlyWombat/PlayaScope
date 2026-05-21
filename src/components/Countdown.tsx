@@ -14,6 +14,7 @@
 // 60s tick handles upcoming → active → past transitions.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FestivalBundle } from '../data/loader';
 import type { SanctionFlags } from '../data/sanctioned';
 import type { SanctionFilter } from '../App';
@@ -46,6 +47,7 @@ function compareRank(a: RankedBurn, b: RankedBurn, filter: SanctionFilter): numb
 }
 
 export function Countdown({ bundles, sanction, filter, onJump }: Props) {
+  const { t } = useTranslation();
   const [now, setNow] = useState(() => new Date());
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -77,13 +79,13 @@ export function Countdown({ bundles, sanction, filter, onJump }: Props) {
     const m = now.getUTCMonth();
     const d = now.getUTCDate();
     const blackRockCity = (m === 7 && d >= 25) || (m === 8 && d <= 4);
-    if (blackRockCity) return 'You should not be looking at this app.';
+    if (blackRockCity) return t('countdown.snark.eggBrc');
     const local = new Date(now);
     if (local.getMonth() === 3 && local.getDate() === 1) {
-      return 'There are no burns. There are only ideas.';
+      return t('countdown.snark.eggAprilFool');
     }
     return null;
-  }, [now]);
+  }, [now, t]);
 
   if (bundles.length === 0) {
     return <span className="countdown" style={countdownStyle}>—</span>;
@@ -95,13 +97,13 @@ export function Countdown({ bundles, sanction, filter, onJump }: Props) {
     const more = active.length - 1;
     return (
       <CountdownChip
-        label="On a playa now"
+        label={t('countdown.onPlaya')}
         burnTitle={top.bundle.festival.title}
         burnSlug={top.bundle.festival.name}
-        detail={`ends in ${formatHours(top.msTo)}`}
+        detail={t('countdown.endsIn', { hours: formatHours(top.msTo) })}
         moreCount={more}
         moreBurns={active.slice(1)}
-        moreLabel={(b) => `${b.bundle.festival.title} (ends in ${formatHours(b.msTo)})`}
+        moreLabel={(b) => t('countdown.moreActive', { title: b.bundle.festival.title, hours: formatHours(b.msTo) })}
         popoverOpen={popoverOpen}
         setPopoverOpen={setPopoverOpen}
         onJump={onJump}
@@ -119,15 +121,18 @@ export function Countdown({ bundles, sanction, filter, onJump }: Props) {
     const more = cluster.length - 1;
     return (
       <CountdownChip
-        label="Next"
+        label={t('countdown.next')}
         burnTitle={top.bundle.festival.title}
         burnSlug={top.bundle.festival.name}
-        detail={days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`}
+        detail={days === 0 ? t('countdown.today') : days === 1 ? t('countdown.tomorrow') : t('countdown.inDays', { count: days })}
         moreCount={more}
         moreBurns={cluster.slice(1)}
         moreLabel={(b) => {
           const d = Math.floor(b.msTo / (24 * 3600 * 1000));
-          return `${b.bundle.festival.title} (in ${d} day${d === 1 ? '' : 's'})`;
+          return t('countdown.moreUpcoming', {
+            title: b.bundle.festival.title,
+            when: t('countdown.inDays', { count: d }),
+          });
         }}
         popoverOpen={popoverOpen}
         setPopoverOpen={setPopoverOpen}
@@ -137,9 +142,10 @@ export function Countdown({ bundles, sanction, filter, onJump }: Props) {
   }
 
   // QUIET — easter eggs, then a polite default.
+  const quiet = easterEgg ?? t('countdown.snark.offSeason');
   return (
-    <span className="countdown" style={countdownStyle} title={easterEgg ?? ''}>
-      {easterEgg ?? "It's the off-season. Touch grass."}
+    <span className="countdown" style={countdownStyle} title={quiet}>
+      {quiet}
     </span>
   );
 }
@@ -177,13 +183,14 @@ interface ChipProps {
 function CountdownChip({
   label, burnTitle, burnSlug, detail, moreCount, moreBurns, moreLabel, popoverOpen, setPopoverOpen, onJump,
 }: ChipProps) {
+  const { t } = useTranslation();
   return (
     <span className="countdown" style={{ ...countdownStyle, position: 'relative' }}>
       <span style={{ color: 'var(--muted)' }}>{label}:</span>
       <button
         onClick={() => onJump(burnSlug)}
         style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
-        title="Open this burn's page"
+        title={t('countdown.openBurn')}
       >
         {burnTitle}
       </button>
@@ -194,7 +201,7 @@ function CountdownChip({
             onClick={() => setPopoverOpen(!popoverOpen)}
             style={{ background: 'none', border: 'none', padding: '0 4px', color: 'var(--muted)', textDecoration: 'underline dotted', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
           >
-            + {moreCount} more
+            {t('countdown.more', { n: moreCount })}
           </button>
           {popoverOpen && (
             <div

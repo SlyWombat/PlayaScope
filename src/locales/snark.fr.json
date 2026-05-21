@@ -1,0 +1,191 @@
+{
+  "_comment": "Snark localisé en français — adaptation idiomatique, pas une traduction littérale. Ne JAMAIS toucher aux {{placeholders}}. Deep-mergé dans la ressource `fr` (voir src/i18n.ts).",
+  "moop": {
+    "tiles": {
+      "longestCamp": {
+        "title": "Le nom de camp qui ne voulait pas la fermer",
+        "value": "{{n}} caractères, bordel",
+        "hint": "à {{burn}}",
+        "how": "Le plus long nom de camp, tous burns confondus. Un comité s'est battu là-dessus. Cliquez pour ouvrir le burn."
+      },
+      "topWord": {
+        "title": "Le mot que chaque burner est légalement obligé d'utiliser",
+        "detail": "{{n}} fois sur {{titles}} titres d'événements. L'originalité est morte sur la playa et personne n'a fait de cérémonie.",
+        "how": "Titres en minuscules, mots vides virés, fréquence comptée."
+      },
+      "topPrefix": {
+        "title": "Le préfixe qui a lancé un millier de camps",
+        "detail": "{{n}} camps commencent par là. Suivants : {{runners}}. Imagination : vendue séparément.",
+        "how": "Premier mot de chaque nom de camp, mots vides exclus."
+      },
+      "varied": {
+        "title": "Le bourreau de travail absolu",
+        "detail": "Étalé sur tous les types d'événements comme un maniaque sous caféine — score de variété {{score}}/100. Ce burn est incapable de tenir en place.",
+        "how": "Répartition égale sur les 19 catégories = score maximal. Cliquez pour ouvrir le burn."
+      },
+      "oneTrack": {
+        "title": "Le superbe poney à un seul tour",
+        "detail": "Une seule catégorie, toute la putain de semaine — score de variété {{score}}/100. Ils savent ce qu'ils aiment et vous ne les ferez pas changer.",
+        "how": "Plus faible répartition entre catégories (≥5 événements)."
+      },
+      "allDay": {
+        "title": "Le plus d'événements qui techniquement ne font rien, toute la journée",
+        "value": "{{n}} événements toute la journée",
+        "how": "Nombre d'événements avec all_day === true."
+      },
+      "locationless": {
+        "title": "Le plus d'événements « démerde-toi pour le trouver »",
+        "value": "{{n}} événements, zéro indication",
+        "how": "Aucun camp hôte, aucune œuvre hôte, aucun other_location."
+      },
+      "totalHours": {
+        "title": "Programmation totale de la saison",
+        "detail": "Chaque minute programmée de chaque burn, bout à bout. Personne ne dort. Personne.",
+        "how": "Σ (end_time − start_time)."
+      },
+      "ifToday": {
+        "title": "Si tous les burns de la planète avaient lieu aujourd'hui",
+        "value": "{{n}} événements",
+        "detail": "{{camps}} camps · {{art}} œuvres d'un coup. La société n'y survivrait pas — et honnêtement ? Ça vaudrait le coup.",
+        "how": "Cumulé sur le filtre actuel."
+      },
+      "weirdest": {
+        "title": "C'est quoi ce putain d'événement",
+        "detail": "à {{burn}}. Suivants : {{runners}}. Quelqu'un a tapé ça parfaitement sobre. Paraît-il.",
+        "how": "Longueur du titre + 4× le nombre de signes de ponctuation."
+      },
+      "traveled": {
+        "title": "Le DJ qui n'a pas revu son lit depuis mars",
+        "detail": "{{burns}} · {{sets}}",
+        "burns_one": "{{count}} burn",
+        "burns_other": "{{count}} burns",
+        "sets_one": "{{count}} set",
+        "sets_other": "{{count}} sets",
+        "how": "Burns distincts joués, noms génériques (TBD/TBA/inconnu) exclus."
+      },
+      "overlap": {
+        "title": "Le jour où il faut se cloner",
+        "value": "{{n}} burns en même temps",
+        "detail": "Le {{date}} : {{burns}}. Choisissez-en un. Décevez littéralement tous les autres.",
+        "how": "Nombre de festivals dont la période inclut chaque jour UTC."
+      },
+      "afterDark": {
+        "title": "Le lexique de l'après-minuit",
+        "detail": "{{n}} titres d'événements ont viré au cochon. Aussi entendu : {{runners}}. La playa contient des multitudes, et la plupart sont à poil.",
+        "how": "Titres d'événements comparés à une liste de mots pour adultes ({{terms}} termes). Gardez l'esprit ouvert."
+      },
+      "spiciest": {
+        "title": "Le burn le plus chaud de tout le circuit",
+        "detail": "{{n}} événements Public Averti — {{pct}} % de tout le programme. {{total}} sur la saison. Hydratez-vous, étirez-vous, ménagez-vous.",
+        "how": "Nombre d'événements dont l'event_type est « Mature Audiences » — une vraie catégorie dust."
+      },
+      "reputation": {
+        "title": "Les camps qui ont une sacrée réputation",
+        "value": "{{n}} camps",
+        "detail": "Des noms de camp qui rendraient votre mère nerveuse — p. ex. {{sample}}. Vous savez exactement vers quel quartier vous marchez ce soir.",
+        "detailMore": "Des noms de camp qui rendraient votre mère nerveuse — p. ex. {{sample}}, et bien d'autres. Vous savez exactement vers quel quartier vous marchez ce soir.",
+        "how": "Noms de camp comparés à la même liste de {{terms}} mots pour adultes."
+      },
+      "fire": {
+        "title": "Les burns qui ont collé « feu » dessus et basta",
+        "value": "{{n}} / {{total}}",
+        "how": "Le titre contient : {{words}}."
+      },
+      "notFire": {
+        "title": "Les burns ayant eu l'imagination de NE PAS dire « feu »",
+        "value": "{{n}} / {{total}}",
+        "how": "Le complément de la liste ci-dessus. Des braves."
+      },
+      "artWalk": {
+        "title": "La plus longue balade d'art — mets de meilleures chaussures, abruti",
+        "value": "{{km}} km",
+        "detail": "{{burn}} — {{count}} œuvres, {{steps}} pas, {{bananas}} bananes bout à bout. Vos pieds vont porter plainte.",
+        "how": "Chemin le plus court reliant chaque œuvre géolocalisée. 1 pas ≈ 0,762 m, 1 banane ≈ 0,18 m."
+      }
+    }
+  },
+  "battle": {
+    "snark": {
+      "eventsRunaway": "{{big}} fait {{ratio}}× les événements de {{small}}. L'un de vous ne dormira pas de la semaine ; l'autre s'emmerdera dès mardi.",
+      "eventsClose": "{{big}} devance {{small}} de justesse — assez peu pour que continuer à en parler fasse de vous le con de service.",
+      "art": "{{big}} a {{bigArt}} installations d'art contre les {{smallArt}} maigrichonnes de l'autre. Apportez un grand-angle à l'un et de l'indulgence à l'autre.",
+      "music": "{{big}} est la sortie la plus bruyante et la plus moite — {{bigMusic}} sets musicaux contre {{smallMusic}}. Bouchons d'oreilles ou adieu l'audition.",
+      "durationLonger": "{{longer}} dure plus longtemps — {{longDays}} jours contre {{shortDays}}. L'un est un sport d'endurance ; l'autre, vous pouvez l'expliquer à votre patron.",
+      "durationDenser": "Même nombre de jours, mais {{denser}} en bourre chacun à ras bord. Dormir était une option et {{denser}} a dit non merci.",
+      "regionSame": "Guerre civile — les deux burns sont en {{region}}. Quelqu'un va se faire dé-amitié pour ça.",
+      "regionDiff": "{{regionA}} contre {{regionB}} — prévoyez un passeport et une excuse très convaincante.",
+      "sanctionBoth": "Deux régionaux BM officiels en bonne et due forme. L'Org bénit ce magnifique bordel.",
+      "sanctionNeither": "Aucun des deux n'est sur la liste officielle. Deux superbes hors-la-loi, zéro surveillance d'adulte.",
+      "sanctionOne": "{{official}} a le badge officiel BM ; {{other}} fait ce qu'il veut, point. Respect aux deux, franchement.",
+      "vibeClash": "Choc des ambiances : {{titleA}} est à fond {{traitA}}, {{titleB}} est à fond {{traitB}}. Vous savez déjà lequel votre psy choisirait.",
+      "vibeSame": "Les deux burns ont la même veine {{trait}}. Jumeaux séparés à la naissance, élevés par la même secte poussiéreuse."
+    }
+  },
+  "personality": {
+    "traits": {
+      "Arts & Crafts": "Énergie pistolet à colle",
+      "Class/Workshop": "La mort par atelier",
+      "Diversity & Inclusion": "Câlin collectif",
+      "Fire/Spectacle": "Ça crame, mec",
+      "Food & Drink": "Te nourrit sans arrêt",
+      "For Kids": "Amène vraiment les gosses",
+      "Games": "Pas sérieux (tendre)",
+      "Gathering/Party": "Aucune remarque, que la fête",
+      "Live Music": "La basse dans la cage thoracique",
+      "Mature Audiences": "Pantalon fortement facultatif",
+      "Miscellaneous": "Personne n'en sait rien",
+      "Parade": "Toujours en train de défiler",
+      "Performance": "Regardez-moi, regardez-moi",
+      "Repair": "A vraiment géré son truc",
+      "Ritual/Ceremony": "Grosse dose de cérémonie",
+      "Self Care": "QG des câlins",
+      "Sustainability/Greening Your Burn": "Intégristes du sans-trace",
+      "Yoga/Movement/Fitness": "Complexe industriel du bain sonore"
+    },
+    "blurbs": {
+      "noSleep": "Vous ne dormirez pas. Vous ne vous assoirez même pas. Bonne chance, magnifique idiot.",
+      "soundBowl": "Ici tout le monde a un bol chantant et personne n'hésitera à vous en jouer un.",
+      "seeThings": "Vous allez en voir de belles. Hydratez-vous d'abord.",
+      "practical": "Le burn le plus suspectement bien organisé du circuit. Qui vous a blessé ? Qui vous a appris la logistique ?",
+      "kids": "Amenez les enfants. Non, vraiment, de vrais enfants — c'est aussi bon enfant que ça.",
+      "parade": "J'espère que vous aimez les défilés, parce que félicitations, vous êtes DEDANS maintenant.",
+      "subtle": "Un petit burn tout en subtilité. Apportez les vibes ; laissez le lance-flammes à la maison.",
+      "noLearning": "Ce burn ne touche pas aux ateliers. Zéro. Apprendre, c'est pour le monde par défaut.",
+      "average": "Douloureusement, héroïquement équilibré"
+    }
+  },
+  "artists": {
+    "snark": {
+      "marathon": "{{display}} a joué {{n}} burns ({{list}}){{distance}}. Cette personne n'a pas revu son lit depuis le printemps.",
+      "marathonDist": ", {{km}} entre les deux plus éloignés — ce n'est pas une tournée, c'est une cavale",
+      "placeholder": "« {{display}} » est classé n°{{rank}} cette saison — {{burns}} burns, {{sets}} sets — et pas un seul organisateur ne peut dire qui c'est. Une légende entièrement faite de TBD.",
+      "conflict": "{{display}} est à la fois à {{burnA}} ET à {{burnB}} en moins de 24h. Soit un gremlin de données, soit une vraie téléportation."
+    }
+  },
+  "schedule": {
+    "snark": {
+      "noCommentary": "sans commentaire, franchement on est aussi surpris que vous",
+      "hourVibe": {
+        "0": "l'heure des sorcières",
+        "2": "l'heure gobelin en deep playa",
+        "4": "l'heure rave-lever-de-soleil, décisions douteuses",
+        "6": "l'heure lever-de-soleil, encore debout on ne sait comment",
+        "8": "l'heure croque-monsieur et regrets",
+        "10": "l'heure yoga avec la gueule de bois",
+        "12": "l'atelier où personne ne vient",
+        "14": "l'heure pic d'ateliers, pourquoi j'apprends",
+        "16": "l'heure balade d'art et crème solaire agressive",
+        "18": "l'heure apéro et planification de mauvaises idées",
+        "20": "l'heure dîner, feu et mauvais choix",
+        "22": "l'heure où la nuit commence officiellement"
+      }
+    }
+  },
+  "countdown": {
+    "snark": {
+      "eggBrc": "Lâche ton téléphone. Tu es à Burning putain de Man. VAS-Y.",
+      "eggAprilFool": "Il n'y a pas de burns. Il n'y a pas de cuillère. Il n'y a que de la poussière.",
+      "offSeason": "Hors-saison. Va toucher de l'herbe, magnifique rat de poussière."
+    }
+  }
+}

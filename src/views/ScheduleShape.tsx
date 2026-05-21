@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
 import { scheduleShape } from '../data/aggregate';
 import type { FestivalBundle } from '../data/loader';
@@ -9,22 +10,8 @@ interface Props {
   onOpenBurn?: (slug: string) => void;
 }
 
-const HOUR_VIBES: Record<number, string> = {
-  6: 'sunrise-set hour',
-  8: 'breakfast hour',
-  10: 'yoga hour',
-  12: 'the one workshop nobody attends',
-  14: 'workshop hour',
-  16: 'art-walk hour',
-  18: 'aperitif hour',
-  20: 'dinner-and-fire hour',
-  22: 'opening-set hour',
-  0: 'witching hour',
-  2: 'deep-playa hour',
-  4: 'sunrise rave hour',
-};
-
 export function ScheduleShape({ bundles, onOpenBurn }: Props) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusBurn, setFocusBurn] = useState<string | null>(null);
 
@@ -40,7 +27,7 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
   }, [byCount, selected]);
 
   const maxDay = useMemo(() => Math.max(...active.map((r) => r.perDay.length), 1), [active]);
-  const dayAxis = Array.from({ length: maxDay }, (_, i) => `Day ${i - 1}`);
+  const dayAxis = Array.from({ length: maxDay }, (_, i) => t('schedule.day', { n: i - 1 }));
 
   // ---- Time-of-day heatmap (issue #2) ----
   const heatmapBurn = useMemo(() => {
@@ -103,11 +90,8 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="panel">
-        <h2>Schedule shape — events per day of burn</h2>
-        <div className="sub">
-          X axis is days from the festival's local start (Day -1 = pre-burn, Day 0 = opening). Y axis is event count per day.
-          Showing {active.length} burn{active.length === 1 ? '' : 's'}.
-        </div>
+        <h2>{t('schedule.title')}</h2>
+        <div className="sub">{t('schedule.sub', { count: active.length })}</div>
         <EChart
           className="chart tall"
           option={{
@@ -143,8 +127,8 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
       </div>
 
       <div className="panel">
-        <h2>Pick burns to compare</h2>
-        <div className="sub">Click to toggle on the chart. Shift-click (or use the arrow) to open the burn page. Empty selection = top 8 by event volume.</div>
+        <h2>{t('schedule.pick')}</h2>
+        <div className="sub">{t('schedule.pickSub')}</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {byTitle.map((r) => {
             const on = selected.has(r.festival);
@@ -169,7 +153,7 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
                 {onOpenBurn && (
                   <button
                     onClick={() => onOpenBurn(r.festival)}
-                    title="Open burn page"
+                    title={t('schedule.openBurn')}
                     style={{
                       fontSize: 11,
                       padding: '4px 6px',
@@ -191,7 +175,7 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
       {heatmapBurn && (
         <div className="panel">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: 12 }}>
-            <h2 style={{ margin: 0 }}>Time-of-day heatmap — {heatmapBurn.festival.title}</h2>
+            <h2 style={{ margin: 0 }}>{t('schedule.heatmapTitle', { burn: heatmapBurn.festival.title })}</h2>
             <select
               value={heatmapBurn.festival.name}
               onChange={(e) => setFocusBurn(e.target.value)}
@@ -211,20 +195,20 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
             </select>
           </div>
           <div className="sub">
-            {heatmap ? (
-              <>
-                Peak hour: <strong>{String(heatmap.peakHour).padStart(2, '0')}:00</strong> — {HOUR_VIBES[heatmap.peakHour] ?? 'no commentary, you tell us'}. Hour 0 is midnight local time.
-              </>
-            ) : (
-              <>Computing heatmap for {heatmapBurn.schedule.length.toLocaleString()} events…</>
-            )}
+            {heatmap
+              ? t('schedule.peakHour', {
+                  hour: `${String(heatmap.peakHour).padStart(2, '0')}:00`,
+                  vibe: t(`schedule.snark.hourVibe.${heatmap.peakHour}`, { defaultValue: '' })
+                    || t('schedule.snark.noCommentary'),
+                })
+              : t('schedule.computing', { n: heatmapBurn.schedule.length.toLocaleString() })}
           </div>
           {!heatmap || computing ? (
             <div className="loading" style={{ minHeight: 320 }}>
               <div className="progress">
                 <div className="bar" style={{ width: '40%', animation: 'pulse 1.4s ease-in-out infinite' }} />
               </div>
-              <div style={{ fontSize: 11 }}>Rendering 24h × {Math.max(1, (heatmap?.days ?? 0))}-day grid…</div>
+              <div style={{ fontSize: 11 }}>{t('schedule.rendering', { days: Math.max(1, heatmap?.days ?? 0) })}</div>
             </div>
           ) : (
           <EChart
@@ -245,7 +229,7 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
               grid: { left: 50, right: 60, top: 16, bottom: 40 },
               xAxis: {
                 type: 'category',
-                data: Array.from({ length: heatmap.days }, (_, i) => `Day ${i - 1}`),
+                data: Array.from({ length: heatmap.days }, (_, i) => t('schedule.day', { n: i - 1 })),
                 axisLabel: { color: '#8b93a7' },
               },
               yAxis: {

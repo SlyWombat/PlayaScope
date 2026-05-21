@@ -6,6 +6,7 @@
 // the existing ECharts dependency).
 
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import 'echarts-wordcloud';
 import { EChart } from '../components/EChart';
 import type { FestivalBundle } from '../data/loader';
@@ -33,6 +34,7 @@ const PALETTE = [
 ];
 
 export function Lexicon({ bundles }: Props) {
+  const { t } = useTranslation();
   const [scope, setScope] = useState<Scope>('events');
   const [granularity, setGranularity] = useState<Granularity>('words');
 
@@ -92,22 +94,27 @@ export function Lexicon({ bundles }: Props) {
       <div className="panel">
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 8, gap: 12, flexWrap: 'wrap' }}>
           <div>
-            <h2 style={{ margin: 0 }}>Lexicon — what burners actually say</h2>
+            <h2 style={{ margin: 0 }}>{t('lexicon.title')}</h2>
             <div className="sub">
-              {data.totalUnique.toLocaleString()} distinct {granularity}, {data.totalOccurrences.toLocaleString()} total occurrences across {scope === 'both' ? 'events + camps' : scope}. Bigger = more frequent.
+              {t('lexicon.sub', {
+                unique: data.totalUnique.toLocaleString(),
+                units: t(granularity === 'phrases' ? 'lexicon.granPhrases' : 'lexicon.granWords'),
+                occurrences: data.totalOccurrences.toLocaleString(),
+                scope: t(scope === 'both' ? 'lexicon.scopeBothLong' : scope === 'camps' ? 'lexicon.scopeCamps' : 'lexicon.scopeEvents'),
+              })}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: 4 }}>
-              <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>scope</span>
-              <button className={scope === 'events' ? 'primary' : ''} onClick={() => setScope('events')} style={{ fontSize: 11, padding: '3px 8px' }}>events</button>
-              <button className={scope === 'camps' ? 'primary' : ''} onClick={() => setScope('camps')} style={{ fontSize: 11, padding: '3px 8px' }}>camps</button>
-              <button className={scope === 'both' ? 'primary' : ''} onClick={() => setScope('both')} style={{ fontSize: 11, padding: '3px 8px' }}>both</button>
+              <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>{t('lexicon.scopeLabel')}</span>
+              <button className={scope === 'events' ? 'primary' : ''} onClick={() => setScope('events')} style={{ fontSize: 11, padding: '3px 8px' }}>{t('lexicon.scopeEvents')}</button>
+              <button className={scope === 'camps' ? 'primary' : ''} onClick={() => setScope('camps')} style={{ fontSize: 11, padding: '3px 8px' }}>{t('lexicon.scopeCamps')}</button>
+              <button className={scope === 'both' ? 'primary' : ''} onClick={() => setScope('both')} style={{ fontSize: 11, padding: '3px 8px' }}>{t('lexicon.scopeBoth')}</button>
             </div>
             <div style={{ display: 'flex', gap: 4 }}>
-              <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>units</span>
-              <button className={granularity === 'words' ? 'primary' : ''} onClick={() => setGranularity('words')} style={{ fontSize: 11, padding: '3px 8px' }}>words</button>
-              <button className={granularity === 'phrases' ? 'primary' : ''} onClick={() => setGranularity('phrases')} style={{ fontSize: 11, padding: '3px 8px' }}>phrases (2–3 grams)</button>
+              <span style={{ color: 'var(--muted)', fontSize: 11, alignSelf: 'center', marginRight: 4 }}>{t('lexicon.unitsLabel')}</span>
+              <button className={granularity === 'words' ? 'primary' : ''} onClick={() => setGranularity('words')} style={{ fontSize: 11, padding: '3px 8px' }}>{t('lexicon.unitWords')}</button>
+              <button className={granularity === 'phrases' ? 'primary' : ''} onClick={() => setGranularity('phrases')} style={{ fontSize: 11, padding: '3px 8px' }}>{t('lexicon.unitPhrases')}</button>
             </div>
           </div>
         </div>
@@ -159,16 +166,16 @@ export function Lexicon({ bundles }: Props) {
       </div>
 
       <div className="panel">
-        <h2>Top {data.sortedTop.length} — ranked</h2>
-        <div className="sub">Same data, tabular — the Examples column shows where each term appears.</div>
+        <h2>{t('lexicon.ranked', { n: data.sortedTop.length })}</h2>
+        <div className="sub">{t('lexicon.rankedSub')}</div>
         <div className="table-wrap" style={{ maxHeight: 360, overflowY: 'auto' }}>
           <table className="data">
             <thead>
               <tr>
                 <th style={{ width: 50 }}>#</th>
-                <th>{granularity === 'phrases' ? 'Phrase' : 'Word'}</th>
-                <th className="num">Count</th>
-                <th>Examples</th>
+                <th>{granularity === 'phrases' ? t('lexicon.colPhrase') : t('lexicon.colWord')}</th>
+                <th className="num">{t('lexicon.colCount')}</th>
+                <th>{t('lexicon.colExamples')}</th>
               </tr>
             </thead>
             <tbody>
