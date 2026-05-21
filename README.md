@@ -46,14 +46,17 @@ prior-year duplicates by default.
 git clone https://github.com/SlyWombat/PlayaScope.git
 cd PlayaScope
 npm install
-npm run fetch-data    # one-time: snapshots ~12 MB of dust.events JSON into public/data/
+npm run fetch-data    # one-time: snapshots all source data into public/data/
 npm run dev           # opens http://localhost:5174
 ```
 
-Why `fetch-data` is required: the upstream CDN at `data.dust.events` doesn't
-send `Access-Control-Allow-Origin` headers, so browsers block live fetches.
-We snapshot everything into `public/data/` at build time and read it
-same-origin. Re-run `npm run fetch-data` whenever you want fresher data.
+Why `fetch-data` is required: `data.dust.events` and burningman.org send no
+`Access-Control-Allow-Origin` headers, so browsers block live fetches.
+`scripts/fetch-data.mjs` is a multi-source orchestrator — it runs each adapter
+in `scripts/adapters/` (`dust` for the regionals with full programs,
+`bm-directory` for officially-listed burns that don't use Dust, `manual` for
+Black Rock City), merges their festival lists, and snapshots the result into
+`public/data/` at build time. Re-run it whenever you want fresher data.
 
 ### Other commands
 

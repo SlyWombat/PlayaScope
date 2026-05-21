@@ -58,8 +58,8 @@ export interface DensityRow {
   art: number;
   music: number;
   duration: number;
-  lat: number;
-  long: number;
+  lat: number | null;
+  long: number | null;
   region: string;
   timeZone: string;
 }

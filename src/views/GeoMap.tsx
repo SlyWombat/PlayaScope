@@ -44,7 +44,11 @@ export function GeoMap({ bundles, sanction, onOpenBurn }: Props) {
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             />
             {rows
-              .filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.long))
+              // Directory-sourced festivals have null coords — no map pin for
+              // them (they still appear on Calendar / Data). Type guard so the
+              // CircleMarker center sees plain numbers.
+              .filter((r): r is typeof r & { lat: number; long: number } =>
+                r.lat != null && r.long != null && Number.isFinite(r.lat) && Number.isFinite(r.long))
               .map((r) => {
                 const radius = 6 + 18 * Math.sqrt(r.events / maxEvents);
                 const isOfficial = sanction?.byFestival.get(r.festival)?.is_sanctioned ?? false;

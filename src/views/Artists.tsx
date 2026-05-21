@@ -62,8 +62,11 @@ export function Artists({ bundles }: Props) {
           setTitle: m.title ?? undefined,
           location: m.location ?? undefined,
           camp: m.camp ?? undefined,
-          lat: b.festival.lat,
-          long: b.festival.long,
+          // Directory festivals have no coords, but they also have no music,
+          // so this path only ever sees dust festivals. NaN keeps the type
+          // simple and makes any distance calc harmlessly skip.
+          lat: b.festival.lat ?? NaN,
+          long: b.festival.long ?? NaN,
         });
       }
     }

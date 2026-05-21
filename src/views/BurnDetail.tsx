@@ -152,6 +152,13 @@ export function BurnDetail({ slug, allBundles, sanction, onBack }: Props) {
                 </a>
               )}
             </div>
+            {f.programDepth === 'dates-only' && (
+              <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>
+                {f.source === 'manual'
+                  ? 'Listed manually — schedule, camps and art aren’t published through a feed PlayaScope can read.'
+                  : 'Listed on the burningman.org directory — this burn doesn’t publish a Dust feed, so only its dates and location are known here.'}
+              </div>
+            )}
           </div>
           <div
             style={{

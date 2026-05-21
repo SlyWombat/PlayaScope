@@ -163,6 +163,14 @@ export function attachSanctioned(festivals: Festival[], index: SanctionedIndex |
   }
   const matchedOfficial = new Set<string>();
   for (const f of festivals) {
+    // Black Rock City IS Burning Man — definitionally sanctioned. It's a
+    // manually-injected festival (not on dust), and its title "Burning Man"
+    // won't fuzzy-match the directory entry "Black Rock City 2026", so we
+    // flag it directly rather than relying on the scrape.
+    if (f.name.startsWith('black-rock-city')) {
+      byFestival.set(f.name, { is_sanctioned: true, officialName: 'Black Rock City', via: 'exact' });
+      continue;
+    }
     const m = matchFestival(f, index);
     byFestival.set(f.name, { is_sanctioned: m.matched, officialName: m.officialName, via: m.via });
     if (m.officialName) matchedOfficial.add(m.officialName);

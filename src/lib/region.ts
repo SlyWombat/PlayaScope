@@ -4,10 +4,9 @@
 // project rule). Other continents stay continent-level because their burn
 // counts are small enough that further splits would just produce N=1 slices.
 //
-// The bounding boxes are rough — they're a sorting heuristic, not a GIS
-// product. If a burn lands on the wrong side of a border, fix the
-// COORD_OVERRIDES table in scripts/fetch-dust-data.mjs first, then revisit
-// the boxes here.
+// The bounding boxes are rough — a sorting heuristic, not a GIS product. If a
+// burn lands on the wrong side of a border, fix the COORD_OVERRIDES table in
+// scripts/adapters/dust.mjs first, then revisit the boxes here.
 
 export type RegionLabel =
   | 'Canada'
@@ -50,24 +49,48 @@ export const REGION_COLORS: Record<RegionLabel, string> = {
 
 // The festival's free-text `region` string is the authoritative COUNTRY
 // signal — coordinate boxes can't separate southern Ontario from the
-// northern US (Windsor ON is south of Detroit MI). When the string clearly
-// names a country/province/state, trust it; otherwise fall back to coords.
+// northern US (Windsor ON is south of Detroit MI), and directory-scraped
+// festivals have no coords at all. When the string clearly names a
+// country/province/state, trust it; otherwise fall back to coords.
 const CANADA_RE =
-  /\b(canada|ontario|qu[ée]bec|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|labrador|prince edward|yukon|nunavut|northwest territories)\b/i;
+  /\b(canada|ontario|qu[ée]bec|british columbia|\bbc\b|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|labrador|prince edward|yukon|nunavut|northwest territories)\b/i;
 // Mexico, but NOT "New Mexico" (a US state).
 const MEXICO_RE = /(^|[^w]\s)mexico\b/i;
-const USA_RE = /\b(usa|u\.s\.a|united states|new mexico)\b/i;
+// US states + territories. "New Mexico" lives here, not in MEXICO_RE.
+const USA_RE = new RegExp(
+  '\\b(usa|u\\.s\\.a|united states|alabama|alaska|arizona|arkansas|california|colorado|' +
+  'connecticut|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|' +
+  'kentucky|louisiana|maine|maryland|massachusetts|michigan|minnesota|mississippi|' +
+  'missouri|montana|nebraska|nevada|new hampshire|new jersey|new mexico|new york|' +
+  'north carolina|north dakota|ohio|oklahoma|oregon|pennsylvania|rhode island|' +
+  'south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|' +
+  'west virginia|wisconsin|wyoming)\\b',
+  'i',
+);
+const EUROPE_RE =
+  /\b(europe|united kingdom|england|scotland|wales|ireland|spain|france|germany|italy|netherlands|belgium|portugal|sweden|norway|finland|denmark|iceland|poland|austria|switzerland|czech|hungary|romania|bulgaria|greece|croatia|slovenia|slovakia|estonia|latvia|lithuania|cyprus|malta|luxembourg|serbia)\b/i;
+const OCEANIA_RE = /\b(australia|new zealand|nsw|victoria|queensland|tasmania|aotearoa)\b/i;
+const ASIA_RE = /\b(japan|china|korea|india|indonesia|thailand|vietnam|philippines|malaysia|singapore|taiwan|hong kong|israel)\b/i;
+const AFRICA_RE = /\b(south africa|namibia|kenya|nigeria|morocco|egypt|tanzania|ghana|tafraoute|tankwa)\b/i;
+const SOUTH_AMERICA_RE = /\b(brazil|argentina|chile|peru|colombia|venezuela|ecuador|bolivia|uruguay|paraguay)\b/i;
 
-export function regionForFestival(f: { lat: number; long: number; region?: string }): RegionLabel {
+export function regionForFestival(f: { lat: number | null; long: number | null; region?: string }): RegionLabel {
   const r = f.region ?? '';
+  // Country/state string wins. Canada + Mexico checked before USA so a
+  // "British Columbia" never mis-hits, and "New Mexico" stays USA.
   if (CANADA_RE.test(r)) return 'Canada';
-  if (USA_RE.test(r)) return 'USA';
   if (MEXICO_RE.test(r)) return 'Mexico';
+  if (USA_RE.test(r)) return 'USA';
+  if (EUROPE_RE.test(r)) return 'Europe';
+  if (OCEANIA_RE.test(r)) return 'Oceania';
+  if (ASIA_RE.test(r)) return 'Asia';
+  if (AFRICA_RE.test(r)) return 'Africa';
+  if (SOUTH_AMERICA_RE.test(r)) return 'South America';
   return regionForCoords(f.lat, f.long);
 }
 
-export function regionForCoords(lat: number, lng: number): RegionLabel {
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return 'Other';
+export function regionForCoords(lat: number | null, lng: number | null): RegionLabel {
+  if (lat == null || lng == null || !Number.isFinite(lat) || !Number.isFinite(lng)) return 'Other';
 
   // North America block first.
   if (lat > 14 && lng > -170 && lng < -50) {
@@ -99,7 +122,7 @@ export function regionForCoords(lat: number, lng: number): RegionLabel {
 }
 
 // Convenience: ordered iterator that returns only regions actually present.
-export function regionsPresent(coords: Array<{ lat: number; long: number }>): RegionLabel[] {
+export function regionsPresent(coords: Array<{ lat: number | null; long: number | null }>): RegionLabel[] {
   const set = new Set<RegionLabel>();
   for (const c of coords) set.add(regionForCoords(c.lat, c.long));
   return REGION_ORDER.filter((r) => set.has(r));

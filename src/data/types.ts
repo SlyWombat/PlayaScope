@@ -11,6 +11,9 @@ export interface FestivalTheme {
   primaryColor?: string;
 }
 
+/** Which adapter produced a festival (see scripts/adapters/). */
+export type FestivalSource = 'dust' | 'bm-directory' | 'manual' | 'bm-api';
+
 export interface Festival {
   name: string;
   id: string;
@@ -20,8 +23,9 @@ export interface Festival {
   active: boolean;
   start: string;
   end: string;
-  lat: number;
-  long: number;
+  /** null for directory-scraped festivals — they have a region string but no coords. */
+  lat: number | null;
+  long: number | null;
   region: string;
   website: string;
   imageUrl: string;
@@ -40,6 +44,10 @@ export interface Festival {
   music_registration: boolean;
   mv_registration: boolean;
   unknownDates?: boolean;
+  /** Multi-source metadata, set by the build-time orchestrator. */
+  source?: FestivalSource;
+  /** 'full' = has a schedule/camps/art feed; 'dates-only' = calendar entry only. */
+  programDepth?: 'full' | 'dates-only';
 }
 
 export interface EventType {
