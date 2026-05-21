@@ -167,6 +167,18 @@ const countdownStyle: React.CSSProperties = {
   maxWidth: '100%',
 };
 
+// The chip's text row. The "+N more" popover is a sibling of THIS element,
+// not a child — so the mobile `overflow: hidden` that truncates the single-
+// line chip clips the text but never the popover.
+const lineStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: 6,
+  minWidth: 0,
+  maxWidth: '100%',
+};
+
 interface ChipProps {
   label: string;
   burnTitle: string;
@@ -186,55 +198,55 @@ function CountdownChip({
   const { t } = useTranslation();
   return (
     <span className="countdown" style={{ ...countdownStyle, position: 'relative' }}>
-      <span style={{ color: 'var(--muted)' }}>{label}:</span>
-      <button
-        className="countdown-burn"
-        onClick={() => onJump(burnSlug)}
-        style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
-        title={t('countdown.openBurn')}
-      >
-        {burnTitle}
-      </button>
-      <span style={{ color: 'var(--muted)' }}>· {detail}</span>
-      {moreCount > 0 && (
-        <>
+      <span className="countdown-line" style={lineStyle}>
+        <span style={{ color: 'var(--muted)' }}>{label}:</span>
+        <button
+          className="countdown-burn"
+          onClick={() => onJump(burnSlug)}
+          style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
+          title={t('countdown.openBurn')}
+        >
+          {burnTitle}
+        </button>
+        <span style={{ color: 'var(--muted)' }}>· {detail}</span>
+        {moreCount > 0 && (
           <button
             onClick={() => setPopoverOpen(!popoverOpen)}
-            style={{ background: 'none', border: 'none', padding: '0 4px', color: 'var(--muted)', textDecoration: 'underline dotted', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
+            style={{ background: 'none', border: 'none', padding: '0 4px', color: 'var(--muted)', textDecoration: 'underline dotted', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', flexShrink: 0 }}
           >
             {t('countdown.more', { n: moreCount })}
           </button>
-          {popoverOpen && (
+        )}
+      </span>
+      {moreCount > 0 && popoverOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '110%',
+            // Anchor to the right edge of the chip, but never let the box
+            // run past the viewport on a narrow screen.
+            right: 0,
+            background: 'var(--panel)',
+            border: '1px solid var(--border)',
+            borderRadius: 6,
+            padding: 8,
+            minWidth: 240,
+            maxWidth: 'calc(100vw - 24px)',
+            zIndex: 10,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+          }}
+        >
+          {moreBurns.map((b) => (
             <div
-              style={{
-                position: 'absolute',
-                top: '110%',
-                // Anchor to the right edge of the chip, but never let the box
-                // run past the viewport on a narrow screen.
-                right: 0,
-                background: 'var(--panel)',
-                border: '1px solid var(--border)',
-                borderRadius: 6,
-                padding: 8,
-                minWidth: 240,
-                maxWidth: 'calc(100vw - 24px)',
-                zIndex: 10,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-              }}
+              key={b.bundle.festival.name}
+              onClick={() => { onJump(b.bundle.festival.name); setPopoverOpen(false); }}
+              style={{ padding: '4px 6px', cursor: 'pointer', fontSize: 11, color: 'var(--text)' }}
             >
-              {moreBurns.map((b) => (
-                <div
-                  key={b.bundle.festival.name}
-                  onClick={() => { onJump(b.bundle.festival.name); setPopoverOpen(false); }}
-                  style={{ padding: '4px 6px', cursor: 'pointer', fontSize: 11, color: 'var(--text)' }}
-                >
-                  {b.isOfficial && <span style={{ color: 'var(--accent)' }}>★ </span>}
-                  {moreLabel(b)}
-                </div>
-              ))}
+              {b.isOfficial && <span style={{ color: 'var(--accent)' }}>★ </span>}
+              {moreLabel(b)}
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
     </span>
   );

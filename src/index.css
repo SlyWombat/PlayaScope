@@ -462,9 +462,10 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
   /* The countdown's inline link-buttons are not tap targets — exempt them
      from the 44px min-height so the chip stays one or two lines. */
   .countdown button { min-height: 0; padding: 0; }
-  /* Force the chip onto a single line; the burn name truncates if needed
-     (issue #13 P2). !important overrides the inline flex-wrap. */
-  .countdown { flex-wrap: nowrap !important; overflow: hidden; }
+  /* Force the chip text onto a single line; the burn name truncates if
+     needed (issue #13 P2). The clip is on .countdown-line, not .countdown,
+     so the "+N more" popover (a sibling) is never clipped. */
+  .countdown-line { flex-wrap: nowrap !important; overflow: hidden; }
   .countdown-burn {
     min-width: 0;
     overflow: hidden;
