@@ -7,7 +7,7 @@ import { test, expect, type Page } from '@playwright/test';
 const READY = 120_000;
 
 const ALL_TABS = [
-  'Overview', 'MOOP Report', 'Geography', 'Personality', 'Event Mix',
+  'Overview', 'MOOP Report', 'Geography', 'Personality', 'Burn Battle', 'Event Mix',
   'Lexicon', 'Artists', 'Schedule Shape', 'Calendar', 'Continuity', 'Data',
 ];
 
@@ -167,5 +167,19 @@ test.describe('PlayaScope — full validation', () => {
       await page.waitForTimeout(200);
       await expect(page.locator('.panel').first()).toBeVisible();
     }
+  });
+
+  test('Burn Battle — picks two burns, scorecard + verdict render', async ({ page }) => {
+    await page.goto('');
+    await waitReady(page);
+    await page.getByRole('button', { name: 'Burn Battle', exact: true }).click({ force: true });
+    await expect(page.locator('.panel', { hasText: 'Scorecard' })).toBeVisible();
+    // Scorecard has the metric rows and an auto verdict.
+    expect(await page.locator('table.data tbody tr').count()).toBeGreaterThan(5);
+    await expect(page.locator('text=Verdict:').first()).toBeVisible();
+    // Swap doesn't crash.
+    await page.getByRole('button', { name: /swap/i }).click();
+    await page.waitForTimeout(300);
+    await expect(page.locator('.panel', { hasText: 'Scorecard' })).toBeVisible();
   });
 });

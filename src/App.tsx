@@ -14,6 +14,7 @@ import { Continuity } from './views/Continuity';
 import { Artists } from './views/Artists';
 import { Personality } from './views/Personality';
 import { Moop } from './views/Moop';
+import { BurnBattle } from './views/BurnBattle';
 import { BurnDetail } from './views/BurnDetail';
 import { Countdown } from './components/Countdown';
 import { regionForFestival, REGION_COLORS } from './lib/region';
@@ -25,6 +26,7 @@ type Tab =
   | 'overview'
   | 'type-mix'
   | 'personality'
+  | 'battle'
   | 'lexicon'
   | 'artists'
   | 'schedule'
@@ -42,6 +44,7 @@ const TABS: { key: Tab; label: string; group: 'explore' | 'detail' }[] = [
   { key: 'moop', label: 'MOOP Report', group: 'explore' },
   { key: 'geo', label: 'Geography', group: 'explore' },
   { key: 'personality', label: 'Personality', group: 'explore' },
+  { key: 'battle', label: 'Burn Battle', group: 'explore' },
   { key: 'type-mix', label: 'Event Mix', group: 'explore' },
   // Second group: deeper dives + raw data.
   { key: 'lexicon', label: 'Lexicon', group: 'detail' },
@@ -372,6 +375,9 @@ export function App() {
             {tab === 'type-mix' && <TypeMix bundles={filteredBundles} onOpenBurn={openBurn} />}
             {tab === 'personality' && (
               <Personality bundles={filteredBundles} allBundles={state.bundles} onOpenBurn={openBurn} />
+            )}
+            {tab === 'battle' && (
+              <BurnBattle allBundles={state.bundles} sanction={state.sanction} onOpenBurn={openBurn} />
             )}
             {tab === 'lexicon' && <Lexicon bundles={filteredBundles} />}
             {tab === 'artists' && <Artists bundles={filteredBundles} />}
