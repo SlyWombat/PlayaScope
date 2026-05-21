@@ -1,6 +1,16 @@
 {
   "_comment": "Curated additions to the sanctioned-events list — burns known to be official Burning Man regionals but absent from the find-a-burning-man-event directory (their date has already passed this year, or they fall outside the directory's listing window). Merged into sanctioned-events.json by scrape-bm-regionals.mjs. Add an entry here when a genuinely-sanctioned burn is showing as 'Other' in the app.",
   "events": [
-    "SideBurn"
+    "SideBurn",
+    "Burning Flipside",
+    "FreezerBurn Texas",
+    "Interfuse",
+    "unSCruz",
+    "Saguaro Man",
+    "Kiwiburn",
+    "Blazing Swan",
+    "Witch's Tit",
+    "AfrikaBurn",
+    "Midburn"
   ]
 }

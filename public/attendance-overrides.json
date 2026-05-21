@@ -17,39 +17,14 @@
       "sourceUrl": "https://sideburn.ca/wp-content/uploads/2026/01/2025-SideBurn-AfterBurn-Report.pdf",
       "year": 2025
     },
-    "blazing-swan": {
-      "estimate": 3000,
-      "low": 2500,
-      "high": 3500,
-      "confidence": "estimated",
-      "source": "Reported as \"over 3,000 participants\" — no crisp single source",
-      "year": 2024
-    },
-    "apogaea": {
-      "estimate": 2000,
-      "low": 1500,
-      "high": 2500,
-      "confidence": "estimated",
-      "source": "Wikipedia recorded ~1,100 in 2010; grown since — recent figure estimated",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Apogaea",
-      "year": 2024
-    },
-    "transformus": {
-      "estimate": 2000,
-      "low": 1500,
-      "high": 2500,
-      "confidence": "estimated",
-      "source": "Wikipedia recorded 2,059 tickets in 2012; event now on hiatus",
-      "sourceUrl": "https://en.wikipedia.org/wiki/Transformus",
-      "year": 2012
-    },
-    "lakes-of-fire": {
-      "estimate": 2500,
-      "low": 2000,
-      "high": 3000,
-      "confidence": "estimated",
-      "source": "Great Lakes region's flagship regional — no published figure; estimated by comparable regionals",
-      "year": 2024
+    "unscruz": {
+      "estimate": 3470,
+      "low": 3252,
+      "high": 3470,
+      "confidence": "reported",
+      "source": "unSCruz 2023 AfterBurn Report — \"Attendance 3470\" (financials); quick-stats cite 3,252 attendees, 366 more than 2022",
+      "sourceUrl": "https://unscruz.org/wp-content/uploads/2023/12/2023-unSCruz-Afterburn.pdf",
+      "year": 2023
     },
     "soak": {
       "estimate": 2000,
@@ -83,6 +58,145 @@
       "source": "Wikipedia — Burning Flipside; ticket sales 2,300–3,131 across 2022–2024",
       "sourceUrl": "https://en.wikipedia.org/wiki/Burning_Flipside",
       "year": 2024
+    },
+    "blazing-swan": {
+      "estimate": 3000,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "lakes-of-fire": {
+      "estimate": 2500,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "element-11": {
+      "estimate": 2250,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "saguaro-man": {
+      "estimate": 2000,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "apogaea": {
+      "estimate": 1500,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "where-the-sheep-sleep": {
+      "estimate": 1200,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "firefly": {
+      "estimate": 1100,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "playa-del-fuego": {
+      "estimate": 1100,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "burning-nest": {
+      "estimate": 1000,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "critical-northwest": {
+      "estimate": 1000,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "frostburn": {
+      "estimate": 1000,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "freezerburn-texas": {
+      "estimate": 950,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "interfuse": {
+      "estimate": 800,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "kiezburn": {
+      "estimate": 650,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "l'osstidburn": {
+      "estimate": 650,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "portalburn": {
+      "estimate": 675,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "hearths-o-phyre": {
+      "estimate": 750,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "burning-japan": {
+      "estimate": 600,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "mosaic-experiment": {
+      "estimate": 600,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "youtopia": {
+      "estimate": 500,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "ignite": {
+      "estimate": 400,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "burn-burn": {
+      "estimate": 350,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "the-borderland": {
+      "estimate": 4500,
+      "confidence": "reported",
+      "source": "Burning Man Project Sweden Registry — ~4,500 (Alversjö, Sweden, late July)"
+    },
+    "afrikaburn": {
+      "estimate": 17500,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance (largest official regional)"
+    },
+    "midburn": {
+      "estimate": 9500,
+      "confidence": "estimated",
+      "source": "Curated estimate — typical annual attendance"
+    },
+    "snrg": {
+      "estimate": 600,
+      "low": 350,
+      "high": 1000,
+      "confidence": "estimated",
+      "source": "Approximate estimate — California regional, no published figure"
+    },
+    "modifyre": {
+      "estimate": 700,
+      "low": 400,
+      "high": 1100,
+      "confidence": "estimated",
+      "source": "Approximate estimate — Australian regional, no published figure"
     }
   }
 }

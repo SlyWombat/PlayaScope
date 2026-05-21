@@ -56,8 +56,16 @@ async function main() {
   }
 
   // 2. Merge: group by (same burn + same year), keep the highest-priority one.
+  // Manual festivals are hand-curated, deliberately-unique entries — never
+  // dedupe them: fuzzy matching can wrongly merge e.g. Midburn into SideBurn,
+  // or AfrikaBurn into "Afrikaburn Decompression".
   const groups = [];
+  const manualFestivals = [];
   for (const fest of pool) {
+    if (fest.source === 'manual') {
+      manualFestivals.push(fest);
+      continue;
+    }
     const year = festivalYear(fest);
     let group = groups.find(
       (g) => g.year === year && sameBurn(g.title, fest.title),
@@ -68,7 +76,7 @@ async function main() {
     }
     group.members.push(fest);
   }
-  const registry = [];
+  let registry = [...manualFestivals];
   let dropped = 0;
   for (const g of groups) {
     g.members.sort((a, b) => rank(a.source) - rank(b.source));
@@ -76,6 +84,17 @@ async function main() {
     dropped += g.members.length - 1;
   }
   console.log(`▸ Merged: ${registry.length} unique festivals (${dropped} cross-source duplicates dropped)`);
+
+  // Decompressions / afterburn parties and virtual (Second Life) events are
+  // not burns — drop them so they don't pollute counts, the map or calendar.
+  const NOT_A_BURN = /\bdecompression\b|\bdecomp\b|\bafterburn\b|\bburn ?2\b/i;
+  const preFilter = registry.length;
+  registry = registry.filter(
+    (f) => !NOT_A_BURN.test(f.title) && !/^online$/i.test(f.region ?? ''),
+  );
+  if (registry.length < preFilter) {
+    console.log(`▸ Dropped ${preFilter - registry.length} non-burns (decompressions / virtual)`);
+  }
 
   // 3. Pull each survivor's program from its owning adapter (concurrent pool).
   const queue = [...registry];

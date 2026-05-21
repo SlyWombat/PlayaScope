@@ -3,11 +3,11 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-05-21T14:28:10.304Z",
+  "scrapedAt": "2026-05-21T20:55:33.214Z",
   "counts": {
     "directory": 50,
-    "extra": 1,
-    "merged": 51
+    "extra": 11,
+    "merged": 61
   },
   "events": [
     "Burning Nest",
@@ -60,6 +60,16 @@
     "Reno Decompression (Tentative Date)",
     "YOUtopia (Tentative Dates)",
     "Burn2 Octoburn: Axis Mundi",
-    "SideBurn"
+    "SideBurn",
+    "Burning Flipside",
+    "FreezerBurn Texas",
+    "Interfuse",
+    "unSCruz",
+    "Saguaro Man",
+    "Kiwiburn",
+    "Blazing Swan",
+    "Witch's Tit",
+    "AfrikaBurn",
+    "Midburn"
   ]
 }
