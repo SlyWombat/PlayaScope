@@ -114,7 +114,18 @@ export function Overview({ bundles, sanction, attendance, filter, onSelectRegion
             backgroundColor: 'transparent',
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             grid: { left: isMobile ? 96 : 160, right: 24, top: 12, bottom: 24 },
-            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            xAxis: {
+              type: 'value',
+              axisLine: { lineStyle: { color: '#444' } },
+              splitLine: { lineStyle: { color: '#222' } },
+              // Mobile plots are narrow — fewer ticks + abbreviated numbers
+              // (20000 -> 20k) so the bottom scale doesn't overprint itself.
+              splitNumber: isMobile ? 3 : 5,
+              axisLabel: {
+                fontSize: isMobile ? 9 : 11,
+                formatter: (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v)),
+              },
+            },
             yAxis: {
               type: 'category',
               data: topByEvents
@@ -184,7 +195,18 @@ export function Overview({ bundles, sanction, attendance, filter, onSelectRegion
             backgroundColor: 'transparent',
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             grid: { left: isMobile ? 96 : 160, right: 24, top: 12, bottom: 24 },
-            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            xAxis: {
+              type: 'value',
+              axisLine: { lineStyle: { color: '#444' } },
+              splitLine: { lineStyle: { color: '#222' } },
+              // Mobile plots are narrow — fewer ticks + abbreviated numbers
+              // (20000 -> 20k) so the bottom scale doesn't overprint itself.
+              splitNumber: isMobile ? 3 : 5,
+              axisLabel: {
+                fontSize: isMobile ? 9 : 11,
+                formatter: (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v)),
+              },
+            },
             yAxis: {
               type: 'category',
               data: topByPopulation
@@ -214,7 +236,18 @@ export function Overview({ bundles, sanction, attendance, filter, onSelectRegion
             backgroundColor: 'transparent',
             tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
             grid: { left: isMobile ? 110 : 200, right: 24, top: 12, bottom: 24 },
-            xAxis: { type: 'value', axisLine: { lineStyle: { color: '#444' } }, splitLine: { lineStyle: { color: '#222' } } },
+            xAxis: {
+              type: 'value',
+              axisLine: { lineStyle: { color: '#444' } },
+              splitLine: { lineStyle: { color: '#222' } },
+              // Mobile plots are narrow — fewer ticks + abbreviated numbers
+              // (20000 -> 20k) so the bottom scale doesn't overprint itself.
+              splitNumber: isMobile ? 3 : 5,
+              axisLabel: {
+                fontSize: isMobile ? 9 : 11,
+                formatter: (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v)),
+              },
+            },
             yAxis: {
               type: 'category',
               data: [...typeMix].sort((a, b) => a.count - b.count).map((r) => r.label),
