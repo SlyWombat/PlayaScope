@@ -94,6 +94,8 @@ export function App() {
   // Mobile nav drawer (issue #13 P0) — collapses the 12-tab bar on phones.
   const isMobile = useIsMobile();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // Mobile: the sanction-info strip is collapsed to a badge until tapped (#13 P1).
+  const [sanctionOpen, setSanctionOpen] = useState(false);
   // Hash-routed drilldown: when set, the BurnDetail view takes over the main area.
   const [burnHash, setBurnHash] = useState<string | null>(() =>
     typeof window === 'undefined' ? null : readBurnHash(),
@@ -333,11 +335,11 @@ export function App() {
           it silently narrows every view, so it gets a loud, obvious clear. */}
       {regionFilter && (
         <div
+          className="region-bar"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            padding: '8px 20px',
             background: 'rgba(255, 138, 61, 0.12)',
             borderBottom: '1px solid var(--accent)',
             fontSize: 13,
@@ -362,10 +364,25 @@ export function App() {
         </div>
       )}
 
-      {state.sanction?.index && (
+      {/* On mobile the sanction-info strip collapses to a tappable badge
+          (issue #13 P1) — it's diagnostic detail, not primary content. */}
+      {state.sanction?.index && isMobile && (
+        <button
+          className="sanction-badge"
+          onClick={() => setSanctionOpen((v) => !v)}
+          style={{ color: stale ? 'var(--warn)' : 'var(--muted)' }}
+        >
+          <span
+            className="sanction-dot"
+            style={{ background: stale ? 'var(--warn)' : 'var(--good)' }}
+          />
+          {t('sanctionStrip.badge')} {sanctionOpen ? '▲' : '▼'}
+        </button>
+      )}
+      {state.sanction?.index && (!isMobile || sanctionOpen) && (
         <div
+          className="sanction-strip"
           style={{
-            padding: '6px 20px',
             borderBottom: '1px solid var(--border)',
             background: stale ? 'rgba(245, 197, 66, 0.08)' : 'var(--panel)',
             color: stale ? 'var(--warn)' : 'var(--muted)',

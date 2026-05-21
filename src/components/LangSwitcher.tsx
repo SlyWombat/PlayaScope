@@ -62,7 +62,14 @@ export function LangSwitcher() {
       >
         {SUPPORTED_LOCALES.map((l) => (
           // 2-letter code in the control; full name as a tooltip on the option.
-          <option key={l.code} value={l.code} title={l.label}>
+          // Explicit colours — the native dropdown list otherwise renders on the
+          // OS default (white) background, leaving the light text unreadable.
+          <option
+            key={l.code}
+            value={l.code}
+            title={l.label}
+            style={{ background: 'var(--panel)', color: 'var(--text)' }}
+          >
             {l.code.toUpperCase()}
           </option>
         ))}

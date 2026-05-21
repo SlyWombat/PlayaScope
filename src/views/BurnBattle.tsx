@@ -84,6 +84,8 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [copied, setCopied] = useState(false);
+  // Mobile: the fingerprint + schedule charts share one slot behind a toggle.
+  const [battleChart, setBattleChart] = useState<'fingerprint' | 'schedule'>('fingerprint');
   // Alphabetical for the pickers; not a ranking.
   const sorted = useMemo(
     () => [...allBundles].sort((a, b) => a.festival.title.localeCompare(b.festival.title)),
@@ -286,12 +288,10 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
             </ul>
           </div>
 
-          <div className="grid cols-2">
-            <div className="panel">
-              <h2>{t('battle.fingerprint')}</h2>
-              <div className="sub">{t('battle.fingerprintSub')}</div>
+          {(() => {
+            const fingerprint = (
               <EChart
-                style={{ width: '100%', height: isMobile ? 300 : 360 }}
+                style={{ width: '100%', height: isMobile ? 320 : 360 }}
                 option={{
                   backgroundColor: 'transparent',
                   legend: { top: 0, textStyle: { color: '#8b93a7', fontSize: 11 } },
@@ -304,7 +304,7 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
                       ),
                     })),
                     radius: '62%',
-                    axisName: { color: '#8b93a7', fontSize: 9 },
+                    axisName: isMobile ? { show: false } : { color: '#8b93a7', fontSize: 9 },
                     splitLine: { lineStyle: { color: '#2a2f3f' } },
                     splitArea: { areaStyle: { color: ['transparent'] } },
                   },
@@ -329,13 +329,49 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
                   }],
                 }}
               />
-            </div>
-            <div className="panel">
-              <h2>{t('battle.scheduleShape')}</h2>
-              <div className="sub">{t('battle.scheduleShapeSub')}</div>
-              <ScheduleVs bundleA={bundleA} bundleB={bundleB} titleA={titleA} titleB={titleB} />
-            </div>
-          </div>
+            );
+            const schedule = <ScheduleVs bundleA={bundleA} bundleB={bundleB} titleA={titleA} titleB={titleB} />;
+
+            // Mobile: one chart at a time behind a toggle — a 19-spoke radar
+            // and a multi-line chart stacked are unreadable at 375px (#13 P2).
+            if (isMobile) {
+              return (
+                <div className="panel">
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                    <button
+                      className={battleChart === 'fingerprint' ? 'primary' : ''}
+                      style={{ fontSize: 12, flex: 1 }}
+                      onClick={() => setBattleChart('fingerprint')}
+                    >
+                      {t('battle.fingerprint')}
+                    </button>
+                    <button
+                      className={battleChart === 'schedule' ? 'primary' : ''}
+                      style={{ fontSize: 12, flex: 1 }}
+                      onClick={() => setBattleChart('schedule')}
+                    >
+                      {t('battle.scheduleShape')}
+                    </button>
+                  </div>
+                  {battleChart === 'fingerprint' ? fingerprint : schedule}
+                </div>
+              );
+            }
+            return (
+              <div className="grid cols-2">
+                <div className="panel">
+                  <h2>{t('battle.fingerprint')}</h2>
+                  <div className="sub">{t('battle.fingerprintSub')}</div>
+                  {fingerprint}
+                </div>
+                <div className="panel">
+                  <h2>{t('battle.scheduleShape')}</h2>
+                  <div className="sub">{t('battle.scheduleShapeSub')}</div>
+                  {schedule}
+                </div>
+              </div>
+            );
+          })()}
         </>
       )}
     </div>

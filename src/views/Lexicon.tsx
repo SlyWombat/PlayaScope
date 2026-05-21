@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'echarts-wordcloud';
 import { EChart } from '../components/EChart';
+import { useIsMobile } from '../lib/useIsMobile';
 import type { FestivalBundle } from '../data/loader';
 import { tokens, ngrams, bump, topN } from '../lib/tokenize';
 
@@ -35,6 +36,7 @@ const PALETTE = [
 
 export function Lexicon({ bundles }: Props) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const [scope, setScope] = useState<Scope>('events');
   const [granularity, setGranularity] = useState<Granularity>('words');
 
@@ -120,7 +122,7 @@ export function Lexicon({ bundles }: Props) {
         </div>
 
         <EChart
-          style={{ width: '100%', height: 480 }}
+          style={{ width: '100%', height: isMobile ? 320 : 480 }}
           option={{
             backgroundColor: 'transparent',
             tooltip: {
@@ -140,10 +142,10 @@ export function Lexicon({ bundles }: Props) {
                 top: 'center',
                 width: '92%',
                 height: '92%',
-                sizeRange: [12, 56],
+                sizeRange: isMobile ? [10, 38] : [12, 56],
                 rotationRange: [-30, 30],
                 rotationStep: 15,
-                gridSize: 8,
+                gridSize: isMobile ? 6 : 8,
                 drawOutOfBound: false,
                 textStyle: {
                   fontFamily: granularity === 'phrases'

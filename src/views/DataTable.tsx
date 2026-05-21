@@ -83,7 +83,7 @@ export function DataTable({ bundles, sanction, attendance, onOpenBurn }: Props) 
 
   return (
     <div className="panel">
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 8 }}>
+      <div className="datatable-head" style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 8 }}>
         <h2 style={{ margin: 0 }}>
           {t('data.allBurns')} <span style={{ color: 'var(--text)' }}>({sorted.length})</span>
         </h2>
@@ -104,7 +104,9 @@ export function DataTable({ bundles, sanction, attendance, onOpenBurn }: Props) 
         />
       </div>
       <div className="table-wrap">
-        <table className="data">
+        {/* `datatable` marks this as the main table — the mobile sticky-column
+            rule targets it specifically, not every table.data (issue #13 P1). */}
+        <table className="data datatable">
           <thead>
             <tr>
               {headerCell('sanctioned', t('data.colBm'), true)}

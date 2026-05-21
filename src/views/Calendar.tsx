@@ -152,11 +152,11 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
                 regions: [...new Set(inWindow.map((r) => r.region))].length,
               })}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+            <div className="cal-controls" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
               {!showFullYear && (
-                <>
+                <div className="cal-monthnav" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <button onClick={() => setWindowStart(new Date(Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth() - 1, 1)))} style={{ fontSize: 12 }}>‹</button>
-                  <span style={{ fontSize: 12, color: 'var(--text)', fontFamily: "'JetBrains Mono', monospace", minWidth: 160, textAlign: 'center' }}>
+                  <span className="cal-monthrange" style={{ fontSize: 12, color: 'var(--text)', fontFamily: "'JetBrains Mono', monospace", minWidth: 160, textAlign: 'center' }}>
                     {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(windowStart)} – {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(windowStart.getTime() + 3 * MONTH_MS - 24 * 3600 * 1000))}
                   </span>
                   <button onClick={() => setWindowStart(new Date(Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth() + 1, 1)))} style={{ fontSize: 12 }}>›</button>
@@ -164,7 +164,7 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
                     const now = new Date();
                     setWindowStart(startOfMonth(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1))));
                   }} style={{ fontSize: 11, marginLeft: 6 }}>{t('calendar.navToday')}</button>
-                </>
+                </div>
               )}
               <button onClick={() => setShowFullYear(!showFullYear)} style={{ fontSize: 11, marginLeft: 12 }} className={showFullYear ? 'primary' : ''}>
                 {showFullYear ? t('calendar.showWindow') : t('calendar.showYear')}
@@ -218,7 +218,7 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
                   `${region} · ${events} events`;
               }) as never,
             },
-            grid: { left: isMobile ? 92 : 200, right: 24, top: 24, bottom: 40 },
+            grid: { left: isMobile ? 110 : 200, right: 24, top: 24, bottom: 40 },
             xAxis: {
               type: 'time',
               min: minMs,

@@ -338,6 +338,31 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* Active-filter / sanction-info strips below the topbar (issue #13 P1). */
+.region-bar { padding: 8px 20px; }
+.sanction-strip { padding: 6px 20px; }
+.sanction-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  background: var(--panel);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  cursor: pointer;
+}
+.sanction-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 /* ---------------------------------------------------------------------------
    Mobile (≤720px). Addresses GitHub issue #10:
    - 44px minimum tap targets
@@ -366,6 +391,23 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
   /* The countdown's inline link-buttons are not tap targets — exempt them
      from the 44px min-height so the chip stays one or two lines. */
   .countdown button { min-height: 0; padding: 0; }
+  /* Force the chip onto a single line; the burn name truncates if needed
+     (issue #13 P2). !important overrides the inline flex-wrap. */
+  .countdown { flex-wrap: nowrap !important; overflow: hidden; }
+  .countdown-burn {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Filter strips: tighter padding on a phone (issue #13 P1). */
+  .region-bar { padding: 6px 12px; }
+  .sanction-strip { padding: 8px 12px; }
+
+  /* Calendar: the month-nav takes its own full-width row (issue #13 P1). */
+  .cal-monthnav { width: 100%; }
+  .cal-monthrange { flex: 1; }
   /* The drawer footer reuses the meta controls — keep them thumb-sized. */
   .nav-drawer-footer button { min-height: 40px; }
 
@@ -384,13 +426,22 @@ table.data td.num { text-align: right; font-family: 'JetBrains Mono', monospace;
   .progress { width: 100%; max-width: 320px; }
 
   /* Data table: pin the burn-name column so horizontal scroll keeps context.
-     The title column is the 2nd cell (1st is the ★ sanction marker). */
-  table.data th:nth-child(2),
-  table.data td:nth-child(2) {
+     The title column is the 2nd cell (1st is the ★ sanction marker). Scoped
+     to `table.datatable` — other table.data tables (e.g. the Artists result
+     tables) have a different column order (issue #13 P1). */
+  table.datatable th:nth-child(2),
+  table.datatable td:nth-child(2) {
     position: sticky;
     left: 0;
     background: var(--panel);
     z-index: 1;
   }
-  table.data tbody tr:hover td:nth-child(2) { background: var(--panel-2); }
+  table.datatable tbody tr:hover td:nth-child(2) { background: var(--panel-2); }
+
+  /* DataTable header: stack the filter input full-width below the title. */
+  .datatable-head {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
 }

@@ -40,7 +40,8 @@
   "sanctionStrip": {
     "summary": "Lista oficial: {{count}} eventos · {{date}} (hace {{age}} d)",
     "stale": " · obsoleta — ejecutar `npm run scrape-sanctioned`",
-    "unmatched": "{{count}} en la lista oficial sin coincidencia dust activa"
+    "unmatched": "{{count}} en la lista oficial sin coincidencia dust activa",
+    "badge": "Lista oficial"
   },
   "load": {
     "failed": "Error al cargar: {{error}}",
@@ -201,7 +202,9 @@
     "peakHour": "Hora pico: {{hour}} — {{vibe}}. La hora 0 es medianoche, hora local.",
     "computing": "Calculando el mapa de calor para {{n}} eventos…",
     "rendering": "Renderizando la cuadrícula de 24h × {{days}} días…",
-    "day": "Día {{n}}"
+    "day": "Día {{n}}",
+    "showBurns": "Mostrar los {{n}} burns",
+    "hideBurns": "Ocultar la lista"
   },
   "typeMix": {
     "title": "Mezcla de tipos de evento por burn",

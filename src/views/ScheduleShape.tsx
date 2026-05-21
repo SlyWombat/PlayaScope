@@ -4,6 +4,7 @@ import { EChart } from '../components/EChart';
 import { scheduleShape } from '../data/aggregate';
 import type { FestivalBundle } from '../data/loader';
 import { hourOfDay, dayOfBurnLocal } from '../lib/timeBins';
+import { useIsMobile } from '../lib/useIsMobile';
 
 interface Props {
   bundles: FestivalBundle[];
@@ -12,6 +13,9 @@ interface Props {
 
 export function ScheduleShape({ bundles, onOpenBurn }: Props) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  // Mobile: the 60+ burn-toggle wall is collapsed until tapped (issue #13 P2).
+  const [showAllBurns, setShowAllBurns] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [focusBurn, setFocusBurn] = useState<string | null>(null);
 
@@ -129,7 +133,16 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
       <div className="panel">
         <h2>{t('schedule.pick')}</h2>
         <div className="sub">{t('schedule.pickSub')}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {isMobile && (
+          <button
+            onClick={() => setShowAllBurns((v) => !v)}
+            style={{ fontSize: 11, marginTop: 4 }}
+          >
+            {showAllBurns ? t('schedule.hideBurns') : t('schedule.showBurns', { n: byTitle.length })}
+          </button>
+        )}
+        {(!isMobile || showAllBurns) && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
           {byTitle.map((r) => {
             const on = selected.has(r.festival);
             return (
@@ -170,6 +183,7 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
             );
           })}
         </div>
+        )}
       </div>
 
       {heatmapBurn && (
@@ -226,7 +240,9 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
                     (samples.length ? `<br/><span style="color:#999">${samples.join('<br/>')}</span>` : '');
                 }) as never,
               },
-              grid: { left: 50, right: 60, top: 16, bottom: 40 },
+              grid: isMobile
+                ? { left: 44, right: 14, top: 16, bottom: 64 }
+                : { left: 50, right: 60, top: 16, bottom: 40 },
               xAxis: {
                 type: 'category',
                 data: Array.from({ length: heatmap.days }, (_, i) => t('schedule.day', { n: i - 1 })),
@@ -241,9 +257,11 @@ export function ScheduleShape({ bundles, onOpenBurn }: Props) {
                 min: 0,
                 max: heatmap.maxVal || 1,
                 calculable: true,
-                orient: 'vertical',
-                right: 0,
-                top: 'middle',
+                // Horizontal along the bottom on mobile — a vertical scale on
+                // the right ate ~17% of a phone's chart width (issue #13 P1).
+                ...(isMobile
+                  ? { orient: 'horizontal' as const, bottom: 0, left: 'center' as const }
+                  : { orient: 'vertical' as const, right: 0, top: 'middle' as const }),
                 inRange: { color: ['#161922', '#ff8a3d'] },
                 textStyle: { color: '#8b93a7' },
               },

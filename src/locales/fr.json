@@ -40,7 +40,8 @@
   "sanctionStrip": {
     "summary": "Liste officielle : {{count}} événements · {{date}} (il y a {{age}} j)",
     "stale": " · obsolète — exécuter `npm run scrape-sanctioned`",
-    "unmatched": "{{count}} sur la liste officielle sans correspondance dust active"
+    "unmatched": "{{count}} sur la liste officielle sans correspondance dust active",
+    "badge": "Liste officielle"
   },
   "load": {
     "failed": "Échec du chargement : {{error}}",
@@ -201,7 +202,9 @@
     "peakHour": "Heure de pointe : {{hour}} — {{vibe}}. L'heure 0 est minuit, heure locale.",
     "computing": "Calcul de la carte de chaleur pour {{n}} événements…",
     "rendering": "Rendu de la grille 24h × {{days}} jours…",
-    "day": "Jour {{n}}"
+    "day": "Jour {{n}}",
+    "showBurns": "Afficher les {{n}} burns",
+    "hideBurns": "Masquer la liste"
   },
   "typeMix": {
     "title": "Répartition des types d'événements par burn",

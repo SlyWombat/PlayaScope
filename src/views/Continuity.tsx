@@ -8,6 +8,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EChart } from '../components/EChart';
+import { useIsMobile } from '../lib/useIsMobile';
 import type { FestivalBundle } from '../data/loader';
 import { groupByBurn, yearFromSlug, withMultipleYears } from '../lib/groupByBurn';
 
@@ -37,6 +38,7 @@ function yearFromBundle(b: FestivalBundle): number {
 
 export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const grouped = useMemo(() => {
     const visible = new Set(bundles.map((b) => b.festival.name));
     // Only show groups where ≥1 of the years is currently visible (respect filter)
@@ -121,7 +123,7 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
               )}
             </div>
             <EChart
-              style={{ width: '100%', height: 180 }}
+              style={{ width: '100%', height: isMobile ? 240 : 180 }}
               option={{
                 backgroundColor: 'transparent',
                 tooltip: { trigger: 'axis' },

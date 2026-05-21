@@ -40,7 +40,8 @@
   "sanctionStrip": {
     "summary": "Sanctioned list: {{count}} events · {{date}} ({{age}}d old)",
     "stale": " · stale — run `npm run scrape-sanctioned`",
-    "unmatched": "{{count}} on official list with no active dust match"
+    "unmatched": "{{count}} on official list with no active dust match",
+    "badge": "Official list"
   },
   "load": {
     "failed": "Load failed: {{error}}",
@@ -249,7 +250,9 @@
     "peakHour": "Peak hour: {{hour}} — {{vibe}}. Hour 0 is midnight local time.",
     "computing": "Computing heatmap for {{n}} events…",
     "rendering": "Rendering 24h × {{days}}-day grid…",
-    "day": "Day {{n}}"
+    "day": "Day {{n}}",
+    "showBurns": "Show all {{n}} burns",
+    "hideBurns": "Hide burn list"
   },
   "typeMix": {
     "title": "Event-type mix per burn",

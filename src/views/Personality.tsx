@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { EChart } from '../components/EChart';
+import { useIsMobile } from '../lib/useIsMobile';
 import type { FestivalBundle } from '../data/loader';
 import { EVENT_TYPE_LABELS, canonicalEventTypeLabel } from '../data/types';
 import type { EventTypeLabel } from '../data/types';
@@ -190,19 +191,22 @@ export function Personality({ bundles, allBundles, onOpenBurn }: Props) {
 
 function RadarMini({ frac, mean }: { frac: Record<EventTypeLabel, number>; mean: Record<EventTypeLabel, number> }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const indicators = EVENT_TYPE_LABELS.map((l) => ({
     name: l.split('/')[0]!.slice(0, 10),
     max: Math.max(...EVENT_TYPE_LABELS.map((m) => Math.max(frac[m], mean[m] * 2))),
   }));
   return (
     <EChart
-      style={{ width: '100%', height: 180, marginTop: 8 }}
+      style={{ width: '100%', height: isMobile ? 200 : 180, marginTop: 8 }}
       option={{
         backgroundColor: 'transparent',
         radar: {
           indicator: indicators,
-          radius: '60%',
-          axisName: { color: '#8b93a7', fontSize: 8 },
+          radius: isMobile ? '66%' : '60%',
+          // 19 axis labels are illegible on a phone — hide them and let the
+          // blob shape carry the comparison (issue #13 P1).
+          axisName: isMobile ? { show: false } : { color: '#8b93a7', fontSize: 8 },
           splitLine: { lineStyle: { color: '#2a2f3f' } },
           splitArea: { areaStyle: { color: ['transparent'] } },
         },

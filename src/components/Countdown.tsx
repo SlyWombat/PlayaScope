@@ -188,6 +188,7 @@ function CountdownChip({
     <span className="countdown" style={{ ...countdownStyle, position: 'relative' }}>
       <span style={{ color: 'var(--muted)' }}>{label}:</span>
       <button
+        className="countdown-burn"
         onClick={() => onJump(burnSlug)}
         style={{ background: 'none', border: 'none', padding: 0, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}
         title={t('countdown.openBurn')}
