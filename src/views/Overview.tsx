@@ -90,12 +90,12 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
         <div className="sub">{t('overview.topBurnsSub')}</div>
         <EChart
           className="chart"
-          onEvents={onOpenBurn ? {
-            click: (p: { dataIndex?: number }) => {
-              if (typeof p.dataIndex !== 'number') return;
-              const row = topByEvents[topByEvents.length - 1 - p.dataIndex];
-              if (row) onOpenBurn(row.festival);
-            },
+          // Whole-row click — the bar OR the burn-name label OR the gap
+          // between opens the burn. convertFromPixel gives the axis index,
+          // which is reversed relative to topByEvents.
+          onRowClick={onOpenBurn ? (axisIdx) => {
+            const row = topByEvents[topByEvents.length - 1 - axisIdx];
+            if (row) onOpenBurn(row.festival);
           } : undefined}
           option={{
             backgroundColor: 'transparent',
@@ -122,9 +122,6 @@ export function Overview({ bundles, sanction, filter, onSelectRegion, onOpenBurn
                   }))
                   .reverse(),
                 barWidth: 14,
-                // Burns with 0 events (e.g. directory-only entries) still get
-                // a small clickable nub so every burn can be opened from here.
-                barMinHeight: 6,
               },
             ],
           }}

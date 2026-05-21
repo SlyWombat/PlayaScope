@@ -4,6 +4,12 @@
 //
 // This is what surfaces the ~21 official regionals that don't use Dust
 // (Lakes of Fire, The Borderland, Burning Japan, …) on the calendar + map.
+//
+// The directory gives no coordinates, only a place name (state / province /
+// country). We pin each burn at that place's centroid (see geo-centroids.mjs)
+// so they show on the world map — approximate, but a real geographic position.
+
+import { GEO_CENTROIDS } from '../lib/geo-centroids.mjs';
 
 const DIRECTORY_URL = 'https://burningman.org/global-events-groups/find-a-burning-man-event/';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
@@ -93,6 +99,9 @@ export async function listFestivals() {
     const locM = chunk.match(/__location">([\s\S]*?)<\/div>/);
     const region = locM ? clean(locM[1].replace(/<svg[\s\S]*?<\/svg>/g, '')) : '';
 
+    // Geocode the place name to a centroid so the burn can be mapped.
+    const centroid = GEO_CENTROIDS[region] ?? null;
+
     const year = start.getUTCFullYear();
     out.push({
       name: slugify(title, year),
@@ -103,8 +112,8 @@ export async function listFestivals() {
       active: true,
       start: isoLocal(start, false),
       end: isoLocal(end, true),
-      lat: null,
-      long: null,
+      lat: centroid ? centroid[0] : null,
+      long: centroid ? centroid[1] : null,
       region,
       website: '',
       imageUrl: '',

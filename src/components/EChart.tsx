@@ -12,9 +12,16 @@ interface EChartProps {
   style?: React.CSSProperties;
   /** ECharts event handlers — `click`, `mouseover`, etc. Wired on first mount. */
   onEvents?: Record<string, EventHandler>;
+  /**
+   * Fires when any point in the plot is clicked, with the category index of
+   * the row under the cursor (via convertFromPixel on yAxis 0). Lets the whole
+   * horizontal band of a category — bar, axis label, whitespace — be clickable,
+   * which ECharts' own events can't do for canvas axis labels.
+   */
+  onRowClick?: (categoryIndex: number) => void;
 }
 
-export function EChart({ option, className, style, onEvents }: EChartProps) {
+export function EChart({ option, className, style, onEvents, onRowClick }: EChartProps) {
   const ref = useRef<HTMLDivElement>(null);
   const instance = useRef<echarts.ECharts | null>(null);
   const handlersRef = useRef<Record<string, EventHandler>>({});
@@ -49,6 +56,21 @@ export function EChart({ option, className, style, onEvents }: EChartProps) {
       inst.on(evt, fn);
     }
   }, [onEvents]);
+
+  // Whole-row click: a zrender-level click fires for *any* point on the canvas
+  // (bar, axis label, whitespace); convertFromPixel maps the y-pixel to a
+  // category index. ECharts' own click events can't cover canvas axis labels.
+  useEffect(() => {
+    const inst = instance.current;
+    if (!inst || !onRowClick) return;
+    const zr = inst.getZr();
+    const handler = (e: { offsetY: number }) => {
+      const idx = inst.convertFromPixel({ yAxisIndex: 0 }, e.offsetY);
+      if (typeof idx === 'number' && idx >= 0) onRowClick(idx);
+    };
+    zr.on('click', handler);
+    return () => { zr.off('click', handler); };
+  }, [onRowClick]);
 
   return <div ref={ref} className={className ?? 'chart'} style={style} />;
 }
