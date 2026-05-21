@@ -248,7 +248,7 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
                   : t('battle.verdictTie', { a: aWins, b: bWins })}
               </div>
             </div>
-            <div className="table-wrap" style={{ marginTop: 8 }}>
+            <div className="table-wrap" style={{ marginTop: 8, overflowX: 'auto' }}>
               <table className="data">
                 <thead>
                   <tr>
@@ -409,11 +409,11 @@ function BurnPicker({
   onChange: (slug: string) => void;
 }) {
   return (
-    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, maxWidth: '100%' }}>
       <span style={{
         width: 22, height: 22, borderRadius: '50%', background: color, color: '#1a1208',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        fontWeight: 700, fontSize: 12,
+        fontWeight: 700, fontSize: 12, flexShrink: 0,
       }}>{label}</span>
       <select
         value={value}
@@ -421,6 +421,9 @@ function BurnPicker({
         style={{
           background: 'var(--panel-2)', border: `1px solid ${color}`, color: 'var(--text)',
           borderRadius: 6, padding: '6px 10px', fontSize: 13, fontFamily: 'inherit',
+          // A bare <select> sizes to its widest option (a long burn name) and
+          // blew past a phone viewport — cap and allow it to shrink (#16).
+          maxWidth: 240, minWidth: 0,
         }}
       >
         {options.map((o) => (

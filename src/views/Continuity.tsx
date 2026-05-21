@@ -47,6 +47,9 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
     return all
       .filter((g) => g.years.some((b) => visible.has(b.festival.name)))
       .map((g) => {
+        // Drop years whose dust program isn't published yet (0 scheduled
+        // events). An unpublished newer year otherwise crashes the trajectory
+        // to 0 and reads as a -100% collapse (issue #18).
         const years: YearStats[] = g.years.map((b) => ({
           year: yearFromBundle(b),
           events: b.schedule.length,
@@ -55,12 +58,16 @@ export function Continuity({ bundles, allBundles, onOpenBurn }: Props) {
           music: b.music.length,
           title: b.festival.title,
           slug: b.festival.name,
-        })).sort((a, b) => a.year - b.year);
-        const first = years[0]!;
-        const last = years[years.length - 1]!;
-        const pctChange = first.events > 0 ? ((last.events - first.events) / first.events) * 100 : null;
-        return { key: g.key, display: last.title, years, pctChange };
-      });
+        })).sort((a, b) => a.year - b.year).filter((y) => y.events > 0);
+        const first = years[0];
+        const last = years[years.length - 1];
+        const pctChange = first && last && first.events > 0
+          ? ((last.events - first.events) / first.events) * 100
+          : null;
+        return { key: g.key, display: last?.title ?? '', years, pctChange };
+      })
+      // Keep only burns with ≥2 years of actually-published program data.
+      .filter((g) => g.years.length >= 2);
   }, [bundles, allBundles]);
 
   const alpha = useMemo(() => [...grouped].sort((a, b) => a.display.localeCompare(b.display)), [grouped]);

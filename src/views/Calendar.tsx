@@ -154,7 +154,7 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
             </div>
             <div className="cal-controls" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
               {!showFullYear && (
-                <div className="cal-monthnav" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div className="cal-monthnav" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <button onClick={() => setWindowStart(new Date(Date.UTC(windowStart.getUTCFullYear(), windowStart.getUTCMonth() - 1, 1)))} style={{ fontSize: 12 }}>‹</button>
                   <span className="cal-monthrange" style={{ fontSize: 12, color: 'var(--text)', fontFamily: "'JetBrains Mono', monospace", minWidth: 160, textAlign: 'center' }}>
                     {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(windowStart)} – {new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(windowStart.getTime() + 3 * MONTH_MS - 24 * 3600 * 1000))}
@@ -230,7 +230,14 @@ export function Calendar({ bundles, sanction, onOpenBurn }: Props) {
             yAxis: {
               type: 'category',
               data: inWindow.map((r) => r.bundle.festival.title),
-              axisLabel: { color: '#8b93a7', fontSize: 10 },
+              // Truncate long burn names with an ellipsis instead of letting
+              // them hard-clip against the grid edge (issue #17).
+              axisLabel: {
+                color: '#8b93a7',
+                fontSize: 10,
+                width: isMobile ? 96 : 184,
+                overflow: 'truncate',
+              },
               axisLine: { show: false },
               splitLine: { show: false },
             },

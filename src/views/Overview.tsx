@@ -166,7 +166,11 @@ export function Overview({ bundles, sanction, attendance, filter, onSelectRegion
             series: [
               {
                 type: 'pie',
-                radius: ['45%', '70%'],
+                // Smaller radius + a margin-carving center leaves room for the
+                // outside labels — at 70% the left-edge "Europe" label had no
+                // space and ECharts truncated it to "…" (issue #14).
+                radius: ['38%', '58%'],
+                center: ['50%', '52%'],
                 avoidLabelOverlap: true,
                 data: regions.map(([name, count]) => ({
                   name,
@@ -174,6 +178,7 @@ export function Overview({ bundles, sanction, attendance, filter, onSelectRegion
                   itemStyle: { color: REGION_COLORS[name] },
                 })),
                 label: { color: '#e6e9ef' },
+                labelLine: { length: 8, length2: 8 },
                 itemStyle: { borderColor: '#161922', borderWidth: 2 },
                 cursor: 'pointer',
               },

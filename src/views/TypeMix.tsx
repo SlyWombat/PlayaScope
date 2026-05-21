@@ -106,6 +106,9 @@ export function TypeMix({ bundles, onOpenBurn }: Props) {
             },
             yAxis: {
               type: 'value',
+              // Fractions stack to 1.0 — cap the axis at 100% so it doesn't
+              // auto-scale to a meaningless 120% (issue #15).
+              max: mode === 'fractions' ? 1 : undefined,
               axisLabel:
                 mode === 'fractions'
                   ? { formatter: (v: number) => `${Math.round(v * 100)}%` }
