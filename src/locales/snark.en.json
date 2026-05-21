@@ -101,6 +101,12 @@
         "value": "{{km}} km",
         "detail": "{{burn}} — {{count}} art pieces, {{steps}} steps, {{bananas}} bananas end to end. Your feet will be filing a formal complaint.",
         "how": "Shortest path connecting every GPS-located art piece. 1 step ≈ 0.762 m, 1 banana ≈ 0.18 m."
+      },
+      "perCapita": {
+        "title": "Burners per capita",
+        "value": "{{country}}: 1 in {{ratio}}",
+        "detail": "Per head of population, {{country}} is the most burner-infested country going — 1 resident in {{ratio}} clears off to go burn something. The full per-capita leaderboard: {{list}}",
+        "how": "A country's total regional-burn attendance ÷ its population, shown as '1 burner per N residents'. Midburn is measured against the wider Middle East — it serves the whole region. Black Rock City is excluded: it's an international pilgrimage, not a national regional (well maybe the Gerlach Regional)."
       }
     }
   },

@@ -13,9 +13,12 @@ import type { DustEvent } from '../data/types';
 import { tokens, bump, topN, normalizeArtistName } from '../lib/tokenize';
 import { formatHourCount, formatInt, distanceMeters } from '../lib/format';
 import { parseLocalToUtc } from '../data/normalize';
+import { attendanceFor, attendanceValue, type AttendanceRecord } from '../data/attendance';
+import { countryForFestival, COUNTRY_POPULATION } from '../lib/countries';
 
 interface Props {
   bundles: FestivalBundle[];
+  attendance: Map<string, AttendanceRecord>;
   onOpenBurn?: (slug: string) => void;
 }
 
@@ -44,7 +47,7 @@ function variety(fractions: number[]): number {
   return maxH > 0 ? h / maxH : 0;
 }
 
-export function Moop({ bundles, onOpenBurn }: Props) {
+export function Moop({ bundles, attendance, onOpenBurn }: Props) {
   const { t } = useTranslation();
   const tiles = useMemo<Tile[]>(() => {
     const out: Tile[] = [];
@@ -381,8 +384,18 @@ export function Moop({ bundles, onOpenBurn }: Props) {
     let bestArtBurn: { burn: string; meters: number; count: number; slug: string } | null = null;
     for (const b of bundles) {
       const pts = b.art
-        .map((a) => ({ lat: a.location?.gps_latitude, long: a.location?.gps_longitude }))
-        .filter((p): p is { lat: number; long: number } => Number.isFinite(p.lat) && Number.isFinite(p.long));
+        .map((a) => {
+          // Art coordinates arrive as a JSON-string pin: '{"lat":N,"lng":N}'.
+          if (!a.pin) return null;
+          try {
+            const p = JSON.parse(a.pin) as { lat?: number; lng?: number };
+            if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return null;
+            return { lat: p.lat as number, long: p.lng as number };
+          } catch {
+            return null;
+          }
+        })
+        .filter((p): p is { lat: number; long: number } => p != null);
       if (pts.length < 3) continue;
       const visited = new Set<number>();
       let current = 0;
@@ -421,9 +434,46 @@ export function Moop({ bundles, onOpenBurn }: Props) {
       });
     }
 
+    // Burners per capita — top 5 countries by home-burn attendance ÷ national
+    // population. Black Rock City is excluded: it's an international
+    // pilgrimage, not a country's own regional event.
+    const byCountry = new Map<string, number>();
+    for (const b of bundles) {
+      if (b.festival.name.startsWith('black-rock-city')) continue;
+      const country = countryForFestival(b.festival);
+      if (!country) continue;
+      const att = attendanceValue(attendanceFor(b.festival.name, attendance));
+      if (att <= 0) continue;
+      byCountry.set(country, (byCountry.get(country) ?? 0) + att);
+    }
+    const perCapita = [...byCountry.entries()]
+      .map(([country, total]) => {
+        const pop = COUNTRY_POPULATION[country];
+        return pop ? { country, ratio: Math.round(pop / total) } : null;
+      })
+      .filter((x): x is { country: string; ratio: number } => x != null)
+      .sort((a, b) => a.ratio - b.ratio)
+      .slice(0, 5);
+    if (perCapita.length) {
+      const top = perCapita[0]!;
+      out.push({
+        title: t('moop.tiles.perCapita.title'),
+        value: t('moop.tiles.perCapita.value', {
+          country: top.country,
+          ratio: top.ratio.toLocaleString(),
+        }),
+        detail: t('moop.tiles.perCapita.detail', {
+          country: top.country,
+          ratio: top.ratio.toLocaleString(),
+          list: perCapita.map((p) => `${p.country} (1:${p.ratio.toLocaleString()})`).join(' · '),
+        }),
+        how: t('moop.tiles.perCapita.how'),
+      });
+    }
+
     return out;
     // `t` in deps so tile copy re-translates on a language switch.
-  }, [bundles, t]);
+  }, [bundles, attendance, t]);
 
   return (
     <div className="grid" style={{ gap: 16 }}>

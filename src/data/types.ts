@@ -131,6 +131,8 @@ export interface ArtPiece {
   category?: string;
   year: string;
   location?: ArtLocation;
+  /** Map-pin coordinates as a JSON string: '{"lat":N,"lng":N}'. */
+  pin?: string;
   hometown?: string;
   images?: { thumbnail_url?: string; gallery_url?: string }[];
   donation_link?: string;

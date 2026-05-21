@@ -101,6 +101,12 @@
         "value": "{{km}} km",
         "detail": "{{burn}} — {{count}} œuvres, {{steps}} pas, {{bananas}} bananes bout à bout. Vos pieds vont porter plainte.",
         "how": "Chemin le plus court reliant chaque œuvre géolocalisée. 1 pas ≈ 0,762 m, 1 banane ≈ 0,18 m."
+      },
+      "perCapita": {
+        "title": "Burners par habitant",
+        "value": "{{country}} : 1 sur {{ratio}}",
+        "detail": "Par habitant, {{country}} est le pays le plus infesté de burners qui soit — 1 habitant sur {{ratio}} se tire pour aller brûler quelque chose. Le classement complet par habitant : {{list}}",
+        "how": "La fréquentation totale des burns nationaux d'un pays ÷ sa population, exprimée en « 1 burner pour N habitants ». Midburn est mesuré sur l'ensemble du Moyen-Orient — il dessert toute la région, pas seulement Israël. Black Rock City est exclu : c'est un pèlerinage international, pas un événement régional national."
       }
     }
   },

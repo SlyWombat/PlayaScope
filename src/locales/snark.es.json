@@ -101,6 +101,12 @@
         "value": "{{km}} km",
         "detail": "{{burn}} — {{count}} piezas de arte, {{steps}} pasos, {{bananas}} plátanos de punta a punta. Tus pies van a poner una queja formal.",
         "how": "Ruta más corta que conecta cada pieza de arte geolocalizada. 1 paso ≈ 0,762 m, 1 plátano ≈ 0,18 m."
+      },
+      "perCapita": {
+        "title": "Burners per cápita",
+        "value": "{{country}}: 1 de cada {{ratio}}",
+        "detail": "Por habitante, {{country}} es el país más infestado de burners que existe — 1 de cada {{ratio}} habitantes se larga a quemar algo. La clasificación completa per cápita: {{list}}",
+        "how": "La asistencia total de los burns nacionales de un país ÷ su población, expresada como «1 burner por cada N habitantes». Midburn se mide sobre todo Oriente Medio — sirve a toda la región, no solo a Israel. Black Rock City queda excluida: es una peregrinación internacional, no un evento regional nacional."
       }
     }
   },

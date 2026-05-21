@@ -491,7 +491,9 @@ export function App() {
             {tab === 'geo' && (
               <GeoMap bundles={filteredBundles} sanction={state.sanction} onOpenBurn={openBurn} />
             )}
-            {tab === 'moop' && <Moop bundles={filteredBundles} onOpenBurn={openBurn} />}
+            {tab === 'moop' && (
+              <Moop bundles={filteredBundles} attendance={state.attendance} onOpenBurn={openBurn} />
+            )}
             {tab === 'table' && (
               <DataTable
                 bundles={filteredBundles}
