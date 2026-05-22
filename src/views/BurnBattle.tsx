@@ -239,7 +239,10 @@ export function BurnBattle({ allBundles, sanction, attendance, onOpenBurn }: Pro
         </div>
       ) : (
         <>
-          <div className="panel">
+          {/* min-width:0 — without it this grid-item panel grows to the wide
+              scorecard table's intrinsic width, overflowing a phone viewport
+              and clipping the verdict line. */}
+          <div className="panel" style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
               <h2 style={{ margin: 0 }}>{t('battle.scorecard')}</h2>
               <div style={{ fontSize: 13 }}>
