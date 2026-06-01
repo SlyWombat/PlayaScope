@@ -3,19 +3,13 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-05-25T16:16:18.298Z",
+  "scrapedAt": "2026-06-01T19:17:34.896Z",
   "counts": {
     "directory": 50,
     "extra": 11,
-    "merged": 61
+    "merged": 60
   },
   "events": [
-    "Burning Nest",
-    "Playa del Fuego",
-    "SOAK",
-    "Wicked Burn",
-    "Ignite!",
-    "Crème Brûlée",
     "OtherWorld",
     "For The Birds",
     "To The Moon",
@@ -38,7 +32,7 @@
     "Afrikaburn Decompression",
     "Schönburn",
     "Black Rock City 2026 Axis Mundi",
-    "The Third Degree Burn (Tentative Dates)",
+    "The Third Degree Burn",
     "MicroBurn (Tentative Dates)",
     "B.U.R.N. Burn (Tentative Dates)",
     "Resonance (Tentative Dates)",
@@ -60,6 +54,12 @@
     "Reno Decompression (Tentative Date)",
     "YOUtopia (Tentative Dates)",
     "Burn2 Octoburn: Axis Mundi",
+    "Sydney Decompression (Tentative Date)",
+    "BurnOn (Tentative Date)",
+    "Midburn",
+    "Coracle",
+    "Dutch Decompression (Tentative Date)",
+    "SeaCompression (Tentative Date)",
     "SideBurn",
     "Burning Flipside",
     "FreezerBurn Texas",
@@ -69,7 +69,6 @@
     "Kiwiburn",
     "Blazing Swan",
     "Witch's Tit",
-    "AfrikaBurn",
-    "Midburn"
+    "AfrikaBurn"
   ]
 }
