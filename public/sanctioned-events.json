@@ -3,20 +3,19 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-07-06T16:48:10.262Z",
+  "scrapedAt": "2026-07-13T16:22:28.344Z",
   "counts": {
-    "directory": 46,
+    "directory": 45,
     "extra": 11,
-    "merged": 56
+    "merged": 55
   },
   "events": [
-    "Elsewhere",
     "Cosmic Burn: Choose Your Own Adventure",
     "Critical Northwest",
     "Lakes of Fire",
     "The Borderland",
-    "What If",
     "PortalBurn",
+    "What If",
     "Burn2 Conception",
     "RoBurn",
     "Modifyre",
@@ -39,8 +38,8 @@
     "Burning Japan",
     "NECTR (Tentative Dates)",
     "AZ Decompression (Tentative Dates)",
-    "Venice Afterburn",
     "Reno Decompression (Tentative Date)",
+    "Venice Afterburn",
     "YOUtopia (Tentative Dates)",
     "Burn2 Octoburn: Axis Mundi",
     "Sydney Decompression (Tentative Date)",
