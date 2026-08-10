@@ -3,16 +3,14 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-08-03T16:15:09.772Z",
+  "scrapedAt": "2026-08-10T14:50:59.004Z",
   "counts": {
-    "directory": 35,
+    "directory": 33,
     "extra": 11,
-    "merged": 45
+    "merged": 43
   },
   "events": [
-    "RoBurn",
-    "Modifyre",
-    "Schönburn",
+    "Burning Man 2026",
     "The Third Degree Burn",
     "MicroBurn",
     "B.U.R.N. Burn (Tentative Dates)",
@@ -27,8 +25,8 @@
     "Idaho Decompression",
     "NECTR",
     "Denver DeCOmp",
-    "Venice Afterburn",
     "Reno Decompression (Tentative Date)",
+    "Venice Afterburn",
     "MPYRE Strikes Back!",
     "YOUtopia",
     "Burn2 Octoburn: Axis Mundi",
