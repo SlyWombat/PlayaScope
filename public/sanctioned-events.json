@@ -3,11 +3,11 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-08-10T14:50:59.004Z",
+  "scrapedAt": "2026-08-17T14:19:18.552Z",
   "counts": {
-    "directory": 33,
+    "directory": 34,
     "extra": 11,
-    "merged": 43
+    "merged": 44
   },
   "events": [
     "Burning Man 2026",
@@ -19,19 +19,20 @@
     "Granite Burn – Mythbehavin",
     "Time TO Burn",
     "Dust Off: Boulder Decompression (Tentative Date)",
-    "Zurich Decompression (Tentative Dates)",
     "IGNiGHT (Tentative Date)",
-    "Burning Japan",
     "Idaho Decompression",
     "NECTR",
+    "Zurich Decompression",
+    "Burning Japan",
+    "Reno Decompression",
     "Denver DeCOmp",
-    "Reno Decompression (Tentative Date)",
     "Venice Afterburn",
     "MPYRE Strikes Back!",
     "YOUtopia",
     "Burn2 Octoburn: Axis Mundi",
     "Sydney Decompression (Tentative Date)",
     "BurnOn (Tentative Date)",
+    "Decompression 2026: Oakland Edition! Vol II",
     "Midburn",
     "Coracle",
     "SeaCompression (Tentative Date)",
