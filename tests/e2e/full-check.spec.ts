@@ -13,7 +13,7 @@ const ALL_TABS = [
 
 // Console / page errors that are upstream noise, not our bug.
 function isBenign(msg: string): boolean {
-  return /cartocdn|fonts\.(googleapis|gstatic)|leaflet.*tile|unpkg\.com|ResizeObserver loop|favicon/i.test(msg);
+  return /cartocdn|fonts\.(googleapis|gstatic)|leaflet.*tile|unpkg\.com|ResizeObserver loop|favicon|api\/analytics/i.test(msg);
 }
 
 async function waitReady(page: Page) {
@@ -24,7 +24,10 @@ function trackErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on('pageerror', (e) => { if (!isBenign(e.message)) errors.push(`pageerror: ${e.message}`); });
   page.on('console', (m) => {
-    if (m.type() === 'error' && !isBenign(m.text())) errors.push(`console: ${m.text()}`);
+    // A failed resource load reports a bare "Failed to load resource" text; the
+    // offending URL only shows up in m.location(), so match against both.
+    const where = `${m.text()} ${m.location()?.url ?? ''}`;
+    if (m.type() === 'error' && !isBenign(where)) errors.push(`console: ${m.text()}`);
   });
   return errors;
 }

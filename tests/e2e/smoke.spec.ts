@@ -30,6 +30,15 @@ test.describe('PlayaScope SPA smoke', () => {
     expect(await canvases.count()).toBeGreaterThanOrEqual(2);
   });
 
+  test('page-view counter tag is present in <head>', async ({ page }) => {
+    // The electricrv.ca cookie-free counter (issue #19). Vite must carry the
+    // tag from index.html into the built page untouched, `defer` intact.
+    await page.goto('/');
+    const tag = page.locator('head script[src="https://electricrv.ca/api/analytics/a.js"]');
+    await expect(tag).toHaveCount(1);
+    await expect(tag).toHaveAttribute('defer', '');
+  });
+
   test('Sanction filter is wired and toggles the count', async ({ page }) => {
     await page.goto('/');
     await waitForReady(page);
