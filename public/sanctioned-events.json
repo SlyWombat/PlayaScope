@@ -3,18 +3,14 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-09-28T20:19:26.018Z",
+  "scrapedAt": "2026-10-05T21:18:02.999Z",
   "counts": {
-    "directory": 25,
+    "directory": 21,
     "extra": 11,
-    "merged": 35
+    "merged": 31
   },
   "events": [
-    "Granite Burn – Mythbehavin",
-    "IGNiGHT",
-    "Alberta Decomp 2026 \"Getting Buggy With It\"",
     "NECTR",
-    "Zurich Decompression",
     "Burning Japan",
     "Denver DeCOmp",
     "Venice Afterburn",
@@ -29,8 +25,8 @@
     "Coracle",
     "London Decompression",
     "Florida Afterburn",
-    "Dustcovery (On Pause for 2026)",
     "Chicago Decompression (Tentative Date)",
+    "Dustcovery (On Pause for 2026)",
     "Lithuania Decompression (Tentative Date)",
     "Dutch Decompression",
     "North Bay Decompression: Reap the Harvest",
