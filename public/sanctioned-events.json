@@ -3,19 +3,15 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-10-05T21:18:02.999Z",
+  "scrapedAt": "2026-10-12T21:55:48.443Z",
   "counts": {
-    "directory": 21,
+    "directory": 17,
     "extra": 11,
-    "merged": 31
+    "merged": 27
   },
   "events": [
     "NECTR",
     "Burning Japan",
-    "Denver DeCOmp",
-    "Venice Afterburn",
-    "Reno Decompression",
-    "MPYRE Strikes Back!",
     "YOUtopia",
     "Burn2 Octoburn: Axis Mundi",
     "SeaCompression",
@@ -25,9 +21,9 @@
     "Coracle",
     "London Decompression",
     "Florida Afterburn",
-    "Chicago Decompression (Tentative Date)",
     "Dustcovery (On Pause for 2026)",
     "Lithuania Decompression (Tentative Date)",
+    "Chicago Decompression (Tentative Date)",
     "Dutch Decompression",
     "North Bay Decompression: Reap the Harvest",
     "Sydney Decompression",
