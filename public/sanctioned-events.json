@@ -3,22 +3,15 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-11-09T23:13:45.911Z",
+  "scrapedAt": "2026-11-16T23:07:35.551Z",
   "counts": {
-    "directory": 16,
+    "directory": 9,
     "extra": 11,
-    "merged": 26
+    "merged": 19
   },
   "events": [
-    "Coracle",
-    "Florida Afterburn",
-    "Dutch Decompression",
-    "Dustcovery (On Pause for 2026)",
-    "North Bay Decom: Process the Harvest",
-    "Fly Ranch Nature Walk",
-    "Los Angeles Burning Man Community Forum + Afterparty",
+    "Chicago Decompression",
     "Lithuania Decompression",
-    "Chicago Decompression (Tentative Date)",
     "Sydney Decompression",
     "Burn2 Winter Burn (Tentative Dates)",
     "Kiwiburn",
