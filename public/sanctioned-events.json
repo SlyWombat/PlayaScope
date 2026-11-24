@@ -3,16 +3,16 @@
     "directory": "https://burningman.org/global-events-groups/find-a-burning-man-event/",
     "extra": "public/sanctioned-extra.json"
   },
-  "scrapedAt": "2026-11-16T23:07:35.551Z",
+  "scrapedAt": "2026-11-24T01:24:42.858Z",
   "counts": {
     "directory": 9,
     "extra": 11,
     "merged": 19
   },
   "events": [
-    "Chicago Decompression",
-    "Lithuania Decompression",
     "Sydney Decompression",
+    "Salt Lake City Burning Man Community Forum",
+    "Las Vegas Burning Man Community Forum",
     "Burn2 Winter Burn (Tentative Dates)",
     "Kiwiburn",
     "Witch's Tit (Tentative Dates)",
